@@ -1,5 +1,6 @@
 #### VaR and ES using RobustGARCH, GAS and MSGARCH
 
+
 library(RobGARCHBoot)
 library(GAS)
 library(MSGARCH)
@@ -49,9 +50,9 @@ for (i in 1:OoS){
 # Model Estimation
   GAS_fit = UniGASFit(GAS_Spec, dailyreturns, Compute.SE = FALSE)
   GAS_fore = UniGASFor(GAS_fit, H = 1)
-  MSGARCH_fit = FitMCMC(MSGARC_Spec,dailyreturns)
   set.seed(i)
-  Boot = RobGARCHBoot(dailyreturns, n.boot = 5000, n.ahead = 1)
+  MSGARCH_fit = FitMCMC(MSGARC_Spec,dailyreturns)
+  Boot = RobGARCHBootParallel(dailyreturns, n.boot = 5000, n.ahead = 1)
 # Computing VaR
   risk = Risk(MSGARCH_fit, alpha = alpha, nahead = 1)
   BootVaR = quantile(Boot[[1]], prob = alpha)
