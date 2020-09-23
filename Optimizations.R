@@ -89,8 +89,10 @@ FZG = function(VaR, ES, r, alpha){
   return(val_)
 }
 
-
-RSC = function(lambda, VaR, ES, r, alpha, S = JSF){
+#########################################################
+####### Relative Score Combining 
+#########################################################
+RSC = function(lambda, VaR, ES, r, alpha, S){
   if(length(r) == 1){
     M = length(VaR) 
     VaR = matrix(VaR, ncol = M, nrow = 1)
@@ -103,7 +105,7 @@ RSC = function(lambda, VaR, ES, r, alpha, S = JSF){
 
   omega =  matrix(0,ncol = 1, nrow = M)
   for (i in 1:M){
-    omega[i,1] = exp(-lambda * sum(S(VaR[,i], ES[,i], r, alpha)))/sum( exp(-lambda * apply(S(VaR, ES, r, alpha),2,sum) ))
+    omega[i,1] = exp(-lambda * sum(S(VaR[,i], ES[,i], r, alpha)))/sum(exp(-lambda * apply(S(VaR, ES, r, alpha),2,sum) ))
   }
 
   if(!is.nan(sum(sum(omega)))) {
@@ -115,7 +117,7 @@ RSC = function(lambda, VaR, ES, r, alpha, S = JSF){
   }
 }
 
-RSC_Eval = function(lambda, VaR, ES, r, alpha, S = JSF){
+RSC_Eval = function(lambda, VaR, ES, r, alpha, S){
   if(length(r) == 1){
     M = length(VaR) 
     VaR = matrix(VaR, ncol = M, nrow = 1)
@@ -134,7 +136,7 @@ RSC_Eval = function(lambda, VaR, ES, r, alpha, S = JSF){
 return(omega)
 }
 
-RSC_grid = function(VaR, ES, r, alpha, S = JSF){
+RSC_grid = function(VaR, ES, r, alpha, S){
   lambda = seq(from = 0.01, to = 1000, length.out = 10^3)
   val = c()
   for (i in 1:(length(lambda))){
@@ -144,6 +146,34 @@ RSC_grid = function(VaR, ES, r, alpha, S = JSF){
   return(c(lambda[which(val == Inf)[1]-1],lambda[which(val == min(val))[1]]))
 }
 
+RSC_opt = function(VaR, ES, r, alpha, S){
+  parini = RSC_grid(VaR, ES, r, alpha, S)
+  lambda = suppressWarnings(optim(par = parini[2], fn = RSC, method = "L-BFGS-B", VaR = VaR, ES = ES, r = r, alpha = alpha, S = S, lower = 0, upper = parini[1])$par)
+  return(lambda)
+}
+
+#########################################################
+####### Relative Score Combining 
+#########################################################
+equal <- function(omega, VaR, ES, r, alpha, S) {
+  M = length(omega)
+  N = M/2
+  return(c(sum(omega[1:N]), sum(omega[(N+1):M])))
+}
+
+MSC = function(omega, VaR, ES, r, alpha, S){
+  N = dim(VaR)[2]
+  VaR_c = VaR%*%omega[1:N]
+  ES_c = ES%*%omega[(N+1):(2*N)]
+  return(sum(S(VaR_c, ES_c, r, alpha)))
+}
+
+MSC_opt = function(VaR, ES, r, alpha, S){
+  N = dim(VaR)[2]
+  parini = rep(rep(1/N,N),2)
+  param = solnp(pars = parini, fun = MSC, eqfun = equal, eqB = c(1,1), LB = rep(0,2*N), VaR = VaR, ES = ES, r = r, alpha = alpha, S = S)$pars
+  return(param)
+}
 
 
 
