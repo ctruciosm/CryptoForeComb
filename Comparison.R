@@ -28,15 +28,15 @@ ES_NZ = read.csv("ES_NZ.csv",sep = " ")[-c(1:7),]
 ES_FZG = read.csv("ES_FZG.csv",sep = " ")[-c(1:7),]
 
 #### VaR and ES 1%
-VaR1 = cbind(VaR[,c("GAS1","MSGARCH1","Boot1")], AL = VaR_AL[,1],  NZ = VaR_NZ[,1], FZG = VaR_FZG[,1])
-ES1 = cbind(VaR[,c("GAS1","MSGARCH1","Boot1")], AL = ES_AL[,1],  NZ = ES_NZ[,1], FZG = ES_FZG[,1])
+VaR1 = cbind(VaR[,c("GAS1","MSGARCH1","Boot1")], FZG = VaR_FZG[,1], NZ = VaR_NZ[,1], AL = VaR_AL[,1])
+ES1 = cbind(VaR[,c("GAS1","MSGARCH1","Boot1")], FZG = ES_FZG[,1],  NZ = ES_NZ[,1], AL = ES_AL[,1])
 #### VaR and ES 2.5%
-VaR2 = cbind(VaR[,c("GAS2","MSGARCH2","Boot2")], AL = VaR_AL[,2],  NZ = VaR_NZ[,2], FZG = VaR_FZG[,2])
-ES2 = cbind(VaR[,c("GAS2","MSGARCH2","Boot2")], AL = ES_AL[,2],  NZ = ES_NZ[,2], FZG = ES_FZG[,2])
+VaR2 = cbind(VaR[,c("GAS2","MSGARCH2","Boot2")], FZG = VaR_FZG[,2],  NZ = VaR_NZ[,2], AL = VaR_AL[,2])
+ES2 = cbind(VaR[,c("GAS2","MSGARCH2","Boot2")], FZG = ES_FZG[,2],  NZ = ES_NZ[,2], AL = ES_AL[,2])
 #### VaR and ES 1%
-VaR5 = cbind(VaR[,c("GAS5","MSGARCH5","Boot5")], AL = VaR_AL[,3],  NZ = VaR_NZ[,3], FZG = VaR_FZG[,3])
-ES5 = cbind(VaR[,c("GAS5","MSGARCH5","Boot5")], AL = ES_AL[,3],  NZ = ES_NZ[,3], FZG = ES_FZG[,3])
-colnames(ES1) = colnames(VaR1) = colnames(ES2) = colnames(VaR2) = colnames(ES5) = colnames(VaR5) = c("GAS", "MSGARCH", "RGARCHBoot", "AL", "NZ", "FZG")
+VaR5 = cbind(VaR[,c("GAS5","MSGARCH5","Boot5")], FZG = VaR_FZG[,3],  NZ = VaR_NZ[,3], AL = VaR_AL[,3])
+ES5 = cbind(VaR[,c("GAS5","MSGARCH5","Boot5")], FZG = ES_FZG[,3],  NZ = ES_NZ[,3], AL = ES_AL[,3])
+colnames(ES1) = colnames(VaR1) = colnames(ES2) = colnames(VaR2) = colnames(ES5) = colnames(VaR5) = c("GAS", "MSGARCH", "RGARCHBoot", "FGZ", "NZ", "AL")
 
 
 ###########################################
@@ -109,7 +109,7 @@ row.names(VaRES) = rep(c("Parametric", "Bayesian", "Bootstrap", "AL", "NZ", "FZG
 
 
 
-print(xtable(VaRES, digits = 3), file = "VaRESBTC.tex", compress = FALSE)
+print(xtable(VaRES, digits = 2), file = "VaRESBTC.tex", compress = FALSE)
 
 
 
