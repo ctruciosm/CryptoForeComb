@@ -137,7 +137,7 @@ return(omega)
 }
 
 RSC_grid = function(VaR, ES, r, alpha, S){
-  lambda = seq(from = 0.01, to = 1000, length.out = 10^3)
+  lambda = seq(from = 0.000001, to = 1000, length.out = 10^3)
   val = c()
   for (i in 1:(length(lambda))){
     val[i] = RSC(lambda[i], VaR, ES, r, alpha, S)
