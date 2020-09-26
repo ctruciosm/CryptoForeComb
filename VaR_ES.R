@@ -97,9 +97,9 @@ for (i in 1:OoS){
   
   
   for (j in 1:InS){
-    inES1_Boot[j,i] = mean(Boot[[3]][j,][Boot[[3]][j,]<inVaR1_Boot[j]])
-    inES2_Boot[j,i] = mean(Boot[[3]][j,][Boot[[3]][j,]<inVaR2_Boot[j]])
-    inES5_Boot[j,i] = mean(Boot[[3]][j,][Boot[[3]][j,]<inVaR5_Boot[j]])
+    inES1_Boot[j,i] = mean(Boot[[3]][j,][Boot[[3]][j,]<inVaR1_Boot[j,i]])
+    inES2_Boot[j,i] = mean(Boot[[3]][j,][Boot[[3]][j,]<inVaR2_Boot[j,i]])
+    inES5_Boot[j,i] = mean(Boot[[3]][j,][Boot[[3]][j,]<inVaR5_Boot[j,i]])
   }
   
   ES[i,] = c(tail(insampleGAS_ES,1), risk$ES, BootES)
