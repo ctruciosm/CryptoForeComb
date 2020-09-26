@@ -3,7 +3,7 @@
 ### Comparisons                         ###
 ###########################################
 
-setwd("/Users/ctruciosm/Dropbox/Academico/ForecastCombinationCrypto/Codes/LAST7/BTC/")
+setwd("./Data/BTC/")
 #setwd("/Users/ctruciosm/Dropbox/Academico/ForecastCombinationCrypto/Codes/LAST7/ETH/")
 #setwd("/Users/ctruciosm/Dropbox/Academico/ForecastCombinationCrypto/Codes/LAST7/LTC/")
 #setwd("/Users/ctruciosm/Dropbox/Academico/ForecastCombinationCrypto/Codes/LAST7/XRP/")
@@ -15,9 +15,6 @@ mu = read.csv("VaR.csv")[-c(1:7),"mu"]
 VaR = as.matrix(read.csv("VaR.csv")[-c(1:7),-1]) + mu
 ES = as.matrix(read.csv("ES.csv")[-c(1:7),-1]) + mu
 ret = read.csv("VaR.csv")[-c(1:7),"OoS"]
-
-
-
 
 VaR_AL = read.csv("VaR_AL.csv",sep = " ")[-c(1:7),]
 VaR_NZ = read.csv("VaR_NZ.csv",sep = " ")[-c(1:7),]
