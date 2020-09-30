@@ -16,24 +16,67 @@ VaR = as.matrix(read.csv("VaR.csv")[-c(1:7),-1]) + mu
 ES = as.matrix(read.csv("ES.csv")[-c(1:7),-1]) + mu
 ret = read.csv("VaR.csv")[-c(1:7),"OoS"]
 
-VaR_AL = read.csv("VaR_AL.csv",sep = " ")[-c(1:7),]
-VaR_NZ = read.csv("VaR_NZ.csv",sep = " ")[-c(1:7),]
-VaR_FZG = read.csv("VaR_FZG.csv",sep = " ")[-c(1:7),]
+VaR_RSC_FZG = read.csv("VaR_RSC_FZG.csv",sep = " ")[-c(1:7),]
+VaR_RSC_NZ = read.csv("VaR_RSC_NZ.csv",sep = " ")[-c(1:7),]
+VaR_RSC_AL = read.csv("VaR_RSC_AL.csv",sep = " ")[-c(1:7),]
 
-ES_AL = read.csv("ES_AL.csv",sep = " ")[-c(1:7),]
-ES_NZ = read.csv("ES_NZ.csv",sep = " ")[-c(1:7),]
-ES_FZG = read.csv("ES_FZG.csv",sep = " ")[-c(1:7),]
+ES_RSC_FZG = read.csv("ES_RSC_FZG.csv",sep = " ")[-c(1:7),]
+ES_RSC_NZ = read.csv("ES_RSC_NZ.csv",sep = " ")[-c(1:7),]
+ES_RSC_AL = read.csv("ES_RSC_AL.csv",sep = " ")[-c(1:7),]
+
+VaR_MSC_FZG = read.csv("VaR_MSC_FZG.csv",sep = " ")[-c(1:7),]
+VaR_MSC_NZ = read.csv("VaR_MSC_NZ.csv",sep = " ")[-c(1:7),]
+VaR_MSC_AL = read.csv("VaR_MSC_AL.csv",sep = " ")[-c(1:7),]
+
+ES_MSC_FZG = read.csv("ES_MSC_FZG.csv",sep = " ")[-c(1:7),]
+ES_MSC_NZ = read.csv("ES_MSC_NZ.csv",sep = " ")[-c(1:7),]
+ES_MSC_AL = read.csv("ES_MSC_AL.csv",sep = " ")[-c(1:7),]
+
+VaR_AVG_FZG = read.csv("VaR_AVG_FZG.csv",sep = " ")[-c(1:7),]
+VaR_AVG_NZ = read.csv("VaR_AVG_NZ.csv",sep = " ")[-c(1:7),]
+VaR_AVG_AL = read.csv("VaR_AVG_AL.csv",sep = " ")[-c(1:7),]
+
+ES_AVG_FZG = read.csv("ES_AVG_FZG.csv",sep = " ")[-c(1:7),]
+ES_AVG_NZ = read.csv("ES_AVG_NZ.csv",sep = " ")[-c(1:7),]
+ES_AVG_AL = read.csv("ES_AVG_AL.csv",sep = " ")[-c(1:7),]
+
+
+
 
 #### VaR and ES 1%
-VaR1 = cbind(VaR[,c("GAS1","MSGARCH1","Boot1")], FZG = VaR_FZG[,1], NZ = VaR_NZ[,1], AL = VaR_AL[,1])
-ES1 = cbind(VaR[,c("GAS1","MSGARCH1","Boot1")], FZG = ES_FZG[,1],  NZ = ES_NZ[,1], AL = ES_AL[,1])
+VaR1 = cbind(VaR[,c("GAS1","MSGARCH1","Boot1")], 
+             FZG_AVG = VaR_AVG_FZG[,1], NZ_AVG = VaR_AVG_NZ[,1], AL_AVG = VaR_AVG_AL[,1],
+             FZG_RSC = VaR_RSC_FZG[,1], NZ_RSC = VaR_RSC_NZ[,1], AL_RSC = VaR_RSC_AL[,1],
+             FZG_MSC = VaR_MSC_FZG[,1], NZ_MSC = VaR_MSC_NZ[,1], AL_MSC = VaR_MSC_AL[,1])
+
+ES1 = cbind(ES[,c("GAS1","MSGARCH1","Boot1")], 
+            FZG_AVG = ES_AVG_FZG[,1], NZ_AVG = ES_AVG_NZ[,1], AL_AVG = ES_AVG_AL[,1],
+            FZG_RSC = ES_RSC_FZG[,1], NZ_RSC = ES_RSC_NZ[,1], AL_RSC = ES_RSC_AL[,1],
+            FZG_MSC = ES_MSC_FZG[,1], NZ_MSC = ES_MSC_NZ[,1], AL_MSC = ES_MSC_AL[,1])
+
 #### VaR and ES 2.5%
-VaR2 = cbind(VaR[,c("GAS2","MSGARCH2","Boot2")], FZG = VaR_FZG[,2],  NZ = VaR_NZ[,2], AL = VaR_AL[,2])
-ES2 = cbind(VaR[,c("GAS2","MSGARCH2","Boot2")], FZG = ES_FZG[,2],  NZ = ES_NZ[,2], AL = ES_AL[,2])
+VaR2 = cbind(VaR[,c("GAS2","MSGARCH2","Boot2")], 
+             FZG_AVG = VaR_AVG_FZG[,2], NZ_AVG = VaR_AVG_NZ[,2], AL_AVG = VaR_AVG_AL[,2],
+             FZG_RSC = VaR_RSC_FZG[,2], NZ_RSC = VaR_RSC_NZ[,2], AL_RSC = VaR_RSC_AL[,2],
+             FZG_MSC = VaR_MSC_FZG[,2], NZ_MSC = VaR_MSC_NZ[,2], AL_MSC = VaR_MSC_AL[,2])
+
+ES2 = cbind(ES[,c("GAS2","MSGARCH2","Boot2")], 
+            FZG_AVG = ES_AVG_FZG[,2], NZ_AVG = ES_AVG_NZ[,2], AL_AVG = ES_AVG_AL[,2],
+            FZG_RSC = ES_RSC_FZG[,2], NZ_RSC = ES_RSC_NZ[,2], AL_RSC = ES_RSC_AL[,2],
+            FZG_MSC = ES_MSC_FZG[,2], NZ_MSC = ES_MSC_NZ[,2], AL_MSC = ES_MSC_AL[,2])
+
 #### VaR and ES 1%
-VaR5 = cbind(VaR[,c("GAS5","MSGARCH5","Boot5")], FZG = VaR_FZG[,3],  NZ = VaR_NZ[,3], AL = VaR_AL[,3])
-ES5 = cbind(VaR[,c("GAS5","MSGARCH5","Boot5")], FZG = ES_FZG[,3],  NZ = ES_NZ[,3], AL = ES_AL[,3])
-colnames(ES1) = colnames(VaR1) = colnames(ES2) = colnames(VaR2) = colnames(ES5) = colnames(VaR5) = c("GAS", "MSGARCH", "RGARCHBoot", "FGZ", "NZ", "AL")
+VaR5 = cbind(VaR[,c("GAS5","MSGARCH5","Boot5")], 
+             FZG_AVG = VaR_AVG_FZG[,3], NZ_AVG = VaR_AVG_NZ[,3], AL_AVG = VaR_AVG_AL[,3],
+             FZG_RSC = VaR_RSC_FZG[,3], NZ_RSC = VaR_RSC_NZ[,3], AL_RSC = VaR_RSC_AL[,3],
+             FZG_MSC = VaR_MSC_FZG[,3], NZ_MSC = VaR_MSC_NZ[,3], AL_MSC = VaR_MSC_AL[,3])
+
+ES5 = cbind(ES[,c("GAS5","MSGARCH5","Boot5")], 
+            FZG_AVG = ES_AVG_FZG[,3], NZ_AVG = ES_AVG_NZ[,3], AL_AVG = ES_AVG_AL[,3],
+            FZG_RSC = ES_RSC_FZG[,3], NZ_RSC = ES_RSC_NZ[,3], AL_RSC = ES_RSC_AL[,3],
+            FZG_MSC = ES_MSC_FZG[,3], NZ_MSC = ES_MSC_NZ[,3], AL_MSC = ES_MSC_AL[,3])
+
+colnames(ES1) = colnames(VaR1) = colnames(ES2) = colnames(VaR2) = colnames(ES5) = colnames(VaR5) = c("GAS", "MSGARCH", "RGARCHBoot", "FGZ_AVG", "NZ_AVG", "AL_AVG", "FGZ_RSC", "NZ_RSC", "AL_RSC", "FGZ_MSC", "NZ_MSC", "AL_MSC")
 
 
 ###########################################
@@ -51,7 +94,7 @@ a2 = 0.025
 a5 = 0.050
 
 BackVaRES1 = BackVaRES2 = BackVaRES5 = matrix(0,ncol = 14,nrow = K) 
-colnames(BackVaRES1) = colnames(BackVaRES2) = colnames(BackVaRES5) = c("Hits", "UC", "CC", "DQ", "VQ", "MFE", "NZ", "ESRV1", "ESRV2" ,"ESRV5", "AQL", "AAL", "ANF", "AFZG")
+colnames(BackVaRES1) = colnames(BackVaRES2) = colnames(BackVaRES5) = c("Hits", "UC", "CC", "DQ", "VQ", "MFE", "NZ", "ESRV1", "ESRV2" ,"ESRV5", "AQL", "AFZG", "ANZ", "AAL")
 
 for (i in 1:K){
   BackT1 = BacktestVaR(ret, VaR1[,i], alpha = a1, Lags = 4)
@@ -67,43 +110,53 @@ for (i in 1:K){
                      BackT1$LRuc[2], BackT1$LRcc[2],BackT1$DQ$pvalue, VaR_VQR(ret, VaR1[,i], a1),
                      EBackT1$boot.p.value,
                      cc_backtest(ret, VaR1[,i], ES1[,i],  alpha  = a1)$pvalue_twosided_simple, 
-                     esr_backtest2(ret, VaR1[,i], ES1[,i],alpha  = a1, B = 0, version = 1)$pvalue_twosided_asymptotic,
-                     esr_backtest2(ret, VaR1[,i], ES1[,i],alpha  = a1, B = 0, version = 2)$pvalue_twosided_asymptotic,
-                     esr_backtest2(ret, VaR1[,i], ES1[,i],alpha  = a1, B = 0, version = 3)$pvalue_twosided_asymptotic,
+                     suppressWarnings(esr_backtest3(ret, VaR1[,i], ES1[,i],alpha  = a1, B = 0, version = 1, cov_config = list(sparsity = "nid", 
+                                                                                                                             sigma_est = "scl_N", misspec = TRUE))$pvalue_twosided_asymptotic),
+                     suppressWarnings(esr_backtest3(ret, VaR1[,i], ES1[,i],alpha  = a1, B = 0, version = 2, cov_config = list(sparsity = "nid", 
+                                                                                                                             sigma_est = "scl_N", misspec = TRUE))$pvalue_twosided_asymptotic),
+                     suppressWarnings(esr_backtest3(ret, VaR1[,i], ES1[,i],alpha  = a1, B = 0, version = 3, cov_config = list(sparsity = "nid", 
+                                                                                                                             sigma_est = "scl_N", misspec = TRUE))$pvalue_twosided_asymptotic),
                      mean(QL(VaR1[,i],ret, alpha = a1)),
-                     mean(AL(VaR1[,i], ES1[,i], ret, alpha = a1)),
+                     mean(FZG(VaR1[,i], ES1[,i], ret, alpha = a1)),
                      mean(NZ(VaR1[,i], ES1[,i], ret, alpha = a1)),
-                     mean(FZG(VaR1[,i], ES1[,i], ret, alpha = a1)))
+                     mean(AL(VaR1[,i], ES1[,i], ret, alpha = a1)))
+                     
+                     
   
   BackVaRES2[i,] = c(mean(ret < VaR2[,i])*100,
                      BackT2$LRuc[2], BackT2$LRcc[2],BackT2$DQ$pvalue, VaR_VQR(ret, VaR2[,i], a2),
                      EBackT2$boot.p.value,
                      cc_backtest(ret, VaR2[,i], ES2[,i],  alpha  = a2)$pvalue_twosided_simple, 
-                     esr_backtest2(ret, VaR2[,i], ES2[,i],alpha  = a2, B = 0, version = 1)$pvalue_twosided_asymptotic,
-                     esr_backtest2(ret, VaR2[,i], ES2[,i],alpha  = a2, B = 0, version = 2)$pvalue_twosided_asymptotic,
-                     esr_backtest2(ret, VaR2[,i], ES2[,i],alpha  = a2, B = 0, version = 3)$pvalue_twosided_asymptotic,
+                     suppressWarnings(esr_backtest3(ret, VaR2[,i], ES2[,i],alpha  = a2, B = 0, version = 1, cov_config = list(sparsity = "nid", 
+                                                                                                                              sigma_est = "scl_N", misspec = TRUE))$pvalue_twosided_asymptotic),
+                     suppressWarnings(esr_backtest3(ret, VaR2[,i], ES2[,i],alpha  = a2, B = 0, version = 2, cov_config = list(sparsity = "nid", 
+                                                                                                                              sigma_est = "scl_N", misspec = TRUE))$pvalue_twosided_asymptotic),
+                     suppressWarnings(esr_backtest3(ret, VaR2[,i], ES2[,i],alpha  = a2, B = 0, version = 3, cov_config = list(sparsity = "nid", 
+                                                                                                                              sigma_est = "scl_N", misspec = TRUE))$pvalue_twosided_asymptotic),
                      mean(QL(VaR2[,i],ret, alpha = a2)),
-                     mean(AL(VaR2[,i], ES2[,i], ret, alpha = a2)),
+                     mean(FZG(VaR2[,i], ES2[,i], ret, alpha = a2)),
                      mean(NZ(VaR2[,i], ES2[,i], ret, alpha = a2)),
-                     mean(FZG(VaR2[,i], ES2[,i], ret, alpha = a2)))
+                     mean(AL(VaR2[,i], ES2[,i], ret, alpha = a2)))
   
   BackVaRES5[i,] = c(mean(ret < VaR5[,i])*100, 
                      BackT5$LRuc[2], BackT5$LRcc[2],BackT5$DQ$pvalue, VaR_VQR(ret, VaR5[,i], a5),
                      EBackT5$boot.p.value,
                      cc_backtest(ret, VaR5[,i], ES5[,i],  alpha  = a5)$pvalue_twosided_simple, 
-                     esr_backtest2(ret, VaR5[,i], ES5[,i],alpha  = a5, B = 0, version = 1)$pvalue_twosided_asymptotic,
-                     esr_backtest2(ret, VaR5[,i], ES5[,i],alpha  = a5, B = 0, version = 2)$pvalue_twosided_asymptotic,
-                     esr_backtest2(ret, VaR5[,i], ES5[,i],alpha  = a5, B = 0, version = 3)$pvalue_twosided_asymptotic,
+                     suppressWarnings(esr_backtest3(ret, VaR5[,i], ES5[,i],alpha  = a5, B = 0, version = 1, cov_config = list(sparsity = "nid", 
+                                                                                                                              sigma_est = "scl_N", misspec = TRUE))$pvalue_twosided_asymptotic),
+                     suppressWarnings(esr_backtest3(ret, VaR5[,i], ES5[,i],alpha  = a5, B = 0, version = 2, cov_config = list(sparsity = "nid", 
+                                                                                                                             sigma_est = "scl_N", misspec = TRUE))$pvalue_twosided_asymptotic),
+                     suppressWarnings(esr_backtest3(ret, VaR5[,i], ES5[,i],alpha  = a5, B = 0, version = 3,cov_config = list(sparsity = "nid", 
+                                                                                                                            sigma_est = "scl_N", misspec = TRUE))$pvalue_twosided_asymptotic),
                      mean(QL(VaR5[,i],ret, alpha = a5)),
-                     mean(AL(VaR5[,i], ES5[,i], ret, alpha = a5)),
+                     mean(FZG(VaR5[,i], ES5[,i], ret, alpha = a5)),
                      mean(NZ(VaR5[,i], ES5[,i], ret, alpha = a5)),
-                     mean(FZG(VaR5[,i], ES5[,i], ret, alpha = a5)))
+                     mean(AL(VaR5[,i], ES5[,i], ret, alpha = a5)))
 }
 
 
 VaRES = rbind(BackVaRES1,BackVaRES2,BackVaRES5)
-row.names(VaRES) = rep(c("Parametric", "Bayesian", "Bootstrap", "AL", "NZ", "FZG"),3)
-
+row.names(VaRES) = rep(c("Parametric", "Bayesian", "Bootstrap", "FGZ_AVG", "NZ_AVG", "AL_AVG", "FGZ_RSC", "NZ_RSC", "AL_RSC", "FGZ_MSC", "NZ_MSC", "AL_MSC"),3)
 
 
 print(xtable(VaRES, digits = 2), file = "VaRESBTC.tex", compress = FALSE)

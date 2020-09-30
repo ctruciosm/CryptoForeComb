@@ -103,22 +103,22 @@ for (j in 1:3){
   
   
   if (j == 1) {
-    write.table(omega1RSC,"omega1_RSC_AL.csv")
-    write.table(omega2RSC,"omega2_RSC_AL.csv")
-    write.table(omega1RSC,"omega5_RSC_AL.csv")
+    write.table(omega1RSC,"omega1_RSC_FZG.csv")
+    write.table(omega2RSC,"omega2_RSC_FZG.csv")
+    write.table(omega1RSC,"omega5_RSC_FZG.csv")
     
-    write.table(VaR_RSC,"VaR_RSC_AL.csv")
-    write.table(ES_RSC,"ES_RSC_AL.csv")
+    write.table(VaR_RSC,"VaR_RSC_FZG.csv")
+    write.table(ES_RSC,"ES_RSC_FZG.csv")
     
-    write.table(VaR_AVG,"VaR_AVG_AL.csv")
-    write.table(ES_AVG,"ES_AVG_AL.csv")
+    write.table(VaR_AVG,"VaR_AVG_FZG.csv")
+    write.table(ES_AVG,"ES_AVG_FZG.csv")
     
-    write.table(omega1MSC,"omega1_MSC_AL.csv")
-    write.table(omega2MSC,"omega2_MSC_AL.csv")
-    write.table(omega1MSC,"omega5_MSC_AL.csv")
+    write.table(omega1MSC,"omega1_MSC_FZG.csv")
+    write.table(omega2MSC,"omega2_MSC_FZG.csv")
+    write.table(omega1MSC,"omega5_MSC_FZG.csv")
     
-    write.table(VaR_MSC,"VaR_MSC_AL.csv")
-    write.table(ES_MSC,"ES_MSC_AL.csv")
+    write.table(VaR_MSC,"VaR_MSC_FZG.csv")
+    write.table(ES_MSC,"ES_MSC_FZG.csv")
   }
   
   if (j == 2) {
