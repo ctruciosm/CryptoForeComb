@@ -13,25 +13,25 @@ crytocurrency = "BTC/" # Other options are: "ETH/", "LTC/", and "XRP/"
 if(crytocurrency == "BTC/"){
   crypto = read.csv("BTCUSDT-1d-data.csv") %>% 
   mutate(date = as.Date(timestamp)) %>% arrange(date) %>% mutate(ret = c(0,diff(log(close))*100)) %>% 
-  dplyr::select(date, ret) %>% filter(date > "2017-08-17", date < "2020-08-18")
+  dplyr::select(date, ret) %>% filter(date > "2017-08-17", date < "2020-09-18")
 }
 
 if(crytocurrency == "ETH/"){
   crypto = read.csv("ETHUSDT-1d-data.csv") %>% 
   mutate(date = as.Date(timestamp)) %>% arrange(date) %>% mutate(ret = c(0,diff(log(close))*100)) %>% 
-  dplyr::select(date, ret) %>% filter(date > "2017-08-17", date < "2020-08-18")
+  dplyr::select(date, ret) %>% filter(date > "2017-08-17", date < "2020-09-18")
 }
 
 if(crytocurrency == "LTC/"){
   crypto = read.csv("LTCUSDT-1d-data.csv") %>% 
   mutate(date = as.Date(timestamp)) %>% arrange(date) %>% mutate(ret = c(0,diff(log(close))*100)) %>% 
-  dplyr::select(date, ret) %>% filter(date > "2017-12-13", date < "2020-08-18")
+  dplyr::select(date, ret) %>% filter(date > "2017-12-13", date < "2020-09-18")
 }
 
 if(crytocurrency == "XRP/"){
   crypto =  read.csv("XRPUSDT-1d-data.csv") %>% 
   mutate(date = as.Date(timestamp)) %>% arrange(date) %>% mutate(ret = c(0,diff(log(close))*100)) %>% 
-  dplyr::select(date, ret) %>% filter(date > "2018-05-04", date < "2020-08-18") 
+  dplyr::select(date, ret) %>% filter(date > "2018-05-04", date < "2020-09-18") 
 }
 
 
@@ -41,7 +41,7 @@ InS = dim(crypto)[1]-OoS
 alpha = c(0.01, 0.025, 0.05)
 
 GAS_Spec = UniGASSpec(Dist = "std", ScalingType = "Inv", GASPar = list(scale = TRUE))
-MSGARC_Spec = CreateSpec(variance.spec = list(model = c("gjrGARCH","gjrGARCH")),switch.spec = list(do.mix = FALSE),distribution.spec = list(distribution = c("sstd", "sstd")))
+MSGARC_Spec = CreateSpec(variance.spec = list(model = c("sGARCH","sGARCH")),switch.spec = list(do.mix = FALSE),distribution.spec = list(distribution = c("sstd", "sstd")))
 
 VaR = matrix(0,ncol= 11, nrow = OoS)
 ES = matrix(0,ncol= 9, nrow = OoS)
@@ -52,6 +52,9 @@ OoSret = mu = c()
 
 inVaR1_MS = inVaR2_MS = inVaR5_MS = inVaR1_GAS = inVaR2_GAS = inVaR5_GAS = inVaR1_Boot = inVaR2_Boot = inVaR5_Boot = matrix(0, ncol = OoS, nrow = InS)
 inES1_MS = inES2_MS = inES5_MS = inES1_GAS = inES2_GAS = inES5_GAS = inES1_Boot = inES2_Boot = inES5_Boot = matrix(0, ncol = OoS, nrow = InS)
+
+vol_Boot = vol_GAS = vol_MS = matrix(0, ncol = OoS, nrow = InS)
+
 
 for (i in 1:OoS){
 # Expanding Windows (because we have few observations)
@@ -65,6 +68,10 @@ for (i in 1:OoS){
   MSGARCH_fit = FitMCMC(MSGARC_Spec,dailyreturns)
   #Boot = RobGARCHBootParallel(dailyreturns, n.boot = 5000, n.ahead = 1, ins = TRUE)
   Boot = RobGARCHBoot(dailyreturns, n.boot = 5000, n.ahead = 1, ins = TRUE)
+# Save volatilities
+  vol_Boot[,i] = fitted_Vol(ROBUSTGARCH(dailyreturns),dailyreturns)[1:length(dailyreturns)]
+  vol_GAS[,i] = GAS_fit@GASDyn$mTheta[2,1:length(dailyreturns)]
+  vol_MS[,i] = as.numeric(Volatility(MSGARCH_fit))  
 # Computing VaR
   risk = Risk(MSGARCH_fit, alpha = alpha, nahead = 1)
   insampleRisk = Risk(MSGARCH_fit, alpha = alpha, do.its = TRUE)
@@ -110,6 +117,11 @@ for (i in 1:OoS){
 
 write.csv(VaR, paste0(crytocurrency,"VaR.csv"))
 write.csv(ES, paste0(crytocurrency,"ES.csv"))
+
+write.csv(vol_Boot, paste0(crytocurrency,"vol_Boot.csv"))
+write.csv(vol_GAS, paste0(crytocurrency,"vol_GAS.csv"))
+write.csv(vol_MS, paste0(crytocurrency,"vol_MS.csv"))
+
 
 write.csv(inVaR1_MS, paste0(crytocurrency,"inVaR1_MS.csv"))
 write.csv(inVaR2_MS, paste0(crytocurrency,"inVaR2_MS.csv"))

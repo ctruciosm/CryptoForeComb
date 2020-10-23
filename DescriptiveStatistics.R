@@ -10,19 +10,19 @@ setwd("./Data")
 
 BTC = read.csv("BTCUSDT-1d-data.csv") %>% 
   mutate(date = as.Date(timestamp)) %>% arrange(date) %>% mutate(ret = c(0,diff(log(close))*100)) %>% 
-  dplyr::select(date, ret) %>% filter(date > "2017-08-31") %>% rename(BTC=ret)
+  dplyr::select(date, ret) %>% filter(date > "2017-08-17", date < "2020-09-18") %>% rename(BTC=ret)
 
 ETH = read.csv("ETHUSDT-1d-data.csv") %>% 
   mutate(date = as.Date(timestamp)) %>% arrange(date) %>% mutate(ret = c(0,diff(log(close))*100)) %>% 
-  dplyr::select(date, ret) %>% filter(date > "2017-08-31") %>% rename(ETH=ret)
+  dplyr::select(date, ret) %>% filter(date > "2017-08-17", date < "2020-09-18") %>% rename(ETH=ret)
 
 LTC = read.csv("LTCUSDT-1d-data.csv") %>% 
   mutate(date = as.Date(timestamp)) %>% arrange(date) %>% mutate(ret = c(0,diff(log(close))*100)) %>% 
-  dplyr::select(date, ret) %>% filter(date > "2017-12-13") %>% rename(LTC=ret)
+  dplyr::select(date, ret) %>% filter(date > "2017-12-13", date < "2020-09-18") %>% rename(LTC=ret)
 
 XRP = read.csv("XRPUSDT-1d-data.csv") %>% 
   mutate(date = as.Date(timestamp)) %>% arrange(date) %>% mutate(ret = c(0,diff(log(close))*100)) %>% 
-  dplyr::select(date, ret) %>% filter(date > "2018-05-04") %>% rename(XRP=ret)
+  dplyr::select(date, ret) %>% filter(date > "2018-05-04", date < "2020-09-18") %>% rename(XRP=ret)
 
 Crypto = BTC %>% left_join(ETH, by = "date")  %>% left_join(LTC, by = "date")  %>% left_join(XRP, by = "date") %>% 
   dplyr::select(BTC, ETH, LTC, XRP) 
@@ -57,7 +57,8 @@ tabela = xtable(Results,caption = "Descriptive statistics of daily returns", dig
 
 print(tabela, file = "Descriptive.tex", compress = FALSE)
 
-
+OoS = 365
+InS = dim(Crypto)[1]-OoS
 
 # Figures
 
@@ -68,22 +69,22 @@ library(scales)
 {
 
 p1_1 = ggplot(BTC, aes(date, BTC)) + geom_line(colour= "green4") +
-  xlab(" ") + ylab("BTC") +
+  xlab(" ") + ylab("BTC") + geom_vline(xintercept=lubridate::ymd("2019-09-18"), linetype = "dashed") + 
   scale_x_date(date_breaks = "1 year", date_labels =  "%Y") +
-  theme_bw() + theme(axis.text.x = element_text(size=10,face="bold"))
+  theme_bw() + theme(axis.text.x = element_text(size=10,face="bold")) 
 
 p1_2 = ggplot(ETH, aes(date, ETH)) + geom_line(colour= "green4") +
-  xlab(" ") + ylab("ETH") +
+  xlab(" ") + ylab("ETH") + geom_vline(xintercept=lubridate::ymd("2019-09-18"), linetype = "dashed") + 
   scale_x_date(date_breaks = "1 year", date_labels =  "%Y") +
   theme_bw() + theme(axis.text.x = element_text(size=10,face="bold"))
 
 p1_3 = ggplot(LTC, aes(date, LTC)) + geom_line(colour= "green4") +
-  xlab(" ") + ylab("LTC") +
+  xlab(" ") + ylab("LTC") + geom_vline(xintercept=lubridate::ymd("2019-09-18"), linetype = "dashed") + 
   scale_x_date(date_breaks = "1 year", date_labels =  "%Y") +
   theme_bw() + theme(axis.text.x = element_text(size=10,face="bold"))
 
 p1_4 = ggplot(XRP, aes(date, XRP)) + geom_line(colour= "green4") +
-  xlab(" ") + ylab("XRP") +
+  xlab(" ") + ylab("XRP") + geom_vline(xintercept= lubridate::ymd("2019-09-18"), linetype = "dashed") + 
   scale_x_date(date_breaks = "1 year", date_labels =  "%Y") +
   theme_bw() + theme(axis.text.x = element_text(size=10,face="bold"))
 

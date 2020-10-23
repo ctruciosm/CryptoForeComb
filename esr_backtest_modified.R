@@ -1,4 +1,8 @@
 conditional_mean_sigma_modified <- function(y, x) {
+  # When constructing the ll, NA's (i.e. zero sigmas) are not considered in the -sum() 
+  # Before if at least one 0 sigma is observed the whole sum  is replaced by NA
+  # Additionally, we include nlminb is Nelder-Mead doesn't work
+  
   # Starting values and ensure positive fitted standard deviations
   fit1 <- stats::lm(y ~ x - 1)
   fit2 <- stats::lm(abs(fit1$residuals) ~ x - 1)
@@ -10,7 +14,8 @@ conditional_mean_sigma_modified <- function(y, x) {
     k <- ncol(x)
     mu <- as.numeric(x %*% par[1:k])
     sigma <- as.numeric(x %*% par[(k+1):(2*k)])
-    ifelse(all(sigma > 0), -sum(stats::dnorm(x=y, mean=mu, sd=sigma, log=TRUE)), NA)
+    -sum(stats::dnorm(x=y, mean=mu, sd=sigma, log=TRUE), na.rm = TRUE)
+    #ifelse(all(sigma >= 0), -sum(stats::dnorm(x=y, mean=mu, sd=sigma, log=TRUE)), NA)
   }
   fit <- try(stats::optim(b0, function(b) ll(par=b, y=y, x=x), method="BFGS"), silent=TRUE)
   
@@ -18,6 +23,7 @@ conditional_mean_sigma_modified <- function(y, x) {
     fit <- try(stats::optim(b0, function(b) ll(par=b, y=y, x=x), method="Nelder-Mead",
                             control=list(maxit=1000000)), silent=TRUE)
   }
+  
   if(inherits(fit, "try-error")|| (fit$convergence != 0)) {
     fitforce <- try(suppressWarnings(optimx(b0, function(b) ll(par=b, y=y, x=x), control = list(all.methods=T))), silent=TRUE)  
     fit$par = as.numeric(fitforce["nlminb",1:4])
@@ -32,8 +38,10 @@ conditional_mean_sigma_modified <- function(y, x) {
   list(mu = mu, sigma = sigma)
 }
 
+
 conditional_truncated_variance_modified <- function(y, x, approach) {
-  if (sum(y <= 0) <= 2) {
+  # Call conditional_mean_sigma_modified instead of conditional_mean_sigma
+  if (sum(y <= 0) < 2) {
     stop("Not enough negative quantile residuals!")
   }
   
@@ -44,8 +52,7 @@ conditional_truncated_variance_modified <- function(y, x, approach) {
       # Get conditional mean and sigma
       mu_sigma <- conditional_mean_sigma_modified(y, x)
       mu <- mu_sigma$mu
-      sigma <- ifelse(mu_sigma$sigma>0.0001,mu_sigma$sigma,0.0001) # original: mu_sigma$sigma but some cases are 0
-      
+      sigma <- mu_sigma$sigma
       
       # Truncated conditional variance
       if (approach == "scl_N") {
@@ -54,7 +61,30 @@ conditional_truncated_variance_modified <- function(y, x, approach) {
         cv <- sigma^2 * (1 - beta * stats::dnorm(beta)/stats::pnorm(beta) -
                            (stats::dnorm(beta)/stats::pnorm(beta))^2)
       } else if (approach == "scl_sp") {
-        stop("Only ind and scl_N are accepted")
+        # Kernel density estimate of the standardized residuals
+        df <- stats::density((y - mu) / sigma, bw = "SJ")
+        lower_int_boundary <- min(df$x)
+        pdf <- stats::approxfun(df, yleft = 0, yright = 0)
+        
+        # Truncation points
+        beta <- -mu / sigma
+        
+        # Integrate the truncated pdf by the trapezoidal rule
+        div <- 1000
+        h <- (max(beta) - lower_int_boundary) / (div - 1)
+        b_approx <- seq(lower_int_boundary, max(beta) + h, h)
+        midpoint <- b_approx[-div] + h/2
+        y0 <- pdf(b_approx)
+        y1 <- b_approx * y0
+        y2 <- b_approx^2 * y0
+        cb <- cumsum(y0[-1] + y0[-div]) / 2 * h
+        m1 <- cumsum(y1[-1] + y1[-div]) / 2 * h
+        m2 <- cumsum(y2[-1] + y2[-div]) / 2 * h
+        cv_approx <- m2 / cb - (m1 / cb)^2
+        cv_approx[cv_approx < 0] <- NA
+        
+        # Approximate the conditional truncated variance
+        cv <- sigma^2 * stats::approx(x = midpoint, y = cv_approx, xout = beta)$y
       }
       if (any(is.na(cv)) | any(!is.finite(cv)) | any(cv < 0)) stop() else cv
     }, error = function(e) {
@@ -67,6 +97,9 @@ conditional_truncated_variance_modified <- function(y, x, approach) {
 }
 
 sigma_matrix_modified <- function(object, sigma_est, misspec) {
+  # Uses conditional_truncated_variance_modified instead conditional_truncated_variance
+  # and cdf_at_quantile_modified instead of cdf_at_quantile
+  
   if(!(sigma_est %in% c("ind", "scl_N", "scl_sp")))
     stop("sigma_estimator can be ind, scl_N or scl_sp")
   
@@ -124,6 +157,8 @@ sigma_matrix_modified <- function(object, sigma_est, misspec) {
 }
 
 vcovA_modified <- function(object, sigma_est = 'scl_N', sparsity = 'nid', misspec = TRUE, bandwidth_estimator = 'Hall-Sheather') {
+  # Call lambda_matrix_modified instead lambda_matrix
+  # Call sigma_matrix_modified instead sigma_matrix
   lambda <- lambda_matrix_modified(object = object, sparsity = sparsity,
                           bandwidth_estimator = bandwidth_estimator, misspec = misspec)
   lambda_inverse <- solve(lambda)
@@ -135,6 +170,8 @@ vcovA_modified <- function(object, sigma_est = 'scl_N', sparsity = 'nid', misspe
 }
 
 lambda_matrix_modified <- function(object, sparsity, bandwidth_estimator, misspec) {
+  # The only difference is that call cdf_at_quantile_modified
+  # instead cdf_at_quantile
   if(!(sparsity %in% c("iid", "nid")))
     stop("sparsity can be iid or nid")
   if(!(bandwidth_estimator %in% c("Bofinger", "Chamberlain", "Hall-Sheather")))
@@ -195,6 +232,8 @@ lambda_matrix_modified <- function(object, sparsity, bandwidth_estimator, misspe
 }
 
 cdf_at_quantile_modified <- function(y, x, q) {
+  # The only difference is that call conditional_mean_sigma_modified(
+  # instead of conditional_mean_sigma
   # Get conditional mean and sigma
   mu_sigma <- conditional_mean_sigma_modified(y, x)
   mu <- mu_sigma$mu
@@ -238,6 +277,7 @@ esr_backtest_modified = function (r, q, e, alpha, version, B = 0, cov_config = l
   fit0 <- esreg::esreg(model, data = data, alpha = alpha, g1 = 2, g2 = 1)
   # The original function uses cvovA but conditional_mean_sigma can sometimes do not converge
   # the original function stop() it, but now we use nlminb optimization after BFGS and Nelder-Mead
+  # additionally, we force conditional_mean_sigma  to be greater than 0 (ifelse(X>0,<x,0.001))
   cov0 <- vcovA_modified(fit0, sparsity = cov_config$sparsity, 
                        sigma_est = cov_config$sigma_est, misspec = cov_config$misspec,bandwidth_estimator = 'Hall-Sheather')
   s0 <- fit0$coefficients - h0

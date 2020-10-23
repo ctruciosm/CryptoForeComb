@@ -89,6 +89,7 @@ FZG = function(VaR, ES, r, alpha){
   return(val_)
 }
 
+
 #########################################################
 ####### Relative Score Combining 
 #########################################################
@@ -136,24 +137,27 @@ RSC_Eval = function(lambda, VaR, ES, r, alpha, S){
 return(omega)
 }
 
-RSC_grid = function(VaR, ES, r, alpha, S){
-  lambda = seq(from = 0.000001, to = 1000, length.out = 10^3)
+RSC_grid = function(parini, VaR, ES, r, alpha, S){
+  lambda = seq(from = 0.000001, to = 100, length.out = 10^4)
   val = c()
   for (i in 1:(length(lambda))){
     val[i] = RSC(lambda[i], VaR, ES, r, alpha, S)
   }
-  #return(lambda[which(val == Inf)[1]-1])
-  return(c(lambda[which(val == Inf)[1]-1],lambda[which(val == min(val))[1]]))
+  lini = lambda[which(val == min(val))[1]]
+  
+  if (RSC(parini, VaR, ES, r, alpha, S) < RSC(lini, VaR, ES, r, alpha, S)) lini = parini
+  
+  return(c(lambda[which(val == Inf)[1]-1],lini))
 }
 
-RSC_opt = function(VaR, ES, r, alpha, S){
-  parini = RSC_grid(VaR, ES, r, alpha, S)
-  lambda = suppressWarnings(optim(par = parini[2], fn = RSC, method = "L-BFGS-B", VaR = VaR, ES = ES, r = r, alpha = alpha, S = S, lower = 0, upper = parini[1])$par)
+RSC_opt = function(parini, VaR, ES, r, alpha, S){
+  parini = RSC_grid(parini, VaR, ES, r, alpha, S)
+  lambda = suppressWarnings(optim(par = parini[2], fn = RSC, method = "L-BFGS-B", VaR = VaR, ES = ES, r = r, alpha = alpha, S = S, lower = 0.000001, upper = parini[1])$par)
   return(lambda)
 }
 
 #########################################################
-####### Relative Score Combining 
+####### Minimum Score Combining 
 #########################################################
 equal <- function(omega, VaR, ES, r, alpha, S) {
   M = length(omega)
@@ -164,13 +168,40 @@ equal <- function(omega, VaR, ES, r, alpha, S) {
 MSC = function(omega, VaR, ES, r, alpha, S){
   N = dim(VaR)[2]
   VaR_c = VaR%*%omega[1:N]
-  ES_c = ES%*%omega[(N+1):(2*N)]
+  ES_c = VaR_c + (ES-VaR)%*%omega[(N+1):(2*N)] 
   return(sum(S(VaR_c, ES_c, r, alpha)))
 }
 
-MSC_opt = function(VaR, ES, r, alpha, S){
+MSC_grid = function(parini, VaR, ES, r, alpha, S){
   N = dim(VaR)[2]
-  parini = rep(rep(1/N,N),2)
+  omega = parini
+  VaR_c = VaR%*%parini[1:N]
+  ES_c = VaR_c + (ES-VaR)%*%parini[(N+1):(2*N)] 
+  SF = sum(S(VaR_c, ES_c, r, alpha))
+  
+  for(i in 1:10^5){
+    omega[1:N] = runif(N)
+    omega[1:(N-1)] = omega[1:(N-1)]/sum(omega[1:N])
+    omega[N] = 1-sum(omega[1:(N-1)])
+    
+    omega[(N+1):(2*N)]  = runif(N)
+    omega[(N+1):(2*N-1)]  = omega[(N+1):(2*N-1)]/sum(omega[(N+1):(2*N)])
+    omega[2*N] = 1-sum(omega[(N+1):(2*N-1)])
+    
+    VaR_c = VaR%*%omega[1:N]
+    ES_c = VaR_c + (ES-VaR)%*%omega[(N+1):(2*N)] 
+    
+    if(sum(S(VaR_c, ES_c, r, alpha)) < SF){
+      parini = omega
+      SF = sum(S(VaR_c, ES_c, r, alpha))
+    }
+  }
+  return(parini)
+}
+
+MSC_opt = function(parini, VaR, ES, r, alpha, S){
+  N = dim(VaR)[2]
+  parini = MSC_grid(parini, VaR, ES, r, alpha, S)
   param = solnp(pars = parini, fun = MSC, eqfun = equal, eqB = c(1,1), LB = rep(0,2*N), VaR = VaR, ES = ES, r = r, alpha = alpha, S = S)$pars
   return(param)
 }
