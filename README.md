@@ -15,7 +15,7 @@ The BTC, ETH, LTC and XRP data downloaded from Binance are in the Data folder. T
 - VaR_ES_GARCH_Type.R: Estimates the VaR using GARCH-Type models (in case you are interested in those results)
 - DescriptiveStatistics: Table 1 and Figure 1 of the paper.
 
-VaR_ES.R >>> ForeComb.R >>> Comparison.R
+How to use? VaR_ES.R >>> ForeComb.R >>> Comparison.R
 
 
 
