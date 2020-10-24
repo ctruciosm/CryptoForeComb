@@ -209,6 +209,7 @@ for(d in distri){
   write.csv(VaR, paste0(paste0(s,d),"VaR.csv"))
 }
 
+
 # FGARCH - submodels: 
 submodels = c("TGARCH", "NGARCH", "NAGARCH", "APARCH", "ALLGARCH")
 for (s in submodels){
