@@ -48,6 +48,7 @@ distri =  c("norm", "snorm", "std", "sstd", "ged", "sged", "nig", "ghyp","jsu")
 # Modelos GARCH, IGARCH, EGARCH, GJR, csGARCH, AVGARCH
 
 # sGARCH
+s = "sGARCH"
 for(d in distri){
   GARCH_spec = ugarchspec(variance.model = list(model = "sGARCH", garchOrder = c(1, 1)), mean.model = list(armaOrder = c(0, 0), include.mean = FALSE), distribution.model = d)
   for (i in 1:OoS){
@@ -66,7 +67,6 @@ for(d in distri){
     VaR[i,1:3] = c(quantile(GARCH_for, 0.01), quantile(GARCH_for, 0.025), quantile(GARCH_for, 0.05))
     print(paste(i,"de", OoS, "replicacoes", s, d))
   }
-  s = "sGARCH"
   write.csv(inVaR1, paste0(paste0(s,d),"inVaR1.csv"))
   write.csv(inVaR2, paste0(paste0(s,d),"inVaR2.csv"))
   write.csv(inVaR5, paste0(paste0(s,d),"inVaR5.csv"))
@@ -75,6 +75,7 @@ for(d in distri){
 }
 
 # IGARCH
+s = "iGARCH"
 for(d in distri){
   GARCH_spec = ugarchspec(variance.model = list(model = "iGARCH", garchOrder = c(1, 1)), mean.model = list(armaOrder = c(0, 0), include.mean = FALSE), distribution.model = d)
   for (i in 1:OoS){
@@ -93,7 +94,6 @@ for(d in distri){
     VaR[i,1:3] = c(quantile(GARCH_for, 0.01), quantile(GARCH_for, 0.025), quantile(GARCH_for, 0.05))
     print(paste(i,"de", OoS, "replicacoes", s, d))
   }
-  s = "iGARCH"
   write.csv(inVaR1, paste0(paste0(s,d),"inVaR1.csv"))
   write.csv(inVaR2, paste0(paste0(s,d),"inVaR2.csv"))
   write.csv(inVaR5, paste0(paste0(s,d),"inVaR5.csv"))
@@ -102,6 +102,7 @@ for(d in distri){
 }
 
 # EGARCH
+s = "eGARCH"
 for(d in distri){
   GARCH_spec = ugarchspec(variance.model = list(model = "eGARCH", garchOrder = c(1, 1)), mean.model = list(armaOrder = c(0, 0), include.mean = FALSE), distribution.model = d)
   for (i in 1:OoS){
@@ -120,7 +121,6 @@ for(d in distri){
     VaR[i,1:3] = c(quantile(GARCH_for, 0.01), quantile(GARCH_for, 0.025), quantile(GARCH_for, 0.05))
     print(paste(i,"de", OoS, "replicacoes", s, d))
   }
-  s = "eGARCH"
   write.csv(inVaR1, paste0(paste0(s,d),"inVaR1.csv"))
   write.csv(inVaR2, paste0(paste0(s,d),"inVaR2.csv"))
   write.csv(inVaR5, paste0(paste0(s,d),"inVaR5.csv"))
@@ -129,6 +129,7 @@ for(d in distri){
 }
 
 # GJR
+s = "gjrGARCH"
 for(d in distri){
   GARCH_spec = ugarchspec(variance.model = list(model = "gjrGARCH", garchOrder = c(1, 1)), mean.model = list(armaOrder = c(0, 0), include.mean = FALSE), distribution.model = d)
   for (i in 1:OoS){
@@ -147,7 +148,6 @@ for(d in distri){
     VaR[i,1:3] = c(quantile(GARCH_for, 0.01), quantile(GARCH_for, 0.025), quantile(GARCH_for, 0.05))
     print(paste(i,"de", OoS, "replicacoes", s, d))
   }
-  s = "gjrGARCH"
   write.csv(inVaR1, paste0(paste0(s,d),"inVaR1.csv"))
   write.csv(inVaR2, paste0(paste0(s,d),"inVaR2.csv"))
   write.csv(inVaR5, paste0(paste0(s,d),"inVaR5.csv"))
@@ -156,6 +156,7 @@ for(d in distri){
 }
 
 # csGARCH
+s = "csGARCH"
 for(d in distri){
   GARCH_spec = ugarchspec(variance.model = list(model = "csGARCH", garchOrder = c(1, 1)), mean.model = list(armaOrder = c(0, 0), include.mean = FALSE), distribution.model = d)
   for (i in 1:OoS){
@@ -174,7 +175,6 @@ for(d in distri){
     VaR[i,1:3] = c(quantile(GARCH_for, 0.01), quantile(GARCH_for, 0.025), quantile(GARCH_for, 0.05))
     print(paste(i,"de", OoS, "replicacoes", s, d))
   }
-  s = "csGARCH"
   write.csv(inVaR1, paste0(paste0(s,d),"inVaR1.csv"))
   write.csv(inVaR2, paste0(paste0(s,d),"inVaR2.csv"))
   write.csv(inVaR5, paste0(paste0(s,d),"inVaR5.csv"))
@@ -183,6 +183,7 @@ for(d in distri){
 }
 
 # AVGARCH
+s = "AVGARCH"
 for(d in distri){
   GARCH_spec = ugarchspec(variance.model = list(model = "apARCH", garchOrder = c(1, 1)), mean.model = list(armaOrder = c(0, 0), include.mean = FALSE), distribution.model = d, fixed.pars = list(gamma1 = 0, delta = 1))
    for (i in 1:OoS){
@@ -201,7 +202,6 @@ for(d in distri){
     VaR[i,1:3] = c(quantile(GARCH_for, 0.01), quantile(GARCH_for, 0.025), quantile(GARCH_for, 0.05))
     print(paste(i,"de", OoS, "replicacoes", s, d))
   }
-  s = "AVGARCH"
   write.csv(inVaR1, paste0(paste0(s,d),"inVaR1.csv"))
   write.csv(inVaR2, paste0(paste0(s,d),"inVaR2.csv"))
   write.csv(inVaR5, paste0(paste0(s,d),"inVaR5.csv"))
