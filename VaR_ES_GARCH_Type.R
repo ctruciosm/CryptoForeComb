@@ -56,14 +56,14 @@ for(d in distri){
     VaR[i,4] = mean(predailyreturns)
     VaR[i,5] = crypto$ret[InS+i]
     dailyreturns = scale(predailyreturns , scale = FALSE, center = TRUE)
-    
-    GARCH_fit  = ugarchfit(GARCH_spec, dailyreturns, solver = "hybrid")
+
+    GARCH_fit  = try(ugarchfit(GARCH_spec, dailyreturns, solver = "hybrid"), silent=TRUE)
     GARCH_for  = ugarchforecast(GARCH_fit, n.ahead = 1, data = dailyreturns)
-    
+
     inVaR1[,i] = as.numeric(quantile(GARCH_fit, 0.010))
     inVaR2[,i] = as.numeric(quantile(GARCH_fit, 0.025))
     inVaR5[,i] = as.numeric(quantile(GARCH_fit, 0.050))
-    
+
     VaR[i,1:3] = c(quantile(GARCH_for, 0.01), quantile(GARCH_for, 0.025), quantile(GARCH_for, 0.05))
     print(paste(i,"de", OoS, "replicacoes", s, d))
   }
@@ -83,14 +83,14 @@ for(d in distri){
     VaR[i,4] = mean(predailyreturns)
     VaR[i,5] = crypto$ret[InS+i]
     dailyreturns = scale(predailyreturns , scale = FALSE, center = TRUE)
-    
-    GARCH_fit  = ugarchfit(GARCH_spec, dailyreturns, solver = "hybrid")
+
+    GARCH_fit  = try(ugarchfit(GARCH_spec, dailyreturns, solver = "hybrid"), silent=TRUE)
     GARCH_for  = ugarchforecast(GARCH_fit, n.ahead = 1, data = dailyreturns)
-    
+
     inVaR1[,i] = as.numeric(quantile(GARCH_fit, 0.010))
     inVaR2[,i] = as.numeric(quantile(GARCH_fit, 0.025))
     inVaR5[,i] = as.numeric(quantile(GARCH_fit, 0.050))
-    
+
     VaR[i,1:3] = c(quantile(GARCH_for, 0.01), quantile(GARCH_for, 0.025), quantile(GARCH_for, 0.05))
     print(paste(i,"de", OoS, "replicacoes", s, d))
   }
@@ -110,14 +110,14 @@ for(d in distri){
     VaR[i,4] = mean(predailyreturns)
     VaR[i,5] = crypto$ret[InS+i]
     dailyreturns = scale(predailyreturns , scale = FALSE, center = TRUE)
-    
-    GARCH_fit  = ugarchfit(GARCH_spec, dailyreturns, solver = "hybrid")
+
+    GARCH_fit  = try(ugarchfit(GARCH_spec, dailyreturns, solver = "hybrid"), silent=TRUE)
     GARCH_for  = ugarchforecast(GARCH_fit, n.ahead = 1, data = dailyreturns)
-    
+
     inVaR1[,i] = as.numeric(quantile(GARCH_fit, 0.010))
     inVaR2[,i] = as.numeric(quantile(GARCH_fit, 0.025))
     inVaR5[,i] = as.numeric(quantile(GARCH_fit, 0.050))
-    
+
     VaR[i,1:3] = c(quantile(GARCH_for, 0.01), quantile(GARCH_for, 0.025), quantile(GARCH_for, 0.05))
     print(paste(i,"de", OoS, "replicacoes", s, d))
   }
@@ -138,7 +138,7 @@ for(d in distri){
     VaR[i,5] = crypto$ret[InS+i]
     dailyreturns = scale(predailyreturns , scale = FALSE, center = TRUE)
     
-    GARCH_fit  = ugarchfit(GARCH_spec, dailyreturns, solver = "hybrid")
+    GARCH_fit  = try(ugarchfit(GARCH_spec, dailyreturns, solver = "hybrid"), silent=TRUE)
     GARCH_for  = ugarchforecast(GARCH_fit, n.ahead = 1, data = dailyreturns)
     
     inVaR1[,i] = as.numeric(quantile(GARCH_fit, 0.010))
@@ -165,7 +165,7 @@ for(d in distri){
     VaR[i,5] = crypto$ret[InS+i]
     dailyreturns = scale(predailyreturns , scale = FALSE, center = TRUE)
     
-    GARCH_fit  = ugarchfit(GARCH_spec, dailyreturns, solver = "hybrid")
+    GARCH_fit  = try(ugarchfit(GARCH_spec, dailyreturns, solver = "hybrid"), silent=TRUE)
     GARCH_for  = ugarchforecast(GARCH_fit, n.ahead = 1, data = dailyreturns)
     
     inVaR1[,i] = as.numeric(quantile(GARCH_fit, 0.010))
@@ -192,7 +192,7 @@ for(d in distri){
     VaR[i,5] = crypto$ret[InS+i]
     dailyreturns = scale(predailyreturns , scale = FALSE, center = TRUE)
     
-    GARCH_fit  = ugarchfit(GARCH_spec, dailyreturns, solver = "hybrid")
+    GARCH_fit  = try(ugarchfit(GARCH_spec, dailyreturns, solver = "hybrid"), silent=TRUE)
     GARCH_for  = ugarchforecast(GARCH_fit, n.ahead = 1, data = dailyreturns)
     
     inVaR1[,i] = as.numeric(quantile(GARCH_fit, 0.010))
@@ -221,7 +221,7 @@ for (s in submodels){
       VaR[i,5] = crypto$ret[InS+i]
       dailyreturns = scale(predailyreturns , scale = FALSE, center = TRUE)
       
-      GARCH_fit  = ugarchfit(GARCH_spec, dailyreturns, solver = "hybrid")
+      GARCH_fit  = try(ugarchfit(GARCH_spec, dailyreturns, solver = "hybrid"), silent=TRUE)
       GARCH_for  = ugarchforecast(GARCH_fit, n.ahead = 1, data = dailyreturns)
       
       inVaR1[,i] = as.numeric(quantile(GARCH_fit, 0.010))
