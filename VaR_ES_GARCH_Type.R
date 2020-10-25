@@ -57,7 +57,7 @@ for(d in distri){
     VaR[i,5] = crypto$ret[InS+i]
     dailyreturns = scale(predailyreturns , scale = FALSE, center = TRUE)
 
-    GARCH_fit  = try(ugarchfit(GARCH_spec, dailyreturns, solver = "hybrid"), silent=TRUE)
+    GARCH_fit  = try(ugarchfit(GARCH_spec, dailyreturns, solver = "hybrid",solver.control = list(tol = 1e-12)), silent=TRUE)
     GARCH_for  = ugarchforecast(GARCH_fit, n.ahead = 1, data = dailyreturns)
 
     inVaR1[,i] = as.numeric(quantile(GARCH_fit, 0.010))
@@ -84,7 +84,7 @@ for(d in distri){
     VaR[i,5] = crypto$ret[InS+i]
     dailyreturns = scale(predailyreturns , scale = FALSE, center = TRUE)
 
-    GARCH_fit  = try(ugarchfit(GARCH_spec, dailyreturns, solver = "hybrid"), silent=TRUE)
+    GARCH_fit  = try(ugarchfit(GARCH_spec, dailyreturns, solver = "hybrid",solver.control = list(tol = 1e-12)), silent=TRUE)
     GARCH_for  = ugarchforecast(GARCH_fit, n.ahead = 1, data = dailyreturns)
 
     inVaR1[,i] = as.numeric(quantile(GARCH_fit, 0.010))
@@ -111,7 +111,8 @@ for(d in distri){
     VaR[i,5] = crypto$ret[InS+i]
     dailyreturns = scale(predailyreturns , scale = FALSE, center = TRUE)
 
-    GARCH_fit  = try(ugarchfit(GARCH_spec, dailyreturns, solver = "hybrid"), silent=TRUE)
+    GARCH_fit  = try(ugarchfit(GARCH_spec, dailyreturns, solver = "hybrid",solver.control = list(tol = 1e-12)), silent=TRUE)
+    
     GARCH_for  = ugarchforecast(GARCH_fit, n.ahead = 1, data = dailyreturns)
 
     inVaR1[,i] = as.numeric(quantile(GARCH_fit, 0.010))
@@ -138,7 +139,7 @@ for(d in distri){
     VaR[i,5] = crypto$ret[InS+i]
     dailyreturns = scale(predailyreturns , scale = FALSE, center = TRUE)
     
-    GARCH_fit  = try(ugarchfit(GARCH_spec, dailyreturns, solver = "hybrid"), silent=TRUE)
+    GARCH_fit  = try(ugarchfit(GARCH_spec, dailyreturns, solver = "hybrid",solver.control = list(tol = 1e-12)), silent=TRUE)
     GARCH_for  = ugarchforecast(GARCH_fit, n.ahead = 1, data = dailyreturns)
     
     inVaR1[,i] = as.numeric(quantile(GARCH_fit, 0.010))
@@ -165,7 +166,7 @@ for(d in distri){
     VaR[i,5] = crypto$ret[InS+i]
     dailyreturns = scale(predailyreturns , scale = FALSE, center = TRUE)
     
-    GARCH_fit  = try(ugarchfit(GARCH_spec, dailyreturns, solver = "hybrid"), silent=TRUE)
+    GARCH_fit  = try(ugarchfit(GARCH_spec, dailyreturns, solver = "hybrid",solver.control = list(tol = 1e-12)), silent=TRUE)
     GARCH_for  = ugarchforecast(GARCH_fit, n.ahead = 1, data = dailyreturns)
     
     inVaR1[,i] = as.numeric(quantile(GARCH_fit, 0.010))
@@ -192,7 +193,7 @@ for(d in distri){
     VaR[i,5] = crypto$ret[InS+i]
     dailyreturns = scale(predailyreturns , scale = FALSE, center = TRUE)
     
-    GARCH_fit  = try(ugarchfit(GARCH_spec, dailyreturns, solver = "hybrid"), silent=TRUE)
+    GARCH_fit  = try(ugarchfit(GARCH_spec, dailyreturns, solver = "hybrid",solver.control = list(tol = 1e-12)), silent=TRUE)
     GARCH_for  = ugarchforecast(GARCH_fit, n.ahead = 1, data = dailyreturns)
     
     inVaR1[,i] = as.numeric(quantile(GARCH_fit, 0.010))
@@ -221,7 +222,7 @@ for (s in submodels){
       VaR[i,5] = crypto$ret[InS+i]
       dailyreturns = scale(predailyreturns , scale = FALSE, center = TRUE)
       
-      GARCH_fit  = try(ugarchfit(GARCH_spec, dailyreturns, solver = "hybrid"), silent=TRUE)
+      GARCH_fit  = try(ugarchfit(GARCH_spec, dailyreturns, solver = "hybrid",solver.control = list(tol = 1e-12)), silent=TRUE)
       GARCH_for  = ugarchforecast(GARCH_fit, n.ahead = 1, data = dailyreturns)
       
       inVaR1[,i] = as.numeric(quantile(GARCH_fit, 0.010))
