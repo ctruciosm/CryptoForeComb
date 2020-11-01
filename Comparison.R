@@ -21,12 +21,12 @@ source("Optimizations.R")
 
 
 p = 0.05
-pMCS = 0.1
+pMCS = 0.05
 
 # Table 2: rl = 1 and a = 0.010 and risklevel = c("GAS1","MSGARCH1","Boot1") 
 # Table 3: rl = 2 and a = 0.025 and risklevel = c("GAS2","MSGARCH2","Boot2") 
 # Table 4: rl = 3 and a = 0.050 and risklevel = c("GAS5","MSGARCH5","Boot5") 
-rl = 3;  a = 0.050 
+rl = 3;  a = 0.050
 risklevel = c("GAS5","MSGARCH5","Boot5")  
 
 setwd("/Users/ctruciosm/Dropbox/Academico/ForecastCombinationCrypto/Codes/CryptoForeComb/Data/BTC/")
@@ -373,40 +373,38 @@ VaRES$ESR_3 = ifelse(VaRES$ESR_3>p,paste0('\\cellcolor{gray!25}',format(round(Va
 VaRES$Hits = format(round(VaRES$Hits,1),nsmall = 1)
 
 
+namesBTC = c("Param.BTC", "Bayes.BTC", "Boots.BTC", "AVGBTC", "RSC_FGZBTC", "RSC_NZBTC", "RSC_ALBTC", "MSC_FGZBTC", "MSC_NZBTC", "MSC_ALBTC")
+namesETH = c("Param.ETH", "Bayes.ETH", "Boots.ETH", "AVGETH", "RSC_FGZETH", "RSC_NZETH", "RSC_ALETH", "MSC_FGZETH", "MSC_NZETH", "MSC_ALETH")
+namesLTC = c("Param.LTC", "Bayes.LTC", "Boots.LTC", "AVGLTC", "RSC_FGZLTC", "RSC_NZLTC", "RSC_ALLTC", "MSC_FGZLTC", "MSC_NZLTC", "MSC_ALLTC")
+namesXRP = c("Param.XRP", "Bayes.XRP", "Boots.XRP", "AVGXRP", "RSC_FGZXRP", "RSC_NZXRP", "RSC_ALXRP", "MSC_FGZXRP", "MSC_NZXRP", "MSC_ALXRP")
 
+Auxmatrix = matrix(0,ncol=length(row.names(VaRES_AUX)), nrow = 1)
+colnames(Auxmatrix) = c(namesBTC,namesETH,namesLTC,namesXRP)
   
-  namesBTC = c("Param.BTC", "Bayes.BTC", "Boots.BTC", "AVGBTC", "RSC_FGZBTC", "RSC_NZBTC", "RSC_ALBTC", "MSC_FGZBTC", "MSC_NZBTC", "MSC_ALBTC")
-  namesETH = c("Param.ETH", "Bayes.ETH", "Boots.ETH", "AVGETH", "RSC_FGZETH", "RSC_NZETH", "RSC_ALETH", "MSC_FGZETH", "MSC_NZETH", "MSC_ALETH")
-  namesLTC = c("Param.LTC", "Bayes.LTC", "Boots.LTC", "AVGLTC", "RSC_FGZLTC", "RSC_NZLTC", "RSC_ALLTC", "MSC_FGZLTC", "MSC_NZLTC", "MSC_ALLTC")
-  namesXRP = c("Param.XRP", "Bayes.XRP", "Boots.XRP", "AVGXRP", "RSC_FGZXRP", "RSC_NZXRP", "RSC_ALXRP", "MSC_FGZXRP", "MSC_NZXRP", "MSC_ALXRP")
-
-  Auxmatrix = matrix(0,ncol=length(row.names(VaRES_AUX)), nrow = 1)
-  colnames(Auxmatrix) = c(namesBTC,namesETH,namesLTC,namesXRP)
+AuxBTC = Auxmatrix %>% data.frame() %>% select(ends_with("BTC"))
+AuxETH = Auxmatrix %>% data.frame() %>% select(ends_with("ETH"))
+AuxLTC = Auxmatrix %>% data.frame() %>% select(ends_with("LTC"))
+AuxXRP = Auxmatrix %>% data.frame() %>% select(ends_with("XRP"))
   
-  AuxBTC = Auxmatrix %>% data.frame() %>% select(ends_with("BTC"))
-  AuxETH = Auxmatrix %>% data.frame() %>% select(ends_with("ETH"))
-  AuxLTC = Auxmatrix %>% data.frame() %>% select(ends_with("LTC"))
-  AuxXRP = Auxmatrix %>% data.frame() %>% select(ends_with("XRP"))
+MCSBTC_MQL = rep(0,length(AuxBTC))
+MCSETH_MQL = rep(0,length(AuxETH))
+MCSLTC_MQL = rep(0,length(AuxLTC))
+MCSXRP_MQL = rep(0,length(AuxXRP))
   
-  MCSBTC_MQL = rep(0,length(AuxBTC))
-  MCSETH_MQL = rep(0,length(AuxETH))
-  MCSLTC_MQL = rep(0,length(AuxLTC))
-  MCSXRP_MQL = rep(0,length(AuxXRP))
+MCSBTC_MFZG = rep(0,length(AuxBTC))
+MCSETH_MFZG = rep(0,length(AuxETH))
+MCSLTC_MFZG = rep(0,length(AuxLTC))
+MCSXRP_MFZG = rep(0,length(AuxXRP))
   
-  MCSBTC_MFZG = rep(0,length(AuxBTC))
-  MCSETH_MFZG = rep(0,length(AuxETH))
-  MCSLTC_MFZG = rep(0,length(AuxLTC))
-  MCSXRP_MFZG = rep(0,length(AuxXRP))
+MCSBTC_MNZ = rep(0,length(AuxBTC))
+MCSETH_MNZ = rep(0,length(AuxETH))
+MCSLTC_MNZ = rep(0,length(AuxLTC))
+MCSXRP_MNZ = rep(0,length(AuxXRP))
   
-  MCSBTC_MNZ = rep(0,length(AuxBTC))
-  MCSETH_MNZ = rep(0,length(AuxETH))
-  MCSLTC_MNZ = rep(0,length(AuxLTC))
-  MCSXRP_MNZ = rep(0,length(AuxXRP))
-  
-  MCSBTC_MAL = rep(0,length(AuxBTC))
-  MCSETH_MAL = rep(0,length(AuxETH))
-  MCSLTC_MAL = rep(0,length(AuxLTC))
-  MCSXRP_MAL = rep(0,length(AuxXRP))
+MCSBTC_MAL = rep(0,length(AuxBTC))
+MCSETH_MAL = rep(0,length(AuxETH))
+MCSLTC_MAL = rep(0,length(AuxLTC))
+MCSXRP_MAL = rep(0,length(AuxXRP))
   
 
   
@@ -414,88 +412,89 @@ VaRES$Hits = format(round(VaRES$Hits,1),nsmall = 1)
 if (ncol(AuxBTC)>1){
   MQL = QL(VaRBTC,retBTC, alpha = a)
   colnames(MQL) = colnames(AuxBTC)
-  auxBTC_MQL = estMCS.quick(MQL, test="t.range", B=5000, l=12, alpha = pMCS)
+  auxBTC_MQL = estMCS.quick(MQL, test="t.max", B=5000, l=12, alpha = pMCS)
   MCSBTC_MQL[auxBTC_MQL] = 1
 
   MFZG = FZG(VaRBTC,ESBTC, retBTC, alpha = a)
   colnames(MFZG) = colnames(AuxBTC)
-  auxBTC_MFZG = estMCS.quick(MFZG, test="t.range", B=5000, l=12, alpha = pMCS)
+  auxBTC_MFZG = estMCS.quick(MFZG, test="t.max", B=5000, l=12, alpha = pMCS)
   MCSBTC_MFZG[auxBTC_MFZG] = 1 
   
   MNZ = NZ(VaRBTC,ESBTC, retBTC, alpha = a)
   colnames(MNZ) = colnames(AuxBTC)
-  auxBTC_MNZ = estMCS.quick(MNZ, test="t.range", B=5000, l=12, alpha = pMCS)
+  auxBTC_MNZ = estMCS.quick(MNZ, test="t.max", B=5000, l=12, alpha = pMCS)
   MCSBTC_MNZ[auxBTC_MNZ] = 1 
+  
   
   MAL = AL(VaRBTC,ESBTC, retBTC, alpha = a)
   colnames(MAL) = colnames(AuxBTC)
-  auxBTC_MAL = estMCS.quick(MAL, test="t.range", B=5000, l=12, alpha = pMCS)
+  auxBTC_MAL = estMCS.quick(MAL, test="t.max", B=5000, l=12, alpha = pMCS)
   MCSBTC_MAL[auxBTC_MAL] = 1
 } 
   
 if (ncol(AuxETH)>1){
     MQL = QL(VaRETH,retETH, alpha = a)
     colnames(MQL) = colnames(AuxETH)
-    auxETH_MQL = estMCS.quick(MQL, test="t.range", B=5000, l=12, alpha = pMCS)
+    auxETH_MQL = estMCS.quick(MQL, test="t.max", B=5000, l=12, alpha = pMCS)
     MCSETH_MQL[auxETH_MQL] = 1
     
     MFZG = FZG(VaRETH,ESETH, retETH, alpha = a)
     colnames(MFZG) = colnames(AuxETH)
-    auxETH_MFZG = estMCS.quick(MFZG, test="t.range", B=5000, l=12, alpha = pMCS)
+    auxETH_MFZG = estMCS.quick(MFZG, test="t.max", B=5000, l=12, alpha = pMCS)
     MCSETH_MFZG[auxETH_MFZG] = 1 
     
     MNZ = NZ(VaRETH,ESETH, retETH, alpha = a)
     colnames(MNZ) = colnames(AuxETH)
-    auxETH_MNZ = estMCS.quick(MNZ, test="t.range", B=5000, l=12, alpha = pMCS)
+    auxETH_MNZ = estMCS.quick(MNZ, test="t.max", B=5000, l=12, alpha = pMCS)
     MCSETH_MNZ[auxETH_MNZ] = 1 
     
     MAL = AL(VaRETH,ESETH, retETH, alpha = a)
     colnames(MAL) = colnames(AuxETH)
-    auxETH_MAL = estMCS.quick(MAL, test="t.range", B=5000, l=12, alpha = pMCS)
+    auxETH_MAL = estMCS.quick(MAL, test="t.max", B=5000, l=12, alpha = pMCS)
     MCSETH_MAL[auxETH_MAL] = 1
 } 
   
 if (ncol(AuxLTC)>1){
     MQL = QL(VaRLTC,retLTC, alpha = a)
     colnames(MQL) = colnames(AuxLTC)
-    auxLTC_MQL = estMCS.quick(MQL, test="t.range", B=5000, l=12, alpha = pMCS)
+    auxLTC_MQL = estMCS.quick(MQL, test="t.max", B=5000, l=12, alpha = pMCS)
     MCSLTC_MQL[auxLTC_MQL] = 1
     
     MFZG = FZG(VaRLTC,ESLTC, retLTC, alpha = a)
     colnames(MFZG) = colnames(AuxLTC)
-    auxLTC_MFZG = estMCS.quick(MFZG, test="t.range", B=5000, l=12, alpha = pMCS)
+    auxLTC_MFZG = estMCS.quick(MFZG, test="t.max", B=5000, l=12, alpha = pMCS)
     MCSLTC_MFZG[auxLTC_MFZG] = 1 
     
     MNZ = NZ(VaRLTC,ESLTC, retLTC, alpha = a)
     colnames(MNZ) = colnames(AuxLTC)
-    auxLTC_MNZ = estMCS.quick(MNZ, test="t.range", B=5000, l=12, alpha = pMCS)
+    auxLTC_MNZ = estMCS.quick(MNZ, test="t.max", B=5000, l=12, alpha = pMCS)
     MCSLTC_MNZ[auxLTC_MNZ] = 1 
     
     MAL = AL(VaRLTC,ESLTC, retLTC, alpha = a)
     colnames(MAL) = colnames(AuxLTC)
-    auxLTC_MAL = estMCS.quick(MAL, test="t.range", B=5000, l=12, alpha = pMCS)
+    auxLTC_MAL = estMCS.quick(MAL, test="t.max", B=5000, l=12, alpha = pMCS)
     MCSLTC_MAL[auxLTC_MAL] = 1
   } 
   
 if (ncol(AuxXRP)>1){
     MQL = QL(VaRXRP,retXRP, alpha = a)
     colnames(MQL) = colnames(AuxXRP)
-    auxXRP_MQL = estMCS.quick(MQL, test="t.range", B=5000, l=12, alpha = pMCS)
+    auxXRP_MQL = estMCS.quick(MQL, test="t.max", B=5000, l=12, alpha = pMCS)
     MCSXRP_MQL[auxXRP_MQL] = 1
     
     MFZG = FZG(VaRXRP,ESXRP, retXRP, alpha = a)
     colnames(MFZG) = colnames(AuxXRP)
-    auxXRP_MFZG = estMCS.quick(MFZG, test="t.range", B=5000, l=12, alpha = pMCS)
+    auxXRP_MFZG = estMCS.quick(MFZG, test="t.max", B=5000, l=12, alpha = pMCS)
     MCSXRP_MFZG[auxXRP_MFZG] = 1 
     
     MNZ = NZ(VaRXRP,ESXRP, retXRP, alpha = a)
     colnames(MNZ) = colnames(AuxXRP)
-    auxXRP_MNZ = estMCS.quick(MNZ, test="t.range", B=5000, l=12, alpha = pMCS)
+    auxXRP_MNZ = estMCS.quick(MNZ, test="t.max", B=5000, l=12, alpha = pMCS)
     MCSXRP_MNZ[auxXRP_MNZ] = 1 
     
     MAL = AL(VaRXRP,ESXRP, retXRP, alpha = a)
     colnames(MAL) = colnames(AuxXRP)
-    auxXRP_MAL = estMCS.quick(MAL, test="t.range", B=5000, l=12, alpha = pMCS)
+    auxXRP_MAL = estMCS.quick(MAL, test="t.max", B=5000, l=12, alpha = pMCS)
     MCSXRP_MAL[auxXRP_MAL] = 1
   } 
 
@@ -564,6 +563,6 @@ row.names(VaRES) = c(namesBTC, namesETH, namesLTC, namesXRP,names)
 setwd("/Users/ctruciosm/Dropbox/Academico/ForecastCombinationCrypto/Codes/CryptoForeComb/Data/")
 
 Caption = "One-step-ahead VaR and ES backtesting for BTC at 1\\% (top panel), 2.5\\% (middle panel) and 5\\% (bottom panel) risk levels. Shaded cells in the calibration test indicate $p$-values larger than 0.01 while shaded cells in the scoring function stand for models in the MCS."
-print(xtable(VaRES, caption = Caption,  align = "l|ccc|ccc|cccc"), file = "VaRES5.tex", compress = FALSE)
+print(xtable(VaRES, caption = Caption,  align = "l|ccc|ccc|cccc"), file = "VaRES5_5_max.tex", compress = FALSE)
 
 
