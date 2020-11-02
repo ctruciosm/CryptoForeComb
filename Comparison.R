@@ -5,6 +5,7 @@
 
 setwd("/Users/ctruciosm/Dropbox/Academico/ForecastCombinationCrypto/Codes/CryptoForeComb/")
 
+
 library(stringr)
 library(modelconf)
 library(dplyr)
@@ -563,6 +564,6 @@ row.names(VaRES) = c(namesBTC, namesETH, namesLTC, namesXRP,names)
 setwd("/Users/ctruciosm/Dropbox/Academico/ForecastCombinationCrypto/Codes/CryptoForeComb/Data/")
 
 Caption = "One-step-ahead VaR and ES backtesting for BTC at 1\\% (top panel), 2.5\\% (middle panel) and 5\\% (bottom panel) risk levels. Shaded cells in the calibration test indicate $p$-values larger than 0.01 while shaded cells in the scoring function stand for models in the MCS."
-print(xtable(VaRES, caption = Caption,  align = "l|ccc|ccc|cccc"), file = "VaRES5_5_max.tex", compress = FALSE)
+print(xtable(VaRES, caption = Caption,  align = "l|ccc|ccc|cccc"), file = "VaRES5.tex", compress = FALSE)
 
 
