@@ -27,8 +27,8 @@ pMCS = 0.05
 # Table 2: rl = 1 and a = 0.010 and risklevel = c("GAS1","MSGARCH1","Boot1") 
 # Table 3: rl = 2 and a = 0.025 and risklevel = c("GAS2","MSGARCH2","Boot2") 
 # Table 4: rl = 3 and a = 0.050 and risklevel = c("GAS5","MSGARCH5","Boot5") 
-rl = 3;  a = 0.050
-risklevel = c("GAS5","MSGARCH5","Boot5")  
+rl = 1;  a = 0.010
+risklevel = c("GAS1","MSGARCH1","Boot1")  
 
 setwd("/Users/ctruciosm/Dropbox/Academico/ForecastCombinationCrypto/Codes/CryptoForeComb/Data/BTC/")
 if(str_sub(getwd(), - 3, - 1)   == "BTC"){
@@ -552,10 +552,10 @@ if (ncol(AuxXRP)>1){
               ESR_1 = sum(ESR_1),
               ESR_2 = sum(ESR_2),
               ESR_3 = sum(ESR_3),
-              AQL = sum(MCCQL),
-              AFZG = sum(MCCFZG),
-              ANZ = sum(MCCNZ),
-              AAL = sum(MCCAL)) %>% select(-label, -UC, -DQ, -ESR_1, -ESR_2) %>% data.frame()
+              AQL = format(round(mean(AQL),2), nsmall = 2),
+              AFZG = format(round(mean(AFZG),2), nsmall = 2),
+              ANZ = format(round(mean(ANZ),2), nsmall = 2),
+              AAL = format(round(mean(AAL),2), nsmall = 2)) %>% select(-label, -UC, -DQ, -ESR_1, -ESR_2) %>% data.frame()
   
   
 VaRES = rbind(VaRES,summarised)  
@@ -563,7 +563,7 @@ row.names(VaRES) = c(namesBTC, namesETH, namesLTC, namesXRP,names)
 
 setwd("/Users/ctruciosm/Dropbox/Academico/ForecastCombinationCrypto/Codes/CryptoForeComb/Data/")
 
-Caption = "One-step-ahead VaR and ES backtesting for BTC at 1\\% (top panel), 2.5\\% (middle panel) and 5\\% (bottom panel) risk levels. Shaded cells in the calibration test indicate $p$-values larger than 0.01 while shaded cells in the scoring function stand for models in the MCS."
-print(xtable(VaRES, caption = Caption,  align = "l|ccc|ccc|cccc"), file = "VaRES5.tex", compress = FALSE)
+Caption = "One-step-ahead VaR and ES backtesting"
+print(xtable(VaRES, caption = Caption,  align = "l|ccc|ccc|cccc"), file = "VaRES1.tex", compress = FALSE)
 
 
