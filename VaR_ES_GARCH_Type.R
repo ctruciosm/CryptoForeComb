@@ -10,10 +10,10 @@ crytocurrency = "BTC/" # Other options are: "ETH/", "LTC/", and "XRP/"
 
 
 if(crytocurrency == "BTC/"){
+setwd("./BTC")
   crypto = read.csv("BTCUSDT-1d-data.csv") %>% 
   mutate(date = as.Date(timestamp)) %>% arrange(date) %>% mutate(ret = c(0,diff(log(close))*100)) %>% 
   dplyr::select(date, ret) %>% filter(date > "2017-08-17", date < "2020-09-18")
-  setwd("./Data/BTC")
 }
 
 if(crytocurrency == "ETH/"){
