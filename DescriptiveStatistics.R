@@ -1,7 +1,11 @@
-###################################################################
-############     Cryptocurrency Forecast Combination      #########
-###  Authors: Carlos Trucios                              #########
-###################################################################
+################################################################################## 
+## Paper: Forecasting Value-at-Risk and Expected Shortfall of Cryptocurrencies  ##
+##        using Combinations based on Jump-Robust and Regime-Switching Models   ##
+## Authors: Carlos Trucíos and James W. Taylor
+################################################################################## 
+#### Implemented by Carlos Trucios
+#### Descriptive Statistics
+################################################################################## 
 library(tidyverse)
 library(qrmtools)
 
