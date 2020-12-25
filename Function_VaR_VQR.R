@@ -1,8 +1,12 @@
-###########################################
-### Forecasting Combination VaR and ES  ###
-###########################################
-#### VQ Test
-#### Paper: Evaluating Value at Risk models via quantile regressions
+################################################################################## 
+## Paper: Forecasting Value-at-Risk and Expected Shortfall of Cryptocurrencies  ##
+##        using Combinations based on Jump-Robust and Regime-Switching Models   ##
+## Authors: Carlos Trucíos and James W. Taylor
+################################################################################## 
+#### Implemented by Carlos Trucios
+#### VaR Quantile Test of Gaglianone et al. (2011)
+################################################################################## 
+
 
 library(quantreg)
 VaR_VQR = function(r,VaR, alpha){
@@ -27,7 +31,7 @@ VaR_VQR = function(r,VaR, alpha){
   icov[1,2] = -icov[2,2]*bb/aa
   
   statistic = (t(M)) %*% icov %*% M 
-  
+  # Added by myself, only in case of computational problems
   if(is.na(statistic)){
     fit1 = suppressWarnings(summary(rq(r ~ VaR, tau = alpha, method = "fn"), method="fn" , se="boot" , cov=TRUE))
     
