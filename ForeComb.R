@@ -1,7 +1,13 @@
-###########################################
-### Forecasting Combination VaR and ES  ###
-### Combinations                        ###
-###########################################
+################################################################################## 
+## Paper: Forecasting Value-at-Risk and Expected Shortfall of Cryptocurrencies  ##
+##        using Combinations based on Jump-Robust and Regime-Switching Models   ##
+## Authors: Carlos Trucíos and James W. Taylor
+################################################################################## 
+#### Implemented by Carlos Trucios
+#### Forecast Combination Strategies
+################################################################################## 
+
+
 library(psych)
 library(Rsolnp)
 library(dplyr)
