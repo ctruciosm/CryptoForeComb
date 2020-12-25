@@ -1,5 +1,12 @@
-#### VaR and ES using RobustGARCH, GAS and MSGARCH
-
+################################################################################## 
+## Paper: Forecasting Value-at-Risk and Expected Shortfall of Cryptocurrencies  ##
+##        using Combinations based on Jump-Robust and Regime-Switching Models   ##
+## Authors: Carlos Trucíos and James W. Taylor
+################################################################################## 
+#### Implemented by Carlos Trucios
+#### One-step-ahead forecast VaR/ES and in-sample VaR/ES estimation
+#### using RobustGARCH, GAS and MSGARCH models
+################################################################################## 
 
 library(RobGARCHBoot)
 library(GAS)
