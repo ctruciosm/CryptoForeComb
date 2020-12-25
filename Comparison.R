@@ -1,7 +1,12 @@
-###########################################
-### Forecasting Combination VaR and ES  ###
-### Comparisons                         ###
-###########################################
+################################################################################## 
+## Paper: Forecasting Value-at-Risk and Expected Shortfall of Cryptocurrencies  ##
+##        using Combinations based on Jump-Robust and Regime-Switching Models   ##
+## Authors: Carlos Trucíos and James W. Taylor
+################################################################################## 
+#### Implemented by Carlos Trucios
+#### Assessment procedures' performance
+#### This code produces the comparison Tables in the paper
+################################################################################## 
 
 setwd("/Users/ctruciosm/Dropbox/Academico/ForecastCombinationCrypto/Codes/CryptoForeComb/")
 
