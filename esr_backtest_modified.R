@@ -1,3 +1,12 @@
+################################################################################## 
+## Paper: Forecasting Value-at-Risk and Expected Shortfall of Cryptocurrencies  ##
+##        using Combinations based on Jump-Robust and Regime-Switching Models   ##
+## Authors: Carlos Trucíos and James W. Taylor
+################################################################################## 
+#### Implemented by Carlos Trucios
+#### ESR functions (slight modifications of some functions in esback package)
+################################################################################## 
+
 conditional_mean_sigma_modified <- function(y, x) {
   # When constructing the ll, NA's (i.e. zero sigmas) are not considered in the -sum() 
   # Before if at least one 0 sigma is observed the whole sum  is replaced by NA
