@@ -48,9 +48,9 @@ InS = dim(crypto)[1]-OoS
 if(crytocurrency == "BTC_Bitstamp"){
   crypto = read.table("BTC_Bitstamp.txt") %>% 
     mutate(Date = as.Date(Date)) %>% arrange(Date) %>% mutate(ret = c(0,diff(log(Last))*100)) %>% 
-    dplyr::select(Date, ret) %>% filter(Date > "2014-04-15", Date < "2020-11-23")
+    dplyr::select(Date, ret) %>% filter(Date > "2014-04-15", Date < "2021-02-11")
   
-  OoS = 1275
+  OoS = 1460 # 4 years
   InS = dim(crypto)[1]-OoS
 }
 
