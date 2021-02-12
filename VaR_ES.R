@@ -12,8 +12,9 @@ library(RobGARCHBoot)
 library(GAS)
 library(MSGARCH)
 library(dplyr)
+library(rugarch)
 
-crytocurrency = "BTC/" # Other options are: "ETH/", "LTC/", and "XRP/"
+crytocurrency = "BTC_Bitstamp" # Other options are: "BTC/", ETH/", "LTC/", and "XRP/"
 
 #setwd("/Users/ctruciosm/Dropbox/Academico/ForecastCombinationCrypto/Codes/CryptoForeComb/Data/")
 
@@ -41,44 +42,60 @@ if(crytocurrency == "XRP/"){
   dplyr::select(date, ret) %>% filter(date > "2018-05-04", date < "2020-09-18") 
 }
 
-
-
 OoS = 365
 InS = dim(crypto)[1]-OoS
+
+if(crytocurrency == "BTC_Bitstamp"){
+  crypto = read.table("BTC_Bitstamp.txt") %>% 
+    mutate(Date = as.Date(Date)) %>% arrange(Date) %>% mutate(ret = c(0,diff(log(Last))*100)) %>% 
+    dplyr::select(Date, ret) %>% filter(Date > "2014-04-15", Date < "2020-11-23")
+  
+  OoS = 1275
+  InS = dim(crypto)[1]-OoS
+}
+
+
+
+
 alpha = c(0.01, 0.025, 0.05)
 
 GAS_Spec = UniGASSpec(Dist = "std", ScalingType = "Inv", GASPar = list(scale = TRUE))
 MSGARC_Spec = CreateSpec(variance.spec = list(model = c("sGARCH","sGARCH")),switch.spec = list(do.mix = FALSE),distribution.spec = list(distribution = c("sstd", "sstd")))
+FIGARCH_Spec = ugarchspec(variance.model = list(model = 'fiGARCH', garchOrder = c(1, 1)), 
+                          mean.model = list(armaOrder = c(0,0), include.mean = FALSE), distribution = 'sstd')
 
-VaR = matrix(0,ncol= 11, nrow = OoS)
-ES = matrix(0,ncol= 9, nrow = OoS)
-nomes = c("GAS1", "GAS2", "GAS5", "MSGARCH1", "MSGARCH2", "MSGARCH5", "Boot1", "Boot2", "Boot5", "OoS", "mu")
+  
+VaR = matrix(0,ncol= 14, nrow = OoS)
+ES = matrix(0,ncol= 12, nrow = OoS)
+nomes = c("GAS1", "GAS2", "GAS5", "MSGARCH1", "MSGARCH2", "MSGARCH5", "Boot1", "Boot2", "Boot5", "FIGARCH1", "FIGARCH2", "FIGARCH5", "OoS", "mu")
 colnames(VaR) = nomes
-colnames(ES) = nomes[1:9]
+colnames(ES) = nomes[1:12]
 OoSret = mu = c()
 
-inVaR1_MS = inVaR2_MS = inVaR5_MS = inVaR1_GAS = inVaR2_GAS = inVaR5_GAS = inVaR1_Boot = inVaR2_Boot = inVaR5_Boot = matrix(0, ncol = OoS, nrow = InS)
-inES1_MS = inES2_MS = inES5_MS = inES1_GAS = inES2_GAS = inES5_GAS = inES1_Boot = inES2_Boot = inES5_Boot = matrix(0, ncol = OoS, nrow = InS)
+inVaR1_FI = inVaR2_FI = inVaR5_FI = inVaR1_MS = inVaR2_MS = inVaR5_MS = inVaR1_GAS = inVaR2_GAS = inVaR5_GAS = inVaR1_Boot = inVaR2_Boot = inVaR5_Boot = matrix(0, ncol = OoS, nrow = InS)
+inES1_FI = inES2_FI = inES5_FI = inES1_MS = inES2_MS = inES5_MS = inES1_GAS = inES2_GAS = inES5_GAS = inES1_Boot = inES2_Boot = inES5_Boot = matrix(0, ncol = OoS, nrow = InS)
 
-vol_Boot = vol_GAS = vol_MS = matrix(0, ncol = OoS, nrow = InS)
+vol_FI = vol_Boot = vol_GAS = vol_MS = matrix(0, ncol = OoS, nrow = InS)
 
 
 for (i in 1:OoS){
-# Expanding Windows (because we have few observations)
+# Rolling Windows 
   predailyreturns = crypto$ret[i:(InS+i-1)]
-  VaR[i,11] = mean(predailyreturns)
+  VaR[i,14] = mean(predailyreturns)
   dailyreturns = scale(predailyreturns , scale = FALSE, center = TRUE)
 # Model Estimation
   GAS_fit = UniGASFit(GAS_Spec, dailyreturns, Compute.SE = FALSE)
   GAS_fore = UniGASFor(GAS_fit, H = 1)
+  FIGARCH_fit = ugarchfit(FIGARCH_Spec, dailyreturns, solver = "hybrid", fit.control =  list(trunclag = 100))
+  FIGARCH_fore = ugarchforecast(FIGARCH_fit, n.ahead = 1)
   set.seed(i)
   MSGARCH_fit = FitMCMC(MSGARC_Spec,dailyreturns)
-  #Boot = RobGARCHBootParallel(dailyreturns, n.boot = 5000, n.ahead = 1, ins = TRUE)
   Boot = RobGARCHBoot(dailyreturns, n.boot = 5000, n.ahead = 1, ins = TRUE)
-# Save volatilities
+# In-sample volatilities
   vol_Boot[,i] = fitted_Vol(ROBUSTGARCH(dailyreturns),dailyreturns)[1:length(dailyreturns)]
-  vol_GAS[,i] = GAS_fit@GASDyn$mTheta[2,1:length(dailyreturns)]
+  vol_GAS[,i] = sqrt(GAS_fit@GASDyn$mTheta[2,1:length(dailyreturns)])
   vol_MS[,i] = as.numeric(Volatility(MSGARCH_fit))  
+  vol_FI[,i] = as.numeric(sigma(FIGARCH_fit)) 
 # Computing VaR
   risk = Risk(MSGARCH_fit, alpha = alpha, nahead = 1)
   insampleRisk = Risk(MSGARCH_fit, alpha = alpha, do.its = TRUE)
@@ -94,10 +111,42 @@ for (i in 1:OoS){
   inVaR1_Boot[,i] = apply(Boot[[3]],1,quantile, prob = alpha[1])
   inVaR2_Boot[,i] = apply(Boot[[3]],1,quantile, prob = alpha[2])
   inVaR5_Boot[,i] = apply(Boot[[3]],1,quantile, prob = alpha[3])
+
+  e = as.numeric(dailyreturns/vol_FI[,i])
+  param = fitdist(distribution = "sstd", e)$par
+  insampleFI_VaR = matrix(as.vector(sigma(FIGARCH_fit)),ncol=1)%*%qdist(distribution = "sstd", c(0.01,0.025,0.05), 
+                                                                       mu = ifelse(is.na(param["mu"]), NULL, param["mu"]),
+                                                                       sigma = ifelse(is.na(param["sigma"]), NULL, param["sigma"]),
+                                                                       skew = ifelse(is.na(param["skew"]), NULL, param["skew"]),
+                                                                       shape = ifelse(is.na(param["shape"]), NULL, param["shape"]))
+  inVaR1_FI[,i] = insampleFI_VaR[1:InS,1]
+  inVaR2_FI[,i] = insampleFI_VaR[1:InS,2]
+  inVaR5_FI[,i] = insampleFI_VaR[1:InS,3]
+  VaR_FI = qdist(distribution = "sstd", c(0.01,0.025,0.05), 
+                 mu = ifelse(is.na(param["mu"]), NULL, param["mu"]),
+                 sigma = ifelse(is.na(param["sigma"]), NULL, param["sigma"]),
+                 skew = ifelse(is.na(param["skew"]), NULL, param["skew"]),
+                 shape = ifelse(is.na(param["shape"]), NULL, param["shape"]))*as.numeric(FIGARCH_fore@forecast$sigmaFor)
   
   BootVaR = quantile(Boot[[1]], prob = alpha)
-  VaR[i,1:9] = c(tail(insampleGAS_VaR,1),risk$VaR, BootVaR)
+  
+  VaR[i,1:12] = c(tail(insampleGAS_VaR,1), risk$VaR, BootVaR, VaR_FI)
 # Computing ES
+  
+  f = function(x) qdist(distribution = "sstd", p = x, 
+                        mu = ifelse(is.na(param["mu"]), NULL, param["mu"]),
+                        sigma = ifelse(is.na(param["sigma"]), NULL, param["sigma"]),
+                        skew = ifelse(is.na(param["skew"]), NULL, param["skew"]),
+                        shape = ifelse(is.na(param["shape"]), NULL, param["shape"]))
+  
+  ES_FI = c(as.numeric(FIGARCH_fore@forecast$sigmaFor)*integrate(f, 0, 0.010)$value/0.010, 
+            as.numeric(FIGARCH_fore@forecast$sigmaFor)*integrate(f, 0, 0.025)$value/0.025, 
+            as.numeric(FIGARCH_fore@forecast$sigmaFor)*integrate(f, 0, 0.050)$value/0.050) 
+  
+  inES1_FI[,i] = as.numeric(sigma(FIGARCH_fit))*integrate(f, 0, 0.010)$value/0.010
+  inES2_FI[,i] = as.numeric(sigma(FIGARCH_fit))*integrate(f, 0, 0.025)$value/0.025
+  inES5_FI[,i] = as.numeric(sigma(FIGARCH_fit))*integrate(f, 0, 0.050)$value/0.050
+  
   BootES = c(mean(Boot[[1]][Boot[[1]]<BootVaR[1]]),mean(Boot[[1]][Boot[[1]]<BootVaR[2]]),mean(Boot[[1]][Boot[[1]]<BootVaR[3]]))
 
   insampleGAS_ES = ES(GAS_fit,probs = alpha)
@@ -116,10 +165,10 @@ for (i in 1:OoS){
     inES5_Boot[j,i] = mean(Boot[[3]][j,][Boot[[3]][j,]<inVaR5_Boot[j,i]])
   }
   
-  ES[i,] = c(tail(insampleGAS_ES,1), risk$ES, BootES)
+  ES[i,] = c(tail(insampleGAS_ES,1), risk$ES, BootES, ES_FI)
 # Saving Out-of-Sample (OoS) returns
-  VaR[i,10] = crypto$ret[InS+i]
-  print(paste(i,"de", OoS, "replicacoes"))
+  VaR[i,13] = crypto$ret[InS+i]
+  print(paste(i,"of", OoS, "replications"))
 }
 
 write.csv(VaR, paste0(crytocurrency,"VaR.csv"))
@@ -128,6 +177,7 @@ write.csv(ES, paste0(crytocurrency,"ES.csv"))
 write.csv(vol_Boot, paste0(crytocurrency,"vol_Boot.csv"))
 write.csv(vol_GAS, paste0(crytocurrency,"vol_GAS.csv"))
 write.csv(vol_MS, paste0(crytocurrency,"vol_MS.csv"))
+write.csv(vol_FI, paste0(crytocurrency,"vol_FI.csv"))
 
 
 write.csv(inVaR1_MS, paste0(crytocurrency,"inVaR1_MS.csv"))
@@ -153,3 +203,12 @@ write.csv(inVaR5_Boot, paste0(crytocurrency,"inVaR5_Boot.csv"))
 write.csv(inES1_Boot, paste0(crytocurrency,"inES1_Boot.csv"))
 write.csv(inES2_Boot, paste0(crytocurrency,"inES2_Boot.csv"))
 write.csv(inES5_Boot, paste0(crytocurrency,"inES5_Boot.csv"))
+
+
+write.csv(inVaR1_FI, paste0(crytocurrency,"inVaR1_FI.csv"))
+write.csv(inVaR2_FI, paste0(crytocurrency,"inVaR2_FI.csv"))
+write.csv(inVaR5_FI, paste0(crytocurrency,"inVaR5_FI.csv"))
+
+write.csv(inES1_FI, paste0(crytocurrency,"inES1_FI.csv"))
+write.csv(inES2_FI, paste0(crytocurrency,"inES2_FI.csv"))
+write.csv(inES5_FI, paste0(crytocurrency,"inES5_FI.csv"))
