@@ -7,7 +7,7 @@
 #### Forecast Combination Strategies
 ################################################################################## 
 
-
+setwd("/Volumes/CTRUCIOS_SD/ForecastCombinationCrypto/Codes/CryptoForeComb/")
 library(psych)
 library(Rsolnp)
 library(dplyr)
