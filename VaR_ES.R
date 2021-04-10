@@ -126,10 +126,10 @@ for (i in 1:OoS){
   ## MIXTURE
   riskMix = Risk(MSGARCH_fit, alpha = alpha, nahead = 1)
   insampleRiskMix = Risk(MIXTURE_fit, alpha = alpha, do.its = TRUE)
-  inVaR1_Mix[,i] = insampleRiskMi$VaR[,1]
-  inVaR2_Mix[,i] = insampleRiskMi$VaR[,2]
-  inVaR5_Mix[,i] = insampleRiskMi$VaR[,3]
-  inVaR10_Mix[,i] = insampleRiskMi$VaR[,4] 
+  inVaR1_Mix[,i] = insampleRiskMix$VaR[,1]
+  inVaR2_Mix[,i] = insampleRiskMix$VaR[,2]
+  inVaR5_Mix[,i] = insampleRiskMix$VaR[,3]
+  inVaR10_Mix[,i] = insampleRiskMix$VaR[,4] 
   ## GAS
   insampleGAS_VaR = quantile(GAS_fit, probs = alpha)
   inVaR1_GAS[,i] = insampleGAS_VaR[1:InS,1]
