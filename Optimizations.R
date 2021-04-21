@@ -150,6 +150,8 @@ RSC_grid = function(parini, VaR, ES, r, alpha, S){
   return(c(lambda[which(val == Inf)[1]-1],lini))
 }
 
+
+
 RSC_opt = function(parini, VaR, ES, r, alpha, S){
   parini = RSC_grid(parini, VaR, ES, r, alpha, S)
   lambda = suppressWarnings(optim(par = parini[2], fn = RSC, method = "L-BFGS-B", VaR = VaR, ES = ES, r = r, alpha = alpha, S = S, lower = 0.000001, upper = parini[1])$par)
@@ -181,13 +183,11 @@ MSC_grid = function(parini, VaR, ES, r, alpha, S){
   
   for(i in 1:10^5){
     omega[1:N] = runif(N)
-    omega[1:(N-1)] = omega[1:(N-1)]/sum(omega[1:N])
-    omega[N] = 1-sum(omega[1:(N-1)])
-    
+    omega[1:N] = omega[1:N]/sum(omega[1:N])
+
     omega[(N+1):(2*N)]  = runif(N)
-    omega[(N+1):(2*N-1)]  = omega[(N+1):(2*N-1)]/sum(omega[(N+1):(2*N)])
-    omega[2*N] = 1-sum(omega[(N+1):(2*N-1)])
-    
+    omega[(N+1):(2*N)]  = omega[(N+1):(2*N)]/sum(omega[(N+1):(2*N)])
+
     VaR_c = VaR%*%omega[1:N]
     ES_c = VaR_c + (ES-VaR)%*%omega[(N+1):(2*N)] 
     

@@ -19,7 +19,7 @@ alpha = c(0.01, 0.025, 0.05, 0.1)   # Risk levels
 nmodels = 6                         # Number os models used
 
 #setwd("/Users/ctruciosm/Dropbox/Academico/ForecastCombinationCrypto/Codes/CryptoForeComb/Data/")
-setwd("D:/Carlos/Research/Crypto_Forecast_Combination/CryptoForeComb/")  
+#setwd("D:/Carlos/Research/Crypto_Forecast_Combination/CryptoForeComb/")  
 
 if(crytocurrency == "BTC/"){
   crypto = read.csv("Data/BTCUSDT-1d-data.csv") %>% 

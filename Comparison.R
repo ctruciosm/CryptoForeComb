@@ -8,8 +8,50 @@
 #### This code produces the comparison Tables in the paper
 ################################################################################## 
 
-setwd("/Users/ctruciosm/Dropbox/Academico/ForecastCombinationCrypto/Codes/CryptoForeComb/")
+VaR_ES_full = function(risklevel, rl){
+  mu = read.csv("VaR.csv")[,"mu"]
+  VaR = as.matrix(read.csv("VaR.csv")[,-1]) + mu
+  ES = as.matrix(read.csv("ES.csv")[,-1]) + mu
+  ret_OoS = read.csv("VaR.csv")[,"OoS"]
+  
+  VaR_RSC_FZG = read.csv("VaR_RSC_FZG.csv",sep = " ")
+  VaR_RSC_NZ = read.csv("VaR_RSC_NZ.csv",sep = " ")
+  VaR_RSC_AL = read.csv("VaR_RSC_AL.csv",sep = " ")
+  
+  
+  ES_RSC_FZG = read.csv("ES_RSC_FZG.csv",sep = " ")
+  ES_RSC_NZ = read.csv("ES_RSC_NZ.csv",sep = " ")
+  ES_RSC_AL = read.csv("ES_RSC_AL.csv",sep = " ")
+  
+  
+  VaR_MSC_FZG = read.csv("VaR_MSC_FZG.csv",sep = " ")
+  VaR_MSC_NZ = read.csv("VaR_MSC_NZ.csv",sep = " ")
+  VaR_MSC_AL = read.csv("VaR_MSC_AL.csv",sep = " ")
+  
+  
+  ES_MSC_FZG = read.csv("ES_MSC_FZG.csv",sep = " ")
+  ES_MSC_NZ = read.csv("ES_MSC_NZ.csv",sep = " ")
+  ES_MSC_AL = read.csv("ES_MSC_AL.csv",sep = " ")
+  
+  VaR_AVG = read.csv("VaR_AVG.csv",sep = " ")
+  ES_AVG = read.csv("ES_AVG.csv",sep = " ")
+  
+  #### VaR and ES 1%
+  VaR_full = VaR %>% data.frame() %>% 
+    select(ends_with(risklevel), -contains("MIXTURE")) %>%
+    mutate(AL_AVG = VaR_AVG[,rl],
+           FZG_RSC = VaR_RSC_FZG[,rl], NZ_RSC = VaR_RSC_NZ[,rl], AL_RSC = VaR_RSC_AL[,rl],
+           FZG_MSC = VaR_MSC_FZG[,rl], NZ_MSC = VaR_MSC_NZ[,rl], AL_MSC = VaR_MSC_AL[,rl])
+  
+  ES_full = ES %>% data.frame() %>% 
+    select(ends_with(risklevel), -contains("MIXTURE")) %>%
+    mutate(AL_AVG = ES_AVG[,rl],
+           FZG_RSC = ES_RSC_FZG[,rl], NZ_RSC = ES_RSC_NZ[,rl], AL_RSC = ES_RSC_AL[,rl],
+           FZG_MSC = ES_MSC_FZG[,rl], NZ_MSC = ES_MSC_NZ[,rl], AL_MSC = ES_MSC_AL[,rl])
+  return(list(ret_OoS,VaR_full, ES_full))
+}
 
+setwd("/Volumes/CTRUCIOS_SD/ForecastCombinationCrypto/Codes/CryptoForeComb/")
 
 library(stringr)
 library(modelconf)
@@ -25,260 +67,93 @@ source("Function_VaR_VQR.R")
 source("esr_backtest_modified.R")
 source("Optimizations.R")
 
+setwd("/Volumes/CTRUCIOS_SD/ForecastCombinationCrypto/Codes/Resultados/ETH")
+#setwd("/Volumes/CTRUCIOS_SD/ForecastCombinationCrypto/Codes/Resultados/BTC/")
+#setwd("/Volumes/CTRUCIOS_SD/ForecastCombinationCrypto/Codes/Resultados/LTC/")
+#setwd("/Volumes/CTRUCIOS_SD/ForecastCombinationCrypto/Codes/Resultados/XRP/")
+
 
 p = 0.05
 pMCS = 0.05
 
-# Table 2: rl = 1 and a = 0.010 and risklevel = c("GAS1","MSGARCH1","Boot1") 
-# Table 3: rl = 2 and a = 0.025 and risklevel = c("GAS2","MSGARCH2","Boot2") 
-# Table 4: rl = 3 and a = 0.050 and risklevel = c("GAS5","MSGARCH5","Boot5") 
+# Table 2: rl = 1 and a = 0.010 and risklevel = as.character(1)
+# Table 3: rl = 2 and a = 0.025 and risklevel = as.character(2)
+# Table 4: rl = 3 and a = 0.050 and risklevel = as.character(5)
+# Table 5: rl = 4 and a = 0.100 and risklevel = as.character(10)
 rl = 3;  a = 0.050
-risklevel = c("GAS5","MSGARCH5","Boot5")  
+risklevel = as.character(5) # Options: 2,5,10
 
-setwd("/Users/ctruciosm/Dropbox/Academico/ForecastCombinationCrypto/Codes/CryptoForeComb/Data/BTC/")
+setwd("/Volumes/CTRUCIOS_SD/ForecastCombinationCrypto/Codes/Resultados/BTC/")
 if(str_sub(getwd(), - 3, - 1)   == "BTC"){
   crypto = read.csv("BTCUSDT-1d-data.csv") %>% 
     mutate(date = as.Date(timestamp)) %>% arrange(date) %>% mutate(ret = c(0,diff(log(close))*100)) %>% 
-    dplyr::select(date, ret) %>% filter(date > "2017-08-17", date < "2020-09-18")
-  
-  OoS = 365
+    dplyr::select(date, ret) %>% filter(date > "2017-08-17", date < "2021-04-10")
+  OoS = 550
   InS = dim(crypto)[1]-OoS
   crypto = crypto[(InS+1):(InS+OoS),]
-  
   CovidDay = which(crypto$date == "2020-03-12")
-  print(CovidDay)
-  
   # Setting 
-  mu = read.csv("VaR.csv")[,"mu"]
-  VaR = as.matrix(read.csv("VaR.csv")[,-1]) + mu
-  ES = as.matrix(read.csv("ES.csv")[,-1]) + mu
-  retBTC = read.csv("VaR.csv")[,"OoS"]
-  
-  VaR_RSC_FZG = read.csv("VaR_RSC_FZG.csv",sep = " ")
-  VaR_RSC_NZ = read.csv("VaR_RSC_NZ.csv",sep = " ")
-  VaR_RSC_AL = read.csv("VaR_RSC_AL.csv",sep = " ")
-  
-  
-  ES_RSC_FZG = read.csv("ES_RSC_FZG.csv",sep = " ")
-  ES_RSC_NZ = read.csv("ES_RSC_NZ.csv",sep = " ")
-  ES_RSC_AL = read.csv("ES_RSC_AL.csv",sep = " ")
-  
-  
-  VaR_MSC_FZG = read.csv("VaR_MSC_FZG.csv",sep = " ")
-  VaR_MSC_NZ = read.csv("VaR_MSC_NZ.csv",sep = " ")
-  VaR_MSC_AL = read.csv("VaR_MSC_AL.csv",sep = " ")
-  
-  
-  ES_MSC_FZG = read.csv("ES_MSC_FZG.csv",sep = " ")
-  ES_MSC_NZ = read.csv("ES_MSC_NZ.csv",sep = " ")
-  ES_MSC_AL = read.csv("ES_MSC_AL.csv",sep = " ")
-  
-  VaR_AVG_AL = read.csv("VaR_AVG_AL.csv",sep = " ")
-  
-  ES_AVG_AL = read.csv("ES_AVG_AL.csv",sep = " ")
-  
-  
-  names1 = c("Parametric1", "Bayesian1", "Bootstrap1", 
-             "AVG1", "FGZ_RSC1", "NZ_RSC1", "AL_RSC1", "FGZ_MSC1", "NZ_MSC1", "AL_MSC1")
-  
-  #### VaR and ES 1%
-  VaRBTC = cbind(VaR[,risklevel], 
-                 AL_AVG = VaR_AVG_AL[,rl],
-                 FZG_RSC = VaR_RSC_FZG[,rl], NZ_RSC = VaR_RSC_NZ[,rl], AL_RSC = VaR_RSC_AL[,rl],
-                 FZG_MSC = VaR_MSC_FZG[,rl], NZ_MSC = VaR_MSC_NZ[,rl], AL_MSC = VaR_MSC_AL[,rl])
-  
-  ESBTC = cbind(ES[,risklevel], 
-                AL_AVG = ES_AVG_AL[,rl],
-                FZG_RSC = ES_RSC_FZG[,rl], NZ_RSC = ES_RSC_NZ[,rl], AL_RSC = ES_RSC_AL[,rl],
-                FZG_MSC = ES_MSC_FZG[,rl], NZ_MSC = ES_MSC_NZ[,rl], AL_MSC = ES_MSC_AL[,rl])
+  AUX = VaR_ES_full(risklevel, rl)
+  retBTC = AUX[[1]]
+  VaRBTC = AUX[[2]]
+  ESBTC  = AUX[[3]]
 }
-setwd("/Users/ctruciosm/Dropbox/Academico/ForecastCombinationCrypto/Codes/CryptoForeComb/Data/ETH/")
+setwd("/Volumes/CTRUCIOS_SD/ForecastCombinationCrypto/Codes/Resultados/ETH/")
 if(str_sub(getwd(), - 3, - 1)   == "ETH"){
   crypto = read.csv("ETHUSDT-1d-data.csv") %>% 
     mutate(date = as.Date(timestamp)) %>% arrange(date) %>% mutate(ret = c(0,diff(log(close))*100)) %>% 
-    dplyr::select(date, ret) %>% filter(date > "2017-08-17", date < "2020-09-18")
-  
-  OoS = 365
+    dplyr::select(date, ret) %>% filter(date > "2017-08-17", date < "2020-04-10")
+  OoS = 550
   InS = dim(crypto)[1]-OoS
   crypto = crypto[(InS+1):(InS+OoS),]
-  
   CovidDay = which(crypto$date == "2020-03-12")
-  print(CovidDay)
-  
   # Setting 
-  mu = read.csv("VaR.csv")[,"mu"]
-  VaR = as.matrix(read.csv("VaR.csv")[,-1]) + mu
-  ES = as.matrix(read.csv("ES.csv")[,-1]) + mu
-  retETH = read.csv("VaR.csv")[,"OoS"]
-  
-  VaR_RSC_FZG = read.csv("VaR_RSC_FZG.csv",sep = " ")
-  VaR_RSC_NZ = read.csv("VaR_RSC_NZ.csv",sep = " ")
-  VaR_RSC_AL = read.csv("VaR_RSC_AL.csv",sep = " ")
-  
-  
-  ES_RSC_FZG = read.csv("ES_RSC_FZG.csv",sep = " ")
-  ES_RSC_NZ = read.csv("ES_RSC_NZ.csv",sep = " ")
-  ES_RSC_AL = read.csv("ES_RSC_AL.csv",sep = " ")
-  
-  
-  VaR_MSC_FZG = read.csv("VaR_MSC_FZG.csv",sep = " ")
-  VaR_MSC_NZ = read.csv("VaR_MSC_NZ.csv",sep = " ")
-  VaR_MSC_AL = read.csv("VaR_MSC_AL.csv",sep = " ")
-  
-  
-  ES_MSC_FZG = read.csv("ES_MSC_FZG.csv",sep = " ")
-  ES_MSC_NZ = read.csv("ES_MSC_NZ.csv",sep = " ")
-  ES_MSC_AL = read.csv("ES_MSC_AL.csv",sep = " ")
-  
-  VaR_AVG_AL = read.csv("VaR_AVG_AL.csv",sep = " ")
-  
-  ES_AVG_AL = read.csv("ES_AVG_AL.csv",sep = " ")
-  
-  
-  names1 = c("Parametric1", "Bayesian1", "Bootstrap1", 
-             "AVG1", "FGZ_RSC1", "NZ_RSC1", "AL_RSC1", "FGZ_MSC1", "NZ_MSC1", "AL_MSC1")
-  
-  #### VaR and ES 1%
-  VaRETH = cbind(VaR[,risklevel], 
-                 AL_AVG = VaR_AVG_AL[,rl],
-                 FZG_RSC = VaR_RSC_FZG[,rl], NZ_RSC = VaR_RSC_NZ[,rl], AL_RSC = VaR_RSC_AL[,rl],
-                 FZG_MSC = VaR_MSC_FZG[,rl], NZ_MSC = VaR_MSC_NZ[,rl], AL_MSC = VaR_MSC_AL[,rl])
-  
-  ESETH = cbind(ES[,risklevel], 
-                AL_AVG = ES_AVG_AL[,rl],
-                FZG_RSC = ES_RSC_FZG[,rl], NZ_RSC = ES_RSC_NZ[,rl], AL_RSC = ES_RSC_AL[,rl],
-                FZG_MSC = ES_MSC_FZG[,rl], NZ_MSC = ES_MSC_NZ[,rl], AL_MSC = ES_MSC_AL[,rl])
+  AUX = VaR_ES_full(risklevel, rl)
+  retETH = AUX[[1]]
+  VaRETH = AUX[[2]]
+  ESETH  = AUX[[3]]
 }
-setwd("/Users/ctruciosm/Dropbox/Academico/ForecastCombinationCrypto/Codes/CryptoForeComb/Data/LTC/")
+setwd("/Volumes/CTRUCIOS_SD/ForecastCombinationCrypto/Codes/Resultados/LTC/")
 if(str_sub(getwd(), - 3, - 1)   == "LTC"){
   crypto = read.csv("LTCUSDT-1d-data.csv") %>% 
     mutate(date = as.Date(timestamp)) %>% arrange(date) %>% mutate(ret = c(0,diff(log(close))*100)) %>% 
-    dplyr::select(date, ret) %>% filter(date > "2017-12-13", date < "2020-09-18")
-  
-  OoS = 365
+    dplyr::select(date, ret) %>% filter(date > "2017-12-13", date < "2020-04-10")
+  OoS = 550
   InS = dim(crypto)[1]-OoS
   crypto = crypto[(InS+1):(InS+OoS),]
-  
   CovidDay = which(crypto$date == "2020-03-12")
-  print(CovidDay)
-  
   # Setting 
-  mu = read.csv("VaR.csv")[,"mu"]
-  VaR = as.matrix(read.csv("VaR.csv")[,-1]) + mu
-  ES = as.matrix(read.csv("ES.csv")[,-1]) + mu
-  retLTC = read.csv("VaR.csv")[,"OoS"]
-  
-  VaR_RSC_FZG = read.csv("VaR_RSC_FZG.csv",sep = " ")
-  VaR_RSC_NZ = read.csv("VaR_RSC_NZ.csv",sep = " ")
-  VaR_RSC_AL = read.csv("VaR_RSC_AL.csv",sep = " ")
-  
-  
-  ES_RSC_FZG = read.csv("ES_RSC_FZG.csv",sep = " ")
-  ES_RSC_NZ = read.csv("ES_RSC_NZ.csv",sep = " ")
-  ES_RSC_AL = read.csv("ES_RSC_AL.csv",sep = " ")
-  
-  
-  VaR_MSC_FZG = read.csv("VaR_MSC_FZG.csv",sep = " ")
-  VaR_MSC_NZ = read.csv("VaR_MSC_NZ.csv",sep = " ")
-  VaR_MSC_AL = read.csv("VaR_MSC_AL.csv",sep = " ")
-  
-  
-  ES_MSC_FZG = read.csv("ES_MSC_FZG.csv",sep = " ")
-  ES_MSC_NZ = read.csv("ES_MSC_NZ.csv",sep = " ")
-  ES_MSC_AL = read.csv("ES_MSC_AL.csv",sep = " ")
-  
-  VaR_AVG_AL = read.csv("VaR_AVG_AL.csv",sep = " ")
-  
-  ES_AVG_AL = read.csv("ES_AVG_AL.csv",sep = " ")
-  
-  
-  names1 = c("Parametric1", "Bayesian1", "Bootstrap1", 
-             "AVG1", "FGZ_RSC1", "NZ_RSC1", "AL_RSC1", "FGZ_MSC1", "NZ_MSC1", "AL_MSC1")
-  
-  #### VaR and ES 1%
-  VaRLTC = cbind(VaR[,risklevel], 
-                 AL_AVG = VaR_AVG_AL[,rl],
-                 FZG_RSC = VaR_RSC_FZG[,rl], NZ_RSC = VaR_RSC_NZ[,rl], AL_RSC = VaR_RSC_AL[,rl],
-                 FZG_MSC = VaR_MSC_FZG[,rl], NZ_MSC = VaR_MSC_NZ[,rl], AL_MSC = VaR_MSC_AL[,rl])
-  
-  ESLTC = cbind(ES[,risklevel], 
-                AL_AVG = ES_AVG_AL[,rl],
-                FZG_RSC = ES_RSC_FZG[,rl], NZ_RSC = ES_RSC_NZ[,rl], AL_RSC = ES_RSC_AL[,rl],
-                FZG_MSC = ES_MSC_FZG[,rl], NZ_MSC = ES_MSC_NZ[,rl], AL_MSC = ES_MSC_AL[,rl])
+  AUX = VaR_ES_full(risklevel, rl)
+  retLTC = AUX[[1]]
+  VaRLTC = AUX[[2]]
+  ESLTC  = AUX[[3]]
 }
-setwd("/Users/ctruciosm/Dropbox/Academico/ForecastCombinationCrypto/Codes/CryptoForeComb/Data/XRP/")
+setwd("/Volumes/CTRUCIOS_SD/ForecastCombinationCrypto/Codes/Resultados/XRP/")
 if(str_sub(getwd(), - 3, - 1)   == "XRP"){
   crypto =  read.csv("XRPUSDT-1d-data.csv") %>% 
     mutate(date = as.Date(timestamp)) %>% arrange(date) %>% mutate(ret = c(0,diff(log(close))*100)) %>% 
-    dplyr::select(date, ret) %>% filter(date > "2018-05-04", date < "2020-09-18") 
-  
-  OoS = 365
+    dplyr::select(date, ret) %>% filter(date > "2018-05-04", date < "2020-04-10") 
+  OoS = 550
   InS = dim(crypto)[1]-OoS
   crypto = crypto[(InS+1):(InS+OoS),]
-  
   CovidDay = which(crypto$date == "2020-03-12")
-  print(CovidDay)
-  
   # Setting 
-  mu = read.csv("VaR.csv")[,"mu"]
-  VaR = as.matrix(read.csv("VaR.csv")[,-1]) + mu
-  ES = as.matrix(read.csv("ES.csv")[,-1]) + mu
-  retXRP = read.csv("VaR.csv")[,"OoS"]
-  
-  VaR_RSC_FZG = read.csv("VaR_RSC_FZG.csv",sep = " ")
-  VaR_RSC_NZ = read.csv("VaR_RSC_NZ.csv",sep = " ")
-  VaR_RSC_AL = read.csv("VaR_RSC_AL.csv",sep = " ")
-  
-  
-  ES_RSC_FZG = read.csv("ES_RSC_FZG.csv",sep = " ")
-  ES_RSC_NZ = read.csv("ES_RSC_NZ.csv",sep = " ")
-  ES_RSC_AL = read.csv("ES_RSC_AL.csv",sep = " ")
-  
-  
-  VaR_MSC_FZG = read.csv("VaR_MSC_FZG.csv",sep = " ")
-  VaR_MSC_NZ = read.csv("VaR_MSC_NZ.csv",sep = " ")
-  VaR_MSC_AL = read.csv("VaR_MSC_AL.csv",sep = " ")
-  
-  
-  ES_MSC_FZG = read.csv("ES_MSC_FZG.csv",sep = " ")
-  ES_MSC_NZ = read.csv("ES_MSC_NZ.csv",sep = " ")
-  ES_MSC_AL = read.csv("ES_MSC_AL.csv",sep = " ")
-  
-  VaR_AVG_AL = read.csv("VaR_AVG_AL.csv",sep = " ")
-  
-  ES_AVG_AL = read.csv("ES_AVG_AL.csv",sep = " ")
-  
-  
-  names1 = c("Parametric1", "Bayesian1", "Bootstrap1", 
-             "AVG1", "FGZ_RSC1", "NZ_RSC1", "AL_RSC1", "FGZ_MSC1", "NZ_MSC1", "AL_MSC1")
-  
-  #### VaR and ES 1%
-  VaRXRP = cbind(VaR[,risklevel], 
-                 AL_AVG = VaR_AVG_AL[,rl],
-                 FZG_RSC = VaR_RSC_FZG[,rl], NZ_RSC = VaR_RSC_NZ[,rl], AL_RSC = VaR_RSC_AL[,rl],
-                 FZG_MSC = VaR_MSC_FZG[,rl], NZ_MSC = VaR_MSC_NZ[,rl], AL_MSC = VaR_MSC_AL[,rl])
-  
-  ESXRP = cbind(ES[,risklevel], 
-                AL_AVG = ES_AVG_AL[,rl],
-                FZG_RSC = ES_RSC_FZG[,rl], NZ_RSC = ES_RSC_NZ[,rl], AL_RSC = ES_RSC_AL[,rl],
-                FZG_MSC = ES_MSC_FZG[,rl], NZ_MSC = ES_MSC_NZ[,rl], AL_MSC = ES_MSC_AL[,rl])
+  AUX = VaR_ES_full(risklevel, rl)
+  retXRP = AUX[[1]]
+  VaRXRP = AUX[[2]]
+  ESXRP  = AUX[[3]]
 }
-
-
-
-
-
 
 
 ###########################################
 #########   VaR Backtesting      ##########
 ###########################################
-K = dim(VaRBTC)[2]
+K = dim(VaRETH)[2]  
 
 BackVaRESBTC = BackVaRESETH = BackVaRESLTC = BackVaRESXRP= matrix(0,ncol = 18,nrow = K) 
 colnames(BackVaRESBTC) = colnames(BackVaRESETH) = colnames(BackVaRESLTC) = colnames(BackVaRESXRP) = c("Hits", "UC", "CC", "DQ", "VQ", "MFE", "NZ", "ESR_1", "ESR_2" ,"ESR_3", "AQL", "AFZG", "ANZ", "AAL","AQL2", "AFZG2", "ANZ2", "AAL2")
 
-for (i in 1:K){
+for (i in 1:K){ # each i is a method (individual or combination)
   BackTBTC = BacktestVaR(retBTC, VaRBTC[,i], alpha = a, Lags = 4)
   BackTETH = BacktestVaR(retETH, VaRETH[,i], alpha = a, Lags = 4)
   BackTLTC = BacktestVaR(retLTC, VaRLTC[,i], alpha = a, Lags = 4)
