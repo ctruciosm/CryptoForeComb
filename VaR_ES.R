@@ -24,38 +24,29 @@ nmodels = 6                         # Number os models used
 if(crytocurrency == "BTC/"){
   crypto = read.csv("Data/BTCUSDT-1d-data.csv") %>% 
   mutate(date = as.Date(timestamp)) %>% arrange(date) %>% mutate(ret = c(0,diff(log(close))*100)) %>% 
-  dplyr::select(date, ret) %>% filter(date > "2017-08-17", date < "2021-04-10")
+  dplyr::select(date, ret) %>% filter(date > "2017-08-17", date < "2021-05-02")
 }
 
 if(crytocurrency == "ETH/"){
   crypto = read.csv("Data/ETHUSDT-1d-data.csv") %>% 
   mutate(date = as.Date(timestamp)) %>% arrange(date) %>% mutate(ret = c(0,diff(log(close))*100)) %>% 
-  dplyr::select(date, ret) %>% filter(date > "2017-08-17", date < "2020-04-10")
+  dplyr::select(date, ret) %>% filter(date > "2017-08-17", date < "2021-05-02")
 }
 
 if(crytocurrency == "LTC/"){
   crypto = read.csv("Data/LTCUSDT-1d-data.csv") %>% 
   mutate(date = as.Date(timestamp)) %>% arrange(date) %>% mutate(ret = c(0,diff(log(close))*100)) %>% 
-  dplyr::select(date, ret) %>% filter(date > "2017-12-13", date < "2020-04-10")
+  dplyr::select(date, ret) %>% filter(date > "2017-12-13", date < "2021-05-02")
 }
 
 if(crytocurrency == "XRP/"){
   crypto =  read.csv("Data/XRPUSDT-1d-data.csv") %>% 
   mutate(date = as.Date(timestamp)) %>% arrange(date) %>% mutate(ret = c(0,diff(log(close))*100)) %>% 
-  dplyr::select(date, ret) %>% filter(date > "2018-05-04", date < "2020-04-10") 
+  dplyr::select(date, ret) %>% filter(date > "2018-05-04", date < "2021-05-02") 
 }
 
 OoS = 550
 InS = dim(crypto)[1]-OoS
-
-if(crytocurrency == "BTC_Bitstamp"){
-  crypto = read.table("BTC_Bitstamp.txt") %>% 
-    mutate(Date = as.Date(Date)) %>% arrange(Date) %>% mutate(ret = c(0,diff(log(Last))*100)) %>% 
-    dplyr::select(Date, ret) %>% filter(Date > "2014-04-15", Date < "2021-02-11")
-  
-  OoS = 1460 # 4 years
-  InS = dim(crypto)[1]-OoS
-}
 
 # Volatility models Specifications
 GAS_Spec = UniGASSpec(Dist = "std", ScalingType = "Inv", GASPar = list(scale = TRUE))
@@ -124,7 +115,7 @@ for (i in 1:OoS){
   inVaR5_MS[,i] = insampleRisk$VaR[,3]
   inVaR10_MS[,i] = insampleRisk$VaR[,4]
   ## MIXTURE
-  riskMix = Risk(MSGARCH_fit, alpha = alpha, nahead = 1)
+  riskMix = Risk(MIXTURE_fit, alpha = alpha, nahead = 1)
   insampleRiskMix = Risk(MIXTURE_fit, alpha = alpha, do.its = TRUE)
   inVaR1_Mix[,i] = insampleRiskMix$VaR[,1]
   inVaR2_Mix[,i] = insampleRiskMix$VaR[,2]

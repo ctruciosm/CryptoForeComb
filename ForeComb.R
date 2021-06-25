@@ -30,19 +30,19 @@ if(str_sub(getwd(), - 3, - 1)   == "BTC"){
 if(str_sub(getwd(), - 3, - 1)   == "ETH"){
   crypto = read.csv("ETHUSDT-1d-data.csv") %>% 
     mutate(date = as.Date(timestamp)) %>% arrange(date) %>% mutate(ret = c(0,diff(log(close))*100)) %>% 
-    dplyr::select(date, ret) %>% filter(date > "2017-08-17", date < "2020-04-10")
+    dplyr::select(date, ret) %>% filter(date > "2017-08-17", date < "2021-04-10")
 }
 
 if(str_sub(getwd(), - 3, - 1)  == "LTC"){
   crypto = read.csv("LTCUSDT-1d-data.csv") %>% 
     mutate(date = as.Date(timestamp)) %>% arrange(date) %>% mutate(ret = c(0,diff(log(close))*100)) %>% 
-    dplyr::select(date, ret) %>% filter(date > "2017-12-13", date < "2020-04-10")
+    dplyr::select(date, ret) %>% filter(date > "2017-12-13", date < "2021-04-10")
 }
 
 if(str_sub(getwd(), - 3, - 1)  == "XRP"){
   crypto =  read.csv("XRPUSDT-1d-data.csv") %>% 
     mutate(date = as.Date(timestamp)) %>% arrange(date) %>% mutate(ret = c(0,diff(log(close))*100)) %>% 
-    dplyr::select(date, ret) %>% filter(date > "2018-05-04", date < "2020-04-10") 
+    dplyr::select(date, ret) %>% filter(date > "2018-05-04", date < "2021-04-10") 
 }
 
 

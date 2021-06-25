@@ -14,19 +14,19 @@ setwd("./Data")
 
 BTC = read.csv("BTCUSDT-1d-data.csv") %>% 
   mutate(date = as.Date(timestamp)) %>% arrange(date) %>% mutate(ret = c(0,diff(log(close))*100)) %>% 
-  dplyr::select(date, ret) %>% filter(date > "2017-08-17", date < "2020-09-18") %>% rename(BTC=ret)
+  dplyr::select(date, ret) %>% filter(date > "2017-08-17", date < "2021-05-02") %>% rename(BTC=ret)
 
 ETH = read.csv("ETHUSDT-1d-data.csv") %>% 
   mutate(date = as.Date(timestamp)) %>% arrange(date) %>% mutate(ret = c(0,diff(log(close))*100)) %>% 
-  dplyr::select(date, ret) %>% filter(date > "2017-08-17", date < "2020-09-18") %>% rename(ETH=ret)
+  dplyr::select(date, ret) %>% filter(date > "2017-08-17", date < "2021-05-02") %>% rename(ETH=ret)
 
 LTC = read.csv("LTCUSDT-1d-data.csv") %>% 
   mutate(date = as.Date(timestamp)) %>% arrange(date) %>% mutate(ret = c(0,diff(log(close))*100)) %>% 
-  dplyr::select(date, ret) %>% filter(date > "2017-12-13", date < "2020-09-18") %>% rename(LTC=ret)
+  dplyr::select(date, ret) %>% filter(date > "2017-12-13", date < "2021-05-02") %>% rename(LTC=ret)
 
 XRP = read.csv("XRPUSDT-1d-data.csv") %>% 
   mutate(date = as.Date(timestamp)) %>% arrange(date) %>% mutate(ret = c(0,diff(log(close))*100)) %>% 
-  dplyr::select(date, ret) %>% filter(date > "2018-05-04", date < "2020-09-18") %>% rename(XRP=ret)
+  dplyr::select(date, ret) %>% filter(date > "2018-05-04", date < "2021-05-02") %>% rename(XRP=ret)
 
 Crypto = BTC %>% left_join(ETH, by = "date")  %>% left_join(LTC, by = "date")  %>% left_join(XRP, by = "date") %>% 
   dplyr::select(BTC, ETH, LTC, XRP) 
@@ -61,11 +61,14 @@ tabela = xtable(Results,caption = "Descriptive statistics of daily returns", dig
 
 print(tabela, file = "Descriptive.tex", compress = FALSE)
 
-OoS = 365
+OoS = 550
 InS = dim(Crypto)[1]-OoS
+
 
 # Figures
 
+#geom_rect(color = "gray",alpha = 0.008, aes(xmin=lubridate::ymd("2020-03-12"), xmax=lubridate::ymd("2021-05-01"), ymin= -Inf, ymax=Inf)) +
+  
 library(ggplot2)
 library(gridExtra)
 library(grid)
@@ -73,7 +76,8 @@ library(scales)
 {
 
 p1_1 = ggplot(BTC, aes(date, BTC)) + geom_line(colour= "green4") +
-  xlab(" ") + ylab("BTC") + geom_vline(xintercept=lubridate::ymd("2019-09-18"), linetype = "dashed") + 
+  xlab(" ") + ylab("BTC") + geom_vline(xintercept=lubridate::ymd("2019-09-18"), linetype = "solid") + 
+  geom_vline(xintercept=lubridate::ymd("2020-03-12"), linetype = "dashed") +  
   scale_x_date(date_breaks = "1 year", date_labels =  "%Y") +
   theme_bw() + theme(axis.text.x = element_text(size=10,face="bold")) 
 
