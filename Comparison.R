@@ -69,10 +69,6 @@ source("esr_backtest_modified.R")
 source("Optimizations.R")
 source("00_GiacominiRossi.R")
 
-#setwd("/Volumes/CTRUCIOS_SD/ForecastCombinationCrypto/Codes/Resultados/ETH")
-#setwd("/Volumes/CTRUCIOS_SD/ForecastCombinationCrypto/Codes/Resultados/BTC/")
-#setwd("/Volumes/CTRUCIOS_SD/ForecastCombinationCrypto/Codes/Resultados/LTC/")
-#setwd("/Volumes/CTRUCIOS_SD/ForecastCombinationCrypto/Codes/Resultados/XRP/")
 
 p = 0.05
 pMCS = 0.10
@@ -81,10 +77,10 @@ mu_ = 0.1
 # Table 3: rl = 2 and a = 0.025 and risklevel = as.character(2)
 # Table 4: rl = 3 and a = 0.050 and risklevel = as.character(5)
 # Table 5: rl = 4 and a = 0.100 and risklevel = as.character(10)
-rl = 2;  a = 0.025; risklevel = as.character(2)
-Caption = "One-step-ahead VaR and ES backtesting for BTC, ETH, LTC and XRP for the 2.5\\% risk level. Shaded rows indicate procedures with p-values larger than 0.05 in all calibration tests. $^{G,M,B,F,A}$ superscripts in the combining methods stand for procedures outperforming the GAS(G), MSGARCH(M), Bootstrap(B), FIGARCH(F) and/or AVGARCH(A) methods, respectively (according to the Giacomini and Rossi (2010) fluctuation test at 0.1 significance level)."
-file_tex_name = "VaRES2.tex" 
-label_name = "Table_VaRES2"
+rl = 4;  a = 0.100; risklevel = as.character(10)
+Caption = "One-step-ahead VaR and ES backtesting for BTC, ETH, LTC and XRP for the 10\\% risk level. Shaded rows indicate procedures with p-values larger than 0.05 in all calibration tests. $^{G,M,B,F,A}$ superscripts in the combining methods stand for procedures outperforming the GAS(G), MSGARCH(M), Bootstrap(B), FIGARCH(F) and/or AVGARCH(A) methods, respectively (according to the Giacomini and Rossi (2010) fluctuation test at 0.1 significance level)."
+file_tex_name = "VaRES10.tex" 
+label_name = "Table_VaRES10"
 
 
 
@@ -407,7 +403,6 @@ VaRES = rbind(BackVaRESBTC,BackVaRESETH,BackVaRESLTC,BackVaRESXRP) %>%
 
 
 
-GR_results = matrix(0,ncol = 7, nrow = 160)
 for (m in c("BTC", "ETH", "LTC", "XRP")){
   losses1 = VaRES %>% filter(moeda == m, classe == "Indiv.") %>% select(methods)
   losses1 = losses1$methods
