@@ -74,14 +74,15 @@ source("Optimizations.R")
 #setwd("/Volumes/CTRUCIOS_SD/ForecastCombinationCrypto/Codes/Resultados/XRP/")
 
 p = 0.05
+pMCS = 0.10
 # Table 2: rl = 1 and a = 0.010 and risklevel = as.character(1)
 # Table 3: rl = 2 and a = 0.025 and risklevel = as.character(2)
 # Table 4: rl = 3 and a = 0.050 and risklevel = as.character(5)
 # Table 5: rl = 4 and a = 0.100 and risklevel = as.character(10)
-rl = 1;  a = 0.010; risklevel = as.character(1)
-Caption = "One-step-ahead VaR and ES backtesting for BTC, ETH, LTC and XRP for the 1\\% risk level. Shaded rows indicate procedures with p-values larger than 0.05 in all calibration tests."
-file_tex_name = "VaRES1.tex" 
-label_name = "Table_VaRES1"
+rl = 4;  a = 0.100; risklevel = as.character(10)
+Caption = "One-step-ahead VaR and ES backtesting for BTC, ETH, LTC and XRP for the 10\\% risk level. Shaded rows indicate procedures with p-values larger than 0.05 in all calibration tests."
+file_tex_name = "VaRES10.tex" 
+label_name = "Table_VaRES10"
 
 
 setwd("/Volumes/CTRUCIOS_SD/ForecastCombinationCrypto/Codes/Resultados/BTC/")
@@ -164,15 +165,27 @@ ordering <- c(paste0("GAS",risklevel),paste0("MSGARCH",risklevel),paste0("Boot",
 paste0("FIGARCH",risklevel),paste0("AVGARCH",risklevel),
 "AL_AVG","MED","FZG_RSC","NZ_RSC","AL_RSC","FZG_MSC","NZ_MSC", "AL_MSC")
 
+names = c("GAS", "MSGARCH", "Boot.", "FIGARCH", "AVGARCH",
+              "AVG", "MED", "FZG_RSC","NZ_RSC","AL_RSC","FZG_MSC","NZ_MSC", "AL_MSC")
+
 VaRBTC <- VaRBTC %>% select(ordering)
+colnames(VaRBTC) = names
 VaRETH <- VaRETH %>% select(ordering)
+colnames(VaRETH) = names
 VaRLTC <- VaRLTC %>% select(ordering)
+colnames(VaRLTC) = names
 VaRXRP <- VaRXRP %>% select(ordering)
+colnames(VaRXRP) = names
 
 ESBTC <- ESBTC %>% select(ordering)
+colnames(ESBTC) = names
 ESETH <- ESETH %>% select(ordering)
+colnames(ESETH) = names
 ESLTC <- ESLTC %>% select(ordering)
+colnames(ESLTC) = names
 ESXRP <- ESXRP %>% select(ordering)
+colnames(ESXRP) = names
+
 
 ###########################################
 #########   VaR Backtesting      ##########
@@ -262,31 +275,199 @@ for (i in 1:K){ # each i is a method (individual or combination)
 }
 
 
-VaRES = rbind(BackVaRESBTC,BackVaRESETH,BackVaRESLTC,BackVaRESXRP)
-names = c("GAS", "MSGARCH", "Boots.", "FIGARCH", "AVGARCH", "AVG", "MED","RSC_FGZ", "RSC_NZ", "RSC_AL", "MSC_FGZ", "MSC_NZ", "MSC_AL")
-row.names(VaRES) = c(names,names,names,names)
+###########################################
+#######    Model Confidence Set      ######
+###########################################
 
-VaRES = VaRES %>% data.frame() 
-VaRES = VaRES %>%
-  mutate(method = rep(c("GAS", "MSGARCH", "Boot.", "FIGARCH", "AVGARCH",
-                    "AVG", "MED","$\\rm{RSC_{FZG}}$","$\\rm{RSC_{NZ}}$","$\\rm{RSC_{AL}}$",
-                    "$\\rm{MSC_{FZG}}$","$\\rm{MSC_{NZ}}$","$\\rm{MSC_{AL}}$"),4)) %>% 
-  mutate(classe = rep(c(rep("Indiv.",5), rep("Comb.",8)),4)) %>% 
-  mutate(moeda = c(rep("BTC",13), rep("ETH",13), rep("LTC",13), rep("XRP",13))) %>% 
-  mutate(how_many_ct = ifelse(VaRES$CC>p & VaRES$VQ>p & VaRES$MFE>p & VaRES$NZ>p & VaRES$ESR_3>p,1,0) +
-           ifelse(VaRES$VQ>p,1,0) + ifelse(VaRES$MFE>p,1,0) +
-           ifelse(VaRES$NZ>p,1,0) + ifelse(VaRES$ESR_3>p,1,0))
+MCSBTC_MQL = rep(0,ncol(VaRBTC))
+MQL = QL(VaRBTC,retBTC, alpha = a)
+colnames(MQL) = colnames(VaRBTC)
+auxBTC_MQL = estMCS.quick(MQL, test="t.max", B=5000, l=12, alpha = pMCS)
+MCSBTC_MQL[auxBTC_MQL] = 1
+
+  
+MCSBTC_MFZG = rep(0,ncol(VaRBTC))
+MFZG = FZG(VaRBTC,ESBTC, retBTC, alpha = a)
+colnames(MFZG) = colnames(VaRBTC)
+auxBTC_MFZG = estMCS.quick(MFZG, test="t.max", B=5000, l=12, alpha = pMCS)
+MCSBTC_MFZG[auxBTC_MFZG] = 1 
+  
+MCSBTC_MNZ = rep(0,ncol(VaRBTC))
+MNZ = NZ(VaRBTC,ESBTC, retBTC, alpha = a)
+colnames(MNZ) = colnames(VaRBTC)
+auxBTC_MNZ = estMCS.quick(MNZ, test="t.max", B=5000, l=12, alpha = pMCS)
+MCSBTC_MNZ[auxBTC_MNZ] = 1 
+  
+MCSBTC_MAL = rep(0,ncol(VaRBTC))
+MAL = AL(VaRBTC,ESBTC, retBTC, alpha = a)
+colnames(MAL) = colnames(VaRBTC)
+auxBTC_MAL = estMCS.quick(MAL, test="t.max", B=5000, l=12, alpha = pMCS)
+MCSBTC_MAL[auxBTC_MAL] = 1
+
+MCSETH_MQL = rep(0,ncol(VaRETH))
+MQL = QL(VaRETH,retETH, alpha = a)
+colnames(MQL) = colnames(VaRETH)
+auxETH_MQL = estMCS.quick(MQL, test="t.max", B=5000, l=12, alpha = pMCS)
+MCSETH_MQL[auxETH_MQL] = 1
+ 
+MCSETH_MFZG = rep(0,ncol(VaRETH))
+MFZG = FZG(VaRETH,ESETH, retETH, alpha = a)
+colnames(MFZG) = colnames(VaRETH)
+auxETH_MFZG = estMCS.quick(MFZG, test="t.max", B=5000, l=12, alpha = pMCS)
+MCSETH_MFZG[auxETH_MFZG] = 1 
+
+MCSETH_MNZ = rep(0,ncol(VaRETH))
+MNZ = NZ(VaRETH,ESETH, retETH, alpha = a)
+colnames(MNZ) = colnames(VaRETH)
+auxETH_MNZ = estMCS.quick(MNZ, test="t.max", B=5000, l=12, alpha = pMCS)
+MCSETH_MNZ[auxETH_MNZ] = 1 
+  
+MCSETH_MAL = rep(0,ncol(VaRETH))
+MAL = AL(VaRETH,ESETH, retETH, alpha = a)
+colnames(MAL) = colnames(VaRETH)
+auxETH_MAL = estMCS.quick(MAL, test="t.max", B=5000, l=12, alpha = pMCS)
+MCSETH_MAL[auxETH_MAL] = 1
+ 
+
+MCSLTC_MQL = rep(0,ncol(VaRLTC))
+MQL = QL(VaRLTC,retLTC, alpha = a)
+colnames(MQL) = colnames(VaRLTC)
+auxLTC_MQL = estMCS.quick(MQL, test="t.max", B=5000, l=12, alpha = pMCS)
+MCSLTC_MQL[auxLTC_MQL] = 1
+  
+MCSLTC_MFZG = rep(0,ncol(VaRLTC))
+MFZG = FZG(VaRLTC,ESLTC, retLTC, alpha = a)
+colnames(MFZG) = colnames(VaRLTC)
+auxLTC_MFZG = estMCS.quick(MFZG, test="t.max", B=5000, l=12, alpha = pMCS)
+MCSLTC_MFZG[auxLTC_MFZG] = 1 
+ 
+MCSLTC_MNZ = rep(0,ncol(VaRLTC))
+MNZ = NZ(VaRLTC,ESLTC, retLTC, alpha = a)
+colnames(MNZ) = colnames(VaRLTC)
+auxLTC_MNZ = estMCS.quick(MNZ, test="t.max", B=5000, l=12, alpha = pMCS)
+MCSLTC_MNZ[auxLTC_MNZ] = 1 
+  
+MCSLTC_MAL = rep(0,ncol(VaRLTC))
+MAL = AL(VaRLTC,ESLTC, retLTC, alpha = a)
+colnames(MAL) = colnames(VaRLTC)
+auxLTC_MAL = estMCS.quick(MAL, test="t.max", B=5000, l=12, alpha = pMCS)
+MCSLTC_MAL[auxLTC_MAL] = 1
+ 
+
+MCSXRP_MQL = rep(0,ncol(VaRXRP))
+MQL = QL(VaRXRP,retXRP, alpha = a)
+colnames(MQL) = colnames(VaRXRP)
+auxXRP_MQL = estMCS.quick(MQL, test="t.max", B=5000, l=12, alpha = pMCS)
+MCSXRP_MQL[auxXRP_MQL] = 1
+ 
+MCSXRP_MFZG = rep(0,ncol(VaRXRP))
+MFZG = FZG(VaRXRP,ESXRP, retXRP, alpha = a)
+colnames(MFZG) = colnames(VaRXRP)
+auxXRP_MFZG = estMCS.quick(MFZG, test="t.max", B=5000, l=12, alpha = pMCS)
+MCSXRP_MFZG[auxXRP_MFZG] = 1 
+  
+MCSXRP_MNZ = rep(0,ncol(VaRXRP))
+MNZ = NZ(VaRXRP,ESXRP, retXRP, alpha = a)
+colnames(MNZ) = colnames(VaRXRP)
+auxXRP_MNZ = estMCS.quick(MNZ, test="t.max", B=5000, l=12, alpha = pMCS)
+MCSXRP_MNZ[auxXRP_MNZ] = 1 
+ 
+MCSXRP_MAL = rep(0,ncol(VaRXRP))
+MAL = AL(VaRXRP,ESXRP, retXRP, alpha = a)
+colnames(MAL) = colnames(VaRXRP)
+auxXRP_MAL = estMCS.quick(MAL, test="t.max", B=5000, l=12, alpha = pMCS)
+MCSXRP_MAL[auxXRP_MAL] = 1
+ 
+
+MCCQL = c(MCSBTC_MQL,MCSETH_MQL,MCSLTC_MQL,MCSXRP_MQL)
+MCCFZG = c(MCSBTC_MFZG,MCSETH_MFZG,MCSLTC_MFZG,MCSXRP_MFZG)
+MCCNZ = c(MCSBTC_MNZ,MCSETH_MNZ,MCSLTC_MNZ,MCSXRP_MNZ)
+MCCAL = c(MCSBTC_MAL,MCSETH_MAL,MCSLTC_MAL,MCSXRP_MAL) 
+
+
+#############################################
+### Giacomini and Rossi Fluctuation Test  ###
+#############################################
+
+VaRES = rbind(BackVaRESBTC,BackVaRESETH,BackVaRESLTC,BackVaRESXRP) %>% 
+   data.frame() %>% 
+   mutate(methods = c(names, names, names,names)) %>% 
+   mutate(moeda = c(rep("BTC",13), rep("ETH",13), rep("LTC",13), rep("XRP",13))) %>% 
+   mutate(how_many_ct = ifelse(CC>p & VQ>p & MFE>p & NZ>p & ESR_3>p,1,0)) %>% 
+   mutate(classe = rep(c(rep("Indiv.",5), rep("Comb.",8)),4))
+# 
+# 
+# losses1 = VaRES %>% filter(how_many_ct==1, moeda == "BTC", classe == "Indiv.") %>% select(methods)
+# losses1 = losses1$methods
+# losses2 = VaRES %>% filter(how_many_ct==1, moeda == "BTC", classe == "Comb.") %>% select(methods)
+# losses2 = losses2$methods
+# 
+# 
+#   
+# VaRES = VaRES %>%
+#   mutate(method = rep(c("GAS", "MSGARCH", "Boot.", "FIGARCH", "AVGARCH",
+#                     "AVG", "MED","$\\rm{RSC_{FZG}}$","$\\rm{RSC_{NZ}}$","$\\rm{RSC_{AL}}$",
+#                     "$\\rm{MSC_{FZG}}$","$\\rm{MSC_{NZ}}$","$\\rm{MSC_{AL}}$"),4)) %>% 
+#   mutate(classe = rep(c(rep("Indiv.",5), rep("Comb.",8)),4))
+#   
+# VaRES %>% filter(how_many_ct==5) %>% select(moeda, methods, classe)
+# 
+# 
+# for (i in losses1){
+#   for (j in losses2){
+#     GR_QL <- fluct_test(QL(VaR_[,i], ret_, alpha = a), 
+#                         QL(VaR_[,j], ret_, alpha = a),
+#                         mu = mu_, lag_truncate = 5, 
+#                         alpha = 0.1, dmv_fullsample = TRUE)
+#     GR_FZG <- fluct_test(FZG(VaR_[,i], ES_[,i], ret_, alpha = a), 
+#                          FZG(VaR_[,j], ES_[,j], ret_, alpha = a),
+#                          mu = mu_, lag_truncate = 5, 
+#                          alpha = 0.1, dmv_fullsample = TRUE)
+#     GR_NZ <- fluct_test(NZ(VaR_[,i], ES_[,i], ret_, alpha = a), 
+#                         NZ(VaR_[,j], ES_[,j], ret_, alpha = a),
+#                         mu = mu_, lag_truncate = 5, 
+#                         alpha = 0.1, dmv_fullsample = TRUE)
+#     GR_AL <- fluct_test(AL(VaR_[,i], ES_[,i], ret_, alpha = a), 
+#                         AL(VaR_[,j], ES_[,j], ret_, alpha = a),
+#                         mu = mu_, lag_truncate = 5, 
+#                         alpha = 0.1, dmv_fullsample = TRUE)
+#     n_len = nrow(GR_QL$fluc)
+#     GR = rbind(GR_QL$fluc, GR_FZG$fluc, GR_NZ$fluc, GR_AL$fluc)
+#     GR$Loss = c(rep("QL",n_len),rep("FZG",n_len),rep("NZ",n_len),rep("AL",n_len))
+#     GR$ref1 = rep(i,nrow(GR))
+#     GR$ref2 = rep(j,nrow(GR))
+#     GR_full = rbind(GR_full, GR)
+#   }
+# }
+# 
+
+
+#############################################
+###       Latex Table format              ###
+#############################################
 
 setwd("/Volumes/CTRUCIOS_SD/ForecastCombinationCrypto/WP_2021")
-VaRES %>% select(moeda, classe, method, Hits, CC, VQ,MFE,NZ,ESR_3,AQL,AFZG,ANZ,AAL) %>% 
-  kbl(format = "latex", digits = c(1,1,1,1,3,3,3,3,3,4,4,4,4), booktabs = T,
+VaRES %>% 
+  mutate(method = rep(c("GAS", "MSGARCH", "Boot.", "FIGARCH", "AVGARCH",
+                                "AVG", "MED","$\\rm{RSC_{FZG}}$","$\\rm{RSC_{NZ}}$","$\\rm{RSC_{AL}}$",
+                                "$\\rm{MSC_{FZG}}$","$\\rm{MSC_{NZ}}$","$\\rm{MSC_{AL}}$"),4)) %>% 
+  select(moeda, classe, method, Hits, CC, DQ, VQ,MFE,NZ,ESR_3,AQL,AFZG,ANZ,AAL) %>% 
+  kbl(format = "latex", digits = c(1,1,1,1,3,3,3,3,3,3,4,4,4,4), booktabs = T,
       row.names = FALSE, escape = FALSE, caption = Caption, label = label_name,
-      col.names = c("","","","Hits", "CC", "VQ", "ER","CoC", "ESR", "QL", "FZG","NZ", "AL")) %>% 
-  collapse_rows(columns = 1:3, latex_hline = "major", valign = "middle",row_group_label_position = "stack") %>% 
-  add_header_above(c("", " ", " ", " ", "Calibration tests" = 5, "Average Scoring functions" = 4)) %>% 
-  row_spec(which(VaRES$how_many_ct == 5), background = "gray!25") %>% 
-  kable_styling(latex_options = c("scale_down")) %>% 
+      col.names = c("","","","Hits", "CC", "DQ","VQ", "ER","CoC", "ESR", "QL", "FZG","NZ", "AL")) %>% 
+  collapse_rows(columns = 1:3, latex_hline = "major", valign = "middle",row_group_label_position = "identity") %>% 
+  add_header_above(c("", " ", " ", " ", "Calibration tests" = 6, "Average Scoring functions" = 4)) %>% 
+  column_spec(11, bold = ifelse(MCCQL == 1, T, F)) %>% 
+  column_spec(12, bold = ifelse(MCCFZG == 1, T, F)) %>% 
+  column_spec(13, bold = ifelse(MCCNZ == 1, T, F)) %>% 
+  column_spec(14, bold = ifelse(MCCAL == 1, T, F)) %>% 
+  column_spec(5, background = ifelse(VaRES$CC > p, "gray!25", "white")) %>% 
+  column_spec(6, background = ifelse(VaRES$DQ > p, "gray!25", "white")) %>% 
+  column_spec(7, background = ifelse(VaRES$VQ > p, "gray!25", "white")) %>% 
+  column_spec(8, background = ifelse(VaRES$MFE > p, "gray!25", "white")) %>% 
+  column_spec(9, background = ifelse(VaRES$NZ > p, "gray!25", "white")) %>% 
+  column_spec(10, background = ifelse(VaRES$ESR_3 > p, "gray!25", "white")) %>% 
+  kable_styling(latex_options = c("scale_down"), font_size = 7) %>% 
   save_kable(keep_tex = T, file = file_tex_name)
-
 
 
