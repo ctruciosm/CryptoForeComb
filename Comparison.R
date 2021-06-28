@@ -67,6 +67,7 @@ library(kableExtra)
 source("Function_VaR_VQR.R")
 source("esr_backtest_modified.R")
 source("Optimizations.R")
+source("00_GiacominiRossi.R")
 
 #setwd("/Volumes/CTRUCIOS_SD/ForecastCombinationCrypto/Codes/Resultados/ETH")
 #setwd("/Volumes/CTRUCIOS_SD/ForecastCombinationCrypto/Codes/Resultados/BTC/")
@@ -75,14 +76,18 @@ source("Optimizations.R")
 
 p = 0.05
 pMCS = 0.10
+mu_ = 0.1
 # Table 2: rl = 1 and a = 0.010 and risklevel = as.character(1)
 # Table 3: rl = 2 and a = 0.025 and risklevel = as.character(2)
 # Table 4: rl = 3 and a = 0.050 and risklevel = as.character(5)
 # Table 5: rl = 4 and a = 0.100 and risklevel = as.character(10)
-rl = 4;  a = 0.100; risklevel = as.character(10)
-Caption = "One-step-ahead VaR and ES backtesting for BTC, ETH, LTC and XRP for the 10\\% risk level. Shaded rows indicate procedures with p-values larger than 0.05 in all calibration tests."
-file_tex_name = "VaRES10.tex" 
-label_name = "Table_VaRES10"
+rl = 2;  a = 0.025; risklevel = as.character(2)
+Caption = "One-step-ahead VaR and ES backtesting for BTC, ETH, LTC and XRP for the 2.5\\% risk level. Shaded rows indicate procedures with p-values larger than 0.05 in all calibration tests. $^{G,M,B,F,A}$ superscripts in the combining methods stand for procedures outperforming the GAS(G), MSGARCH(M), Bootstrap(B), FIGARCH(F) and/or AVGARCH(A) methods, respectively (according to the Giacomini and Rossi (2010) fluctuation test at 0.1 significance level)."
+file_tex_name = "VaRES2.tex" 
+label_name = "Table_VaRES2"
+
+
+
 
 
 setwd("/Volumes/CTRUCIOS_SD/ForecastCombinationCrypto/Codes/Resultados/BTC/")
@@ -393,55 +398,67 @@ VaRES = rbind(BackVaRESBTC,BackVaRESETH,BackVaRESLTC,BackVaRESXRP) %>%
    data.frame() %>% 
    mutate(methods = c(names, names, names,names)) %>% 
    mutate(moeda = c(rep("BTC",13), rep("ETH",13), rep("LTC",13), rep("XRP",13))) %>% 
-   mutate(how_many_ct = ifelse(CC>p & VQ>p & MFE>p & NZ>p & ESR_3>p,1,0)) %>% 
-   mutate(classe = rep(c(rep("Indiv.",5), rep("Comb.",8)),4))
-# 
-# 
-# losses1 = VaRES %>% filter(how_many_ct==1, moeda == "BTC", classe == "Indiv.") %>% select(methods)
-# losses1 = losses1$methods
-# losses2 = VaRES %>% filter(how_many_ct==1, moeda == "BTC", classe == "Comb.") %>% select(methods)
-# losses2 = losses2$methods
-# 
-# 
-#   
-# VaRES = VaRES %>%
-#   mutate(method = rep(c("GAS", "MSGARCH", "Boot.", "FIGARCH", "AVGARCH",
-#                     "AVG", "MED","$\\rm{RSC_{FZG}}$","$\\rm{RSC_{NZ}}$","$\\rm{RSC_{AL}}$",
-#                     "$\\rm{MSC_{FZG}}$","$\\rm{MSC_{NZ}}$","$\\rm{MSC_{AL}}$"),4)) %>% 
-#   mutate(classe = rep(c(rep("Indiv.",5), rep("Comb.",8)),4))
-#   
-# VaRES %>% filter(how_many_ct==5) %>% select(moeda, methods, classe)
-# 
-# 
-# for (i in losses1){
-#   for (j in losses2){
-#     GR_QL <- fluct_test(QL(VaR_[,i], ret_, alpha = a), 
-#                         QL(VaR_[,j], ret_, alpha = a),
-#                         mu = mu_, lag_truncate = 5, 
-#                         alpha = 0.1, dmv_fullsample = TRUE)
-#     GR_FZG <- fluct_test(FZG(VaR_[,i], ES_[,i], ret_, alpha = a), 
-#                          FZG(VaR_[,j], ES_[,j], ret_, alpha = a),
-#                          mu = mu_, lag_truncate = 5, 
-#                          alpha = 0.1, dmv_fullsample = TRUE)
-#     GR_NZ <- fluct_test(NZ(VaR_[,i], ES_[,i], ret_, alpha = a), 
-#                         NZ(VaR_[,j], ES_[,j], ret_, alpha = a),
-#                         mu = mu_, lag_truncate = 5, 
-#                         alpha = 0.1, dmv_fullsample = TRUE)
-#     GR_AL <- fluct_test(AL(VaR_[,i], ES_[,i], ret_, alpha = a), 
-#                         AL(VaR_[,j], ES_[,j], ret_, alpha = a),
-#                         mu = mu_, lag_truncate = 5, 
-#                         alpha = 0.1, dmv_fullsample = TRUE)
-#     n_len = nrow(GR_QL$fluc)
-#     GR = rbind(GR_QL$fluc, GR_FZG$fluc, GR_NZ$fluc, GR_AL$fluc)
-#     GR$Loss = c(rep("QL",n_len),rep("FZG",n_len),rep("NZ",n_len),rep("AL",n_len))
-#     GR$ref1 = rep(i,nrow(GR))
-#     GR$ref2 = rep(j,nrow(GR))
-#     GR_full = rbind(GR_full, GR)
-#   }
-# }
-# 
+   mutate(how_many_ct = ifelse(CC>p & DQ >p & VQ>p & MFE>p & NZ>p & ESR_3>p,1,0)) %>% 
+   mutate(classe = rep(c(rep("Indiv.",5), rep("Comb.",8)),4)) %>% 
+   mutate(QLGAS = 0, QLMSGARCH = 0, QLBoot. = 0, QLFIGARCH = 0, QLAVGARCH = 0,
+         FZGGAS = 0, FZGMSGARCH = 0, FZGBoot. = 0, FZGFIGARCH = 0, FZGAVGARCH = 0,
+         NZGAS = 0, NZMSGARCH = 0, NZBoot. = 0, NZFIGARCH = 0, NZAVGARCH = 0,
+         ALGAS = 0, ALMSGARCH = 0, ALBoot. = 0, ALFIGARCH = 0, ALAVGARCH = 0)
 
 
+
+GR_results = matrix(0,ncol = 7, nrow = 160)
+for (m in c("BTC", "ETH", "LTC", "XRP")){
+  losses1 = VaRES %>% filter(moeda == m, classe == "Indiv.") %>% select(methods)
+  losses1 = losses1$methods
+  losses2 = VaRES %>% filter(moeda == m, classe == "Comb.") %>% select(methods)
+  losses2 = losses2$methods
+  if (m == "BTC"){ VaR_ = VaRBTC; ret_ = retBTC; ES_ = ESBTC}
+  if (m == "ETH"){ VaR_ = VaRETH; ret_ = retETH; ES_ = ESETH}
+  if (m == "LTC"){ VaR_ = VaRLTC; ret_ = retLTC; ES_ = ESLTC}
+  if (m == "XRP"){ VaR_ = VaRXRP; ret_ = retXRP; ES_ = ESXRP}
+  for (i in losses1){
+    for (j in losses2){
+      GR_QL <- fluct_test(QL(VaR_[,i], ret_, alpha = a), QL(VaR_[,j], ret_, alpha = a),
+                          mu = mu_, lag_truncate = 5, alpha = 0.1, dmv_fullsample = TRUE)
+      GR_FZG <- fluct_test(FZG(VaR_[,i], ES_[,i], ret_, alpha = a), FZG(VaR_[,j], ES_[,j], ret_, alpha = a),
+                               mu = mu_, lag_truncate = 5, alpha = 0.1, dmv_fullsample = TRUE)
+      GR_NZ <- fluct_test(NZ(VaR_[,i], ES_[,i], ret_, alpha = a), NZ(VaR_[,j], ES_[,j], ret_, alpha = a),
+                             mu = mu_, lag_truncate = 5, alpha = 0.1, dmv_fullsample = TRUE)
+      GR_AL <- fluct_test(AL(VaR_[,i], ES_[,i], ret_, alpha = a), AL(VaR_[,j], ES_[,j], ret_, alpha = a),
+                            mu = mu_, lag_truncate = 5, alpha = 0.1, dmv_fullsample = TRUE)  
+      
+      VaRES[which(VaRES$moeda == m & VaRES$classe == "Comb." & VaRES$methods == j),VaRES %>% select(ends_with(i)) %>% colnames()] = c(ifelse(max(GR_QL$fluc$y)> GR_QL$cv_sup, 1, 0),
+                                                                                                                                      ifelse(max(GR_FZG$fluc$y)> GR_FZG$cv_sup, 1, 0),
+                                                                                                                                      ifelse(max(GR_NZ$fluc$y)> GR_NZ$cv_sup, 1, 0),
+                                                                                                                                      ifelse(max(GR_AL$fluc$y)> GR_AL$cv_sup, 1, 0))
+    }
+  }
+}
+
+
+VaRES = VaRES %>% 
+  mutate(AQL = paste0(format(round(VaRES$AQL,4),nsmall =4),ifelse(VaRES$QLGAS==1, "$^G$", ""),
+                      ifelse(VaRES$QLMSGARCH==1, "$^M$", ""),
+                      ifelse(VaRES$QLBoot.==1, "$^B$", ""),
+                      ifelse(VaRES$QLFIGARCH==1, "$^F$", ""),
+                      ifelse(VaRES$QLAVGARCH==1, "$^A$", "")),
+       AFZG = paste0(format(round(VaRES$AFZG,4),nsmall =4),ifelse(VaRES$FZGGAS==1, "$^G$", ""),
+                     ifelse(VaRES$FZGMSGARCH==1, "$^M$", ""),
+                     ifelse(VaRES$FZGBoot.==1, "$^B$", ""),
+                     ifelse(VaRES$FZGFIGARCH==1, "$^F$", ""),
+                     ifelse(VaRES$FZGAVGARCH==1, "$^A$", "")),
+       ANZ = paste0(format(round(VaRES$ANZ,4),nsmall =4),ifelse(VaRES$NZGAS==1, "$^G$", ""),
+                    ifelse(VaRES$NZMSGARCH==1, "$^M$", ""),
+                    ifelse(VaRES$NZBoot.==1, "$^B$", ""),
+                    ifelse(VaRES$NZFIGARCH==1, "$^F$", ""),
+                    ifelse(VaRES$NZAVGARCH==1, "$^A$", "")),
+       AAL = paste0(format(round(VaRES$AAL,4),nsmall =4),ifelse(VaRES$ALGAS==1, "$^G$", ""),
+                    ifelse(VaRES$ALMSGARCH==1, "$^M$", ""),
+                    ifelse(VaRES$ALBoot.==1, "$^B$", ""),
+                    ifelse(VaRES$ALFIGARCH==1, "$^F$", ""),
+                    ifelse(VaRES$ALAVGARCH==1, "$^A$", "")))
+       
 #############################################
 ###       Latex Table format              ###
 #############################################
@@ -457,17 +474,23 @@ VaRES %>%
       col.names = c("","","","Hits", "CC", "DQ","VQ", "ER","CoC", "ESR", "QL", "FZG","NZ", "AL")) %>% 
   collapse_rows(columns = 1:3, latex_hline = "major", valign = "middle",row_group_label_position = "identity") %>% 
   add_header_above(c("", " ", " ", " ", "Calibration tests" = 6, "Average Scoring functions" = 4)) %>% 
-  column_spec(11, bold = ifelse(MCCQL == 1, T, F)) %>% 
-  column_spec(12, bold = ifelse(MCCFZG == 1, T, F)) %>% 
-  column_spec(13, bold = ifelse(MCCNZ == 1, T, F)) %>% 
-  column_spec(14, bold = ifelse(MCCAL == 1, T, F)) %>% 
-  column_spec(5, background = ifelse(VaRES$CC > p, "gray!25", "white")) %>% 
-  column_spec(6, background = ifelse(VaRES$DQ > p, "gray!25", "white")) %>% 
-  column_spec(7, background = ifelse(VaRES$VQ > p, "gray!25", "white")) %>% 
-  column_spec(8, background = ifelse(VaRES$MFE > p, "gray!25", "white")) %>% 
-  column_spec(9, background = ifelse(VaRES$NZ > p, "gray!25", "white")) %>% 
-  column_spec(10, background = ifelse(VaRES$ESR_3 > p, "gray!25", "white")) %>% 
+  #column_spec(11, bold = ifelse(VaRES$how_many_ct == 1, T, F)) %>% 
+  #column_spec(12, bold = ifelse(VaRES$how_many_ct == 1, T, F)) %>% 
+  #column_spec(13, bold = ifelse(VaRES$how_many_ct == 1, T, F)) %>% 
+  #column_spec(14, bold = ifelse(VaRES$how_many_ct == 1, T, F)) %>% 
+  #column_spec(5, background = ifelse(VaRES$CC > p, "gray!25", "white")) %>% 
+  #column_spec(6, background = ifelse(VaRES$DQ > p, "gray!25", "white")) %>% 
+  #column_spec(7, background = ifelse(VaRES$VQ > p, "gray!25", "white")) %>% 
+  #column_spec(9, background = ifelse(VaRES$NZ > p, "gray!25", "white")) %>% 
+  #column_spec(8, background = ifelse(VaRES$MFE > p, "gray!25", "white")) %>% 
+  #column_spec(10, background = ifelse(VaRES$ESR_3 > p, "gray!25", "white")) %>% 
+  row_spec(which(VaRES$how_many_ct == 1), background = "gray!25") %>% 
   kable_styling(latex_options = c("scale_down"), font_size = 7) %>% 
   save_kable(keep_tex = T, file = file_tex_name)
+
+
+
+
+  
 
 
