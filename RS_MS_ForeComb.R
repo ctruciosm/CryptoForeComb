@@ -7,13 +7,17 @@
 #### Forecast Combination Strategies
 ################################################################################## 
 
-#dir = "/Volumes/CTRUCIOS_SD/ForecastCombinationCrypto/Codes/CryptoForeComb/"
-#setwd(dir)
+dir = "/Volumes/CTRUCIOS_SD/ForecastCombinationCrypto/Codes/CryptoForeComb/"
+setwd(dir)
+
 library(psych)
 library(Rsolnp)
 library(dplyr)
 library(stringr)  
 source("Optimizations.R")
+
+
+setwd("/Volumes/CTRUCIOS_SD/ForecastCombinationCrypto/Codes/Resultados/")
 setwd("./XRP/")
 #setwd("/Volumes/CTRUCIOS_SD/ForecastCombinationCrypto/Codes/Resultados/ETH/")
 #setwd("/Volumes/CTRUCIOS_SD/ForecastCombinationCrypto/Codes/Resultados/BTC/")
@@ -24,25 +28,25 @@ setwd("./XRP/")
 if(str_sub(getwd(), - 3, - 1)   == "BTC"){
   crypto = read.csv("BTCUSDT-1d-data.csv") %>% 
     mutate(date = as.Date(timestamp)) %>% arrange(date) %>% mutate(ret = c(0,diff(log(close))*100)) %>% 
-    dplyr::select(date, ret) %>% filter(date > "2017-08-17", date < "2021-04-10")
+    dplyr::select(date, ret) %>% filter(date > "2017-08-17", date < "2021-06-29")
 }
 
 if(str_sub(getwd(), - 3, - 1)   == "ETH"){
   crypto = read.csv("ETHUSDT-1d-data.csv") %>% 
     mutate(date = as.Date(timestamp)) %>% arrange(date) %>% mutate(ret = c(0,diff(log(close))*100)) %>% 
-    dplyr::select(date, ret) %>% filter(date > "2017-08-17", date < "2021-04-10")
+    dplyr::select(date, ret) %>% filter(date > "2017-08-17", date < "2021-06-29")
 }
 
 if(str_sub(getwd(), - 3, - 1)  == "LTC"){
   crypto = read.csv("LTCUSDT-1d-data.csv") %>% 
     mutate(date = as.Date(timestamp)) %>% arrange(date) %>% mutate(ret = c(0,diff(log(close))*100)) %>% 
-    dplyr::select(date, ret) %>% filter(date > "2017-12-13", date < "2021-04-10")
+    dplyr::select(date, ret) %>% filter(date > "2017-12-13", date < "2021-06-29")
 }
 
 if(str_sub(getwd(), - 3, - 1)  == "XRP"){
   crypto =  read.csv("XRPUSDT-1d-data.csv") %>% 
     mutate(date = as.Date(timestamp)) %>% arrange(date) %>% mutate(ret = c(0,diff(log(close))*100)) %>% 
-    dplyr::select(date, ret) %>% filter(date > "2018-05-04", date < "2021-04-10") 
+    dplyr::select(date, ret) %>% filter(date > "2018-05-04", date < "2021-06-29") 
 }
 
 
@@ -294,60 +298,54 @@ for (j in 1:3){
                      ES10[i,]%*%omega10MSC[i,(M+1):(2*M)])  
     }
   
-  #### Average
-  VaR_AVG = cbind(apply(VaR1,1,mean), apply(VaR2,1,mean), apply(VaR5,1,mean), apply(VaR10,1,mean))
-  ES_AVG = cbind(apply(ES1,1,mean), apply(ES2,1,mean), apply(ES5,1,mean), apply(ES10,1,mean))
-  write.table(VaR_AVG,"VaR_AVG.csv")
-  write.table(ES_AVG,"ES_AVG.csv")
-  
   # Once we compute the combining estimators, we save the results
   if (j == 1) {
-    write.table(omega1RSC,"omega1_RSC_FZG.csv")
-    write.table(omega2RSC,"omega2_RSC_FZG.csv")
-    write.table(omega5RSC,"omega5_RSC_FZG.csv")
-    write.table(omega10RSC,"omega10_RSC_FZG.csv")
+    #write.table(omega1RSC,"omega1_RSC_FZG.csv")
+    #write.table(omega2RSC,"omega2_RSC_FZG.csv")
+    #write.table(omega5RSC,"omega5_RSC_FZG.csv")
+    #write.table(omega10RSC,"omega10_RSC_FZG.csv")
     
     write.table(VaR_RSC,"VaR_RSC_FZG.csv")
     write.table(ES_RSC,"ES_RSC_FZG.csv")
     
-    write.table(omega1MSC,"omega1_MSC_FZG.csv")
-    write.table(omega2MSC,"omega2_MSC_FZG.csv")
-    write.table(omega5MSC,"omega5_MSC_FZG.csv")
-    write.table(omega10MSC,"omega10_MSC_FZG.csv")
+    #write.table(omega1MSC,"omega1_MSC_FZG.csv")
+    #write.table(omega2MSC,"omega2_MSC_FZG.csv")
+    #write.table(omega10MSC,"omega10_MSC_FZG.csv")
+    #write.table(omega5MSC,"omega5_MSC_FZG.csv")
     
     write.table(VaR_MSC,"VaR_MSC_FZG.csv")
     write.table(ES_MSC,"ES_MSC_FZG.csv")
   }
   if (j == 2) {
-    write.table(omega1RSC,"omega1_RSC_NZ.csv")
-    write.table(omega2RSC,"omega2_RSC_NZ.csv")
-    write.table(omega5RSC,"omega5_RSC_NZ.csv")
-    write.table(omega10RSC,"omega10_RSC_NZ.csv")
+    #write.table(omega1RSC,"omega1_RSC_NZ.csv")
+    #write.table(omega2RSC,"omega2_RSC_NZ.csv")
+    #write.table(omega5RSC,"omega5_RSC_NZ.csv")
+    #write.table(omega10RSC,"omega10_RSC_NZ.csv")
     
     write.table(VaR_RSC,"VaR_RSC_NZ.csv")
     write.table(ES_RSC,"ES_RSC_NZ.csv")
     
-    write.table(omega1MSC,"omega1_MSC_NZ.csv")
-    write.table(omega2MSC,"omega2_MSC_NZ.csv")
-    write.table(omega5MSC,"omega5_MSC_NZ.csv")
-    write.table(omega10MSC,"omega10_MSC_NZ.csv")
+    #write.table(omega1MSC,"omega1_MSC_NZ.csv")
+    #write.table(omega2MSC,"omega2_MSC_NZ.csv")
+    #write.table(omega5MSC,"omega5_MSC_NZ.csv")
+    #write.table(omega10MSC,"omega10_MSC_NZ.csv")
     
     write.table(VaR_MSC,"VaR_MSC_NZ.csv")
     write.table(ES_MSC,"ES_MSC_NZ.csv")
   }
   if (j == 3) {
-    write.table(omega1RSC,"omega1_RSC_AL.csv")
-    write.table(omega2RSC,"omega2_RSC_AL.csv")
-    write.table(omega5RSC,"omega5_RSC_AL.csv")
-    write.table(omega10RSC,"omega10_RSC_AL.csv")
+    #write.table(omega1RSC,"omega1_RSC_AL.csv")
+    #write.table(omega2RSC,"omega2_RSC_AL.csv")
+    #write.table(omega5RSC,"omega5_RSC_AL.csv")
+    #write.table(omega10RSC,"omega10_RSC_AL.csv")
     
     write.table(VaR_RSC,"VaR_RSC_AL.csv")
     write.table(ES_RSC,"ES_RSC_AL.csv")
     
-    write.table(omega1MSC,"omega1_MSC_AL.csv")
-    write.table(omega2MSC,"omega2_MSC_AL.csv")
-    write.table(omega5MSC,"omega5_MSC_AL.csv")
-    write.table(omega10MSC,"omega10_MSC_AL.csv")
+    #write.table(omega1MSC,"omega1_MSC_AL.csv")
+    #write.table(omega2MSC,"omega2_MSC_AL.csv")
+    #write.table(omega5MSC,"omega5_MSC_AL.csv")
+    #write.table(omega10MSC,"omega10_MSC_AL.csv")
     
     write.table(VaR_MSC,"VaR_MSC_AL.csv")
     write.table(ES_MSC,"ES_MSC_AL.csv")

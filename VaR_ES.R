@@ -24,28 +24,28 @@ nmodels = 6                         # Number os models used
 if(crytocurrency == "BTC/"){
   crypto = read.csv("Data/BTCUSDT-1d-data.csv") %>% 
   mutate(date = as.Date(timestamp)) %>% arrange(date) %>% mutate(ret = c(0,diff(log(close))*100)) %>% 
-  dplyr::select(date, ret) %>% filter(date > "2017-08-17", date < "2021-05-02")
+  dplyr::select(date, ret) %>% filter(date > "2017-08-17", date < "2021-06-29")
 }
 
 if(crytocurrency == "ETH/"){
   crypto = read.csv("Data/ETHUSDT-1d-data.csv") %>% 
   mutate(date = as.Date(timestamp)) %>% arrange(date) %>% mutate(ret = c(0,diff(log(close))*100)) %>% 
-  dplyr::select(date, ret) %>% filter(date > "2017-08-17", date < "2021-05-02")
+  dplyr::select(date, ret) %>% filter(date > "2017-08-17", date < "2021-06-29")
 }
 
 if(crytocurrency == "LTC/"){
   crypto = read.csv("Data/LTCUSDT-1d-data.csv") %>% 
   mutate(date = as.Date(timestamp)) %>% arrange(date) %>% mutate(ret = c(0,diff(log(close))*100)) %>% 
-  dplyr::select(date, ret) %>% filter(date > "2017-12-13", date < "2021-05-02")
+  dplyr::select(date, ret) %>% filter(date > "2017-12-13", date < "2021-06-29")
 }
 
 if(crytocurrency == "XRP/"){
   crypto =  read.csv("Data/XRPUSDT-1d-data.csv") %>% 
   mutate(date = as.Date(timestamp)) %>% arrange(date) %>% mutate(ret = c(0,diff(log(close))*100)) %>% 
-  dplyr::select(date, ret) %>% filter(date > "2018-05-04", date < "2021-05-02") 
+  dplyr::select(date, ret) %>% filter(date > "2018-05-04", date < "2021-06-29") 
 }
 
-OoS = 550
+OoS = 600
 InS = dim(crypto)[1]-OoS
 
 # Volatility models Specifications
