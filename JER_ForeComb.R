@@ -7,8 +7,8 @@
 ### Joint VaR and ES regression combining strategy (Dimitriadis and Bayer, 2019 EJS)
 ##################################################################################### 
 
-crypto = "/LTC"  # Other options are "/BTC" and "/ETH"
-setwd(paste0("/Volumes/CTRUCIOS_SD/ForecastCombinationCrypto/Codes/Resultados",crypto))
+cryptocurrency = "/LTC"  # Other options are "/BTC" and "/ETH"
+setwd(paste0("/Volumes/CTRUCIOS_SD/ForecastCombinationCrypto/Codes/Resultados",cryptocurrency))
 
 library(dplyr)
 library(esreg)

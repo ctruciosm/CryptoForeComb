@@ -4,26 +4,18 @@
 ## Authors: Carlos Trucíos and James W. Taylor
 ################################################################################## 
 #### Implemented by Carlos Trucios
-#### Forecast Combination Strategies
+#### Relative and Minimum score combining strategies (Taylor, 2020)
 ################################################################################## 
 
-dir = "/Volumes/CTRUCIOS_SD/ForecastCombinationCrypto/Codes/CryptoForeComb/"
-setwd(dir)
-
+setwd("/Volumes/CTRUCIOS_SD/ForecastCombinationCrypto/Codes/CryptoForeComb/")
 library(psych)
 library(Rsolnp)
 library(dplyr)
 library(stringr)  
 source("Optimizations.R")
 
-
-setwd("/Volumes/CTRUCIOS_SD/ForecastCombinationCrypto/Codes/Resultados/")
-setwd("./XRP/")
-#setwd("/Volumes/CTRUCIOS_SD/ForecastCombinationCrypto/Codes/Resultados/ETH/")
-#setwd("/Volumes/CTRUCIOS_SD/ForecastCombinationCrypto/Codes/Resultados/BTC/")
-#setwd("/Volumes/CTRUCIOS_SD/ForecastCombinationCrypto/Codes/Resultados/LTC/")
-#setwd("/Volumes/CTRUCIOS_SD/ForecastCombinationCrypto/Codes/Resultados/XRP/")
-
+cryptocurrency = "/LTC"  # Other options are "/BTC" and "/ETH"
+setwd(paste0("/Volumes/CTRUCIOS_SD/ForecastCombinationCrypto/Codes/Resultados",cryptocurrency))
 
 if(str_sub(getwd(), - 3, - 1)   == "BTC"){
   crypto = read.csv("BTCUSDT-1d-data.csv") %>% 
@@ -49,14 +41,11 @@ if(str_sub(getwd(), - 3, - 1)  == "XRP"){
     dplyr::select(date, ret) %>% filter(date > "2018-05-04", date < "2021-06-29") 
 }
 
-
-
 # Load OoS Data
 VaR = read.csv("VaR.csv")
 ES = read.csv("ES.csv")
 mu = VaR[,"mu"]
 ret = VaR[,"OoS"]
-
 
 VaR1 = VaR %>% select(ends_with("1")) %>% select(-contains("MIXTURE")) %>% as.matrix() + mu
 VaR2 = VaR %>% select(ends_with("2")) %>% select(-contains("MIXTURE")) %>% as.matrix() + mu
@@ -67,11 +56,6 @@ ES1 = ES %>% select(ends_with("1")) %>% select(-contains("MIXTURE")) %>% as.matr
 ES2 = ES %>% select(ends_with("2")) %>% select(-contains("MIXTURE")) %>% as.matrix() + mu
 ES5 = ES %>% select(ends_with("5")) %>% select(-contains("MIXTURE")) %>% as.matrix() + mu
 ES10 = ES %>% select(ends_with("10")) %>% select(-contains("MIXTURE")) %>% as.matrix() + mu
-
-
-
-
-
 
 # Load InS Data
 
