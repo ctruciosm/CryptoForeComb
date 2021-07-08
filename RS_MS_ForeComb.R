@@ -7,15 +7,16 @@
 #### Relative and Minimum score combining strategies (Taylor, 2020)
 ################################################################################## 
 
-setwd("/Volumes/CTRUCIOS_SD/ForecastCombinationCrypto/Codes/CryptoForeComb/")
-library(psych)
+#setwd("/Volumes/CTRUCIOS_SD/ForecastCombinationCrypto/Codes/CryptoForeComb/")
+#library(psych)
 library(Rsolnp)
 library(dplyr)
 library(stringr)  
 source("Optimizations.R")
 
 cryptocurrency = "/LTC"  # Other options are "/BTC" and "/ETH"
-setwd(paste0("/Volumes/CTRUCIOS_SD/ForecastCombinationCrypto/Codes/Resultados",cryptocurrency))
+#setwd(paste0("/Volumes/CTRUCIOS_SD/ForecastCombinationCrypto/Codes/Resultados",cryptocurrency))
+setwd(cryptocurrency)
 
 if(str_sub(getwd(), - 3, - 1)   == "BTC"){
   crypto = read.csv("BTCUSDT-1d-data.csv") %>% 
