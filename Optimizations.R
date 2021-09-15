@@ -9,7 +9,7 @@
 # Scoring Functions
 
 
-QL = function(VaR, r, alpha){
+QL_deprecated = function(VaR, r, alpha){
   D = dim(VaR)
   if (is.null(D)){
     k = 1
@@ -25,7 +25,7 @@ QL = function(VaR, r, alpha){
   return(val_)
 }
 
-AL = function(VaR, ES, r, alpha){
+AL_deprecated = function(VaR, ES, r, alpha){
   D = dim(VaR)
   if (is.null(D)){
     k = 1
@@ -41,7 +41,7 @@ AL = function(VaR, ES, r, alpha){
   return(val_)
 }
 
-FZ0 = function(VaR, ES, r, alpha){
+FZ0_deprecated = function(VaR, ES, r, alpha){
   D = dim(VaR)
   if (is.null(D)){
     k = 1
@@ -57,7 +57,7 @@ FZ0 = function(VaR, ES, r, alpha){
   return(val_)
 }
 
-NZ = function(VaR, ES, r, alpha){
+NZ_deprecated = function(VaR, ES, r, alpha){
   D = dim(VaR)
   if (is.null(D)){
     k = 1
@@ -73,17 +73,17 @@ NZ = function(VaR, ES, r, alpha){
   return(val_)
 }
 
-FZG = function(VaR, ES, r, alpha){
+FZG_deprecated = function(VaR, ES, r, alpha){
   D = dim(VaR)
   if (is.null(D)){
     k = 1
-    val_ = ((ifelse(r<= VaR,1,0) - alpha)*VaR - ifelse(r<=VaR,1,0)*r+ (exp(ES)/(1+exp(ES)))*(ES - VaR + ifelse(r<=VaR,1,0)*(VaR - r)/alpha) - (log(1+exp(ES))) + log(2))
+    val_ = (ifelse(r<= VaR,1,0) - alpha)*VaR - ifelse(r<=VaR,1,0)*r+ (exp(ES)/(1+exp(ES)))*(ES - VaR + ifelse(r<=VaR,1,0)*(VaR - r)/alpha) - log(1+exp(ES)) + log(2)
   } else {
     k = D[2]
     n = D[1]
     val_ = matrix(0,ncol = k, nrow = n)
     for (i in 1:k){
-      val_[,i] = ((ifelse(r<= VaR[,i],1,0) - alpha)*VaR[,i] - ifelse(r<=VaR[,i],1,0)*r+ (exp(ES[,i])/(1+exp(ES[,i])))*(ES[,i] - VaR[,i] + ifelse(r<=VaR[,i],1,0)*(VaR[,i] - r)/alpha) - (log(1+exp(ES[,i]))) + log(2))
+      val_[,i] = (ifelse(r<= VaR[,i],1,0) - alpha)*VaR[,i] - ifelse(r<=VaR[,i],1,0)*r+ (exp(ES[,i])/(1+exp(ES[,i])))*(ES[,i] - VaR[,i] + ifelse(r<=VaR[,i],1,0)*(VaR[,i] - r)/alpha) - log(1+exp(ES[,i])) + log(2)
     }
   }
   return(val_)
@@ -106,13 +106,13 @@ RSC = function(lambda, VaR, ES, r, alpha, S){
 
   omega =  matrix(0,ncol = 1, nrow = M)
   for (i in 1:M){
-    omega[i,1] = exp(-lambda * sum(S(VaR[,i], ES[,i], r, alpha)))/sum(exp(-lambda * apply(S(VaR, ES, r, alpha),2,sum) ))
+    omega[i,1] = exp(-lambda * sum(S(matrix(VaR[,i], ncol = 1), matrix(ES[,i], ncol = 1), r, alpha)))/sum(exp(-lambda * apply(S(VaR, ES, r, alpha),2,sum) ))
   }
 
   if(!is.nan(sum(sum(omega)))) {
     VaR_c = VaR%*%omega
     ES_c = ES%*%omega
-    return(sum(S(VaR_c, ES_c, r, alpha)))
+    return(sum(S(matrix(VaR_c, ncol = 1), matrix(ES_c, ncol = 1), r, alpha)))
   } else{
     return(Inf)
   }
@@ -131,7 +131,7 @@ RSC_Eval = function(lambda, VaR, ES, r, alpha, S){
   
   omega =  matrix(0,ncol = 1, nrow = M)
   for (i in 1:M){
-    omega[i,1] = exp(-lambda * sum(S(VaR[,i], ES[,i], r, alpha)))/sum( exp(-lambda * apply(S(VaR, ES, r, alpha),2,sum) ))
+    omega[i,1] = exp(-lambda * sum(S(matrix(VaR[,i], ncol = 1), matrix(ES[,i], ncol = 1), r, alpha)))/sum( exp(-lambda * apply(S(VaR, ES, r, alpha),2,sum) ))
   }
   
 return(omega)
@@ -142,15 +142,15 @@ RSC_grid = function(parini, VaR, ES, r, alpha, S){
   val = c()
   for (i in 1:(length(lambda))){
     val[i] = RSC(lambda[i], VaR, ES, r, alpha, S)
+    if(val[i] == Inf) break
   }
-  lini = lambda[which(val == min(val))[1]]
+  
+  lini = lambda[which(val == min(val, na.rm = TRUE))[1]]
   
   if (RSC(parini, VaR, ES, r, alpha, S) < RSC(lini, VaR, ES, r, alpha, S)) lini = parini
   
   return(c(lambda[which(val == Inf)[1]-1],lini))
 }
-
-
 
 RSC_opt = function(parini, VaR, ES, r, alpha, S){
   parini = RSC_grid(parini, VaR, ES, r, alpha, S)
@@ -171,7 +171,7 @@ MSC = function(omega, VaR, ES, r, alpha, S){
   N = dim(VaR)[2]
   VaR_c = VaR%*%omega[1:N]
   ES_c = VaR_c + (ES-VaR)%*%omega[(N+1):(2*N)] 
-  return(sum(S(VaR_c, ES_c, r, alpha)))
+  return(sum(S(matrix(VaR_c, ncol = 1), matrix(ES_c, ncol = 1), r, alpha)))
 }
 
 MSC_grid = function(parini, VaR, ES, r, alpha, S){
@@ -179,7 +179,7 @@ MSC_grid = function(parini, VaR, ES, r, alpha, S){
   omega = parini
   VaR_c = VaR%*%parini[1:N]
   ES_c = VaR_c + (ES-VaR)%*%parini[(N+1):(2*N)] 
-  SF = sum(S(VaR_c, ES_c, r, alpha))
+  SF = sum(S(matrix(VaR_c, ncol = 1), matrix(ES_c, ncol = 1), r, alpha))
   
   for(i in 1:10^5){
     omega[1:N] = runif(N)
@@ -191,9 +191,9 @@ MSC_grid = function(parini, VaR, ES, r, alpha, S){
     VaR_c = VaR%*%omega[1:N]
     ES_c = VaR_c + (ES-VaR)%*%omega[(N+1):(2*N)] 
     
-    if(sum(S(VaR_c, ES_c, r, alpha)) < SF){
+    if(sum(S(matrix(VaR_c, ncol = 1), matrix(ES_c, ncol = 1), r, alpha)) < SF){
       parini = omega
-      SF = sum(S(VaR_c, ES_c, r, alpha))
+      SF = sum(S(matrix(VaR_c, ncol = 1), matrix(ES_c, ncol = 1), r, alpha))
     }
   }
   return(parini)
