@@ -65,9 +65,9 @@ OoSret = mu = c()
 
 inVaR2_CS = inVaR5_CS = inVaR2_FI = inVaR5_FI = inVaR2_MS = inVaR5_MS = inVaR2_GAS = inVaR5_GAS = inVaR2_Boot = inVaR5_Boot =  inVaR2_CAViaR =  inVaR5_CAViaR = inVaR2_CAViaREVT =  inVaR5_CAViaREVT = inVaR2_CAViaRALD =  inVaR5_CAViaRALD = matrix(0, ncol = OoS, nrow = InS)
 inES2_CS = inES5_CS = inES2_FI = inES5_FI = inES2_MS = inES5_MS = inES2_GAS = inES5_GAS = inES2_Boot = inES5_Boot =  inES2_CAViaR =  inES5_CAViaR = inES2_CAViaREVT =  inES5_CAViaREVT = inES2_CAViaRALD =  inES5_CAViaRALD = matrix(0, ncol = OoS, nrow = InS)
-caviar2 = caviar5 = caviar_evt2 = caviar_evt5 = NULL
 vol_CS = vol_FI = vol_Boot = vol_GAS = vol_MS = matrix(0, ncol = OoS, nrow = InS)
 
+caviar2 = caviar5 = caviar_evt2 = caviar_evt5 = NULL
 for (i in 1:OoS) {
   print(paste(i,"of", OoS, "replications"))
 # Rolling Windows 
@@ -224,7 +224,7 @@ write.csv(inES5_CS, paste0(crytocurrency,"inES5_CS.csv"))
 write.csv(inVaR2_CAViaR, paste0(crytocurrency,"inVaR2_CAViaR.csv"))
 write.csv(inVaR5_CAViaR, paste0(crytocurrency,"inVaR5_CAViaR.csv"))
 write.csv(inES2_CAViaR, paste0(crytocurrency,"inES2_CAViaR.csv"))
-write.csv(inES5_CAViaR, paste0(crytocurrency,"inES2_CAViaR.csv"))
+write.csv(inES5_CAViaR, paste0(crytocurrency,"inES5_CAViaR.csv"))
 
 write.csv(inVaR2_CAViaREVT, paste0(crytocurrency,"inVaR2_CAViaREVT.csv"))
 write.csv(inVaR5_CAViaREVT, paste0(crytocurrency,"inVaR5_CAViaREVT.csv"))
