@@ -16,7 +16,7 @@ library(robts)
 
 
 setwd("./Data")
-end_date = "2021-08-14"
+end_date = "2021-12-22"
 
 BTC = read.csv("BTCUSDT-1d-data.csv") %>% 
   mutate(date = as.Date(timestamp)) %>% arrange(date) %>% mutate(ret = c(0,diff(log(close))*100)) %>% 
@@ -54,9 +54,9 @@ tabela = xtable(Results,caption = "Descriptive statistics of daily returns", dig
 
 print(tabela, file = "Descriptive.tex", compress = FALSE)
 
-OoS = 600
-InS = dim(Crypto)[1]-OoS
-Crypto2[InS+1,]
+OoS = 700
+InS = dim(Crypto)[1] - OoS
+Crypto2[InS + 1,]
 
 # Figures
 
@@ -69,12 +69,12 @@ library(scales)
 {
 
 p1_1 = ggplot(BTC, aes(date, BTC)) + geom_line(colour= "green4") +
-  xlab(" ") + ylab("BTC") + geom_vline(xintercept=lubridate::ymd("2019-11-17"), linetype = "dashed") + 
+  xlab(" ") + ylab("Bitcoin") + geom_vline(xintercept = Crypto2[InS+1,"date"], linetype = "dashed") + 
   scale_x_date(date_breaks = "1 year", date_labels =  "%Y") +
   theme_bw() + theme(axis.text.x = element_text(size=10,face="bold")) 
 
 p1_2 = ggplot(ETH, aes(date, ETH)) + geom_line(colour= "green4") +
-  xlab(" ") + ylab("ETH") + geom_vline(xintercept=lubridate::ymd("2019-11-17"), linetype = "dashed") + 
+  xlab(" ") + ylab("Ethereum") + geom_vline(xintercept = Crypto2[InS+1,"date"], linetype = "dashed") + 
   scale_x_date(date_breaks = "1 year", date_labels =  "%Y") +
   theme_bw() + theme(axis.text.x = element_text(size=10,face="bold"))
 }
@@ -104,7 +104,7 @@ bacf <- acf(x, plot = FALSE, 50)
 bacfdf <- with(bacf, data.frame(lag, acf))
 
 p2_1 <- ggplot(data=bacfdf[-1,], mapping=aes(x=lag, y=acf)) +
-  geom_bar(stat = "identity", position = "identity", fill = "green4") + ylab("BTC")+ 
+  geom_bar(stat = "identity", position = "identity", fill = "green4") + ylab("Bitcoin")+ 
   ylim(c(-0.15,0.15))+
   geom_line(aes(y = -1.96*band, x = 1:50)) +
   geom_line(aes(y = 1.96*band, x = 1:50)) + theme_bw() + 
@@ -123,7 +123,7 @@ bacf <- acf(x, plot = FALSE, 50)
 bacfdf <- with(bacf, data.frame(lag, acf))
 
 p2_2 <- ggplot(data=bacfdf[-1,], mapping=aes(x=lag, y=acf)) +
-  geom_bar(stat = "identity", position = "identity", fill = "green4") + ylab("ETH")+ 
+  geom_bar(stat = "identity", position = "identity", fill = "green4") + ylab("Ethereum")+ 
   ylim(c(-0.15,0.15))+
   geom_line(aes(y = -1.96*band, x = 1:50)) +
   geom_line(aes(y = 1.96*band, x = 1:50)) + theme_bw() + 
@@ -164,7 +164,7 @@ bacfdf <- with(bacf, data.frame(lag, acf))
 
 
 p3_1 <- ggplot(data=bacfdf[-1,], mapping=aes(x=lag, y=acf)) +
-  geom_bar(stat = "identity", position = "identity", fill = "green4") + ylab(expression(BTC^{2}))+ 
+  geom_bar(stat = "identity", position = "identity", fill = "green4") + ylab(expression(Bitcoin^{2}))+ 
   geom_line(aes(y = -1.96*bart.error[1:50], x = 1:50)) +
   geom_line(aes(y = 1.96*bart.error[1:50], x = 1:50)) + theme_bw() + 
   theme(legend.position = "none")
@@ -201,14 +201,14 @@ bacfdf <- with(bacf, data.frame(lag, acf))
 
 
 p3_2 <- ggplot(data=bacfdf[-1,], mapping=aes(x=lag, y=acf)) +
-  geom_bar(stat = "identity", position = "identity", fill = "green4") + ylab(expression(ETH^{2}))+ 
+  geom_bar(stat = "identity", position = "identity", fill = "green4") + ylab(expression(Ethereum^{2}))+ 
   geom_line(aes(y = -1.96*bart.error[1:50], x = 1:50)) +
   geom_line(aes(y = 1.96*bart.error[1:50], x = 1:50)) + theme_bw() + 
   theme(legend.position = "none")
 
 }
 
-pdf("crypto_figures.pdf", paper = "a4r", width = 14, height = 8) 
+pdf("crypto_figures.pdf", paper = "a4r", width = 18, height = 8) 
 pushViewport(viewport(layout = grid.layout(2, 3)))
 vplayout <- function(x, y) viewport(layout.pos.row = x, layout.pos.col = y)
 print(p1_1, vp = vplayout(1, 1))

@@ -105,8 +105,8 @@ RSC = function(lambda, VaR, ES, r, alpha, S){
   }
 
   omega =  matrix(0,ncol = 1, nrow = M)
-  for (i in 1:M){
-    omega[i,1] = exp(-lambda * sum(S(matrix(VaR[,i], ncol = 1), matrix(ES[,i], ncol = 1), r, alpha)))/sum(exp(-lambda * apply(S(VaR, ES, r, alpha),2,sum) ))
+  for (j in 1:M){
+    omega[j,1] = exp(-lambda * sum(S(matrix(VaR[,j], ncol = 1), matrix(ES[,j], ncol = 1), r, alpha)))/sum(exp(-lambda * apply(S(VaR, ES, r, alpha),2,sum) ))
   }
 
   if(!is.nan(sum(sum(omega)))) {
@@ -140,21 +140,27 @@ return(omega)
 RSC_grid = function(parini, VaR, ES, r, alpha, S){
   lambda = seq(from = 0.000001, to = 100, length.out = 10^4)
   val = c()
-  for (i in 1:(length(lambda))){
-    val[i] = RSC(lambda[i], VaR, ES, r, alpha, S)
-    if(val[i] == Inf) break
+  for (j in 1:(length(lambda))) {
+    val[j] = RSC(lambda[j], VaR, ES, r, alpha, S)
+    if(val[j] == Inf) break
   }
   
   lini = lambda[which(val == min(val, na.rm = TRUE))[1]]
   
   if (RSC(parini, VaR, ES, r, alpha, S) < RSC(lini, VaR, ES, r, alpha, S)) lini = parini
   
-  return(c(lambda[which(val == Inf)[1]-1],lini))
+  return(c(lambda[which(val == Inf)[1] - 1],lini))
 }
 
 RSC_opt = function(parini, VaR, ES, r, alpha, S){
   parini = RSC_grid(parini, VaR, ES, r, alpha, S)
-  lambda = suppressWarnings(optim(par = parini[2], fn = RSC, method = "L-BFGS-B", VaR = VaR, ES = ES, r = r, alpha = alpha, S = S, lower = 0.000001, upper = parini[1])$par)
+  lambda = tryCatch({
+    suppressWarnings(optim(par = parini[2], fn = RSC, method = "L-BFGS-B", VaR = VaR, ES = ES, r = r, alpha = alpha, S = S, lower = 0.000001, upper = parini[1])$par)
+  }, error = function(e) {
+    parini[2] = 0.000001
+    suppressWarnings(optim(par = parini[2], fn = RSC, method = "Brent", VaR = VaR, ES = ES, r = r, alpha = alpha, S = S, lower = 0.000001, upper = 5)$par)
+  })
+    
   return(lambda)
 }
 
@@ -202,7 +208,12 @@ MSC_grid = function(parini, VaR, ES, r, alpha, S){
 MSC_opt = function(parini, VaR, ES, r, alpha, S){
   N = dim(VaR)[2]
   parini = MSC_grid(parini, VaR, ES, r, alpha, S)
-  param = solnp(pars = parini, fun = MSC, eqfun = equal, eqB = c(1,1), LB = rep(0,2*N), VaR = VaR, ES = ES, r = r, alpha = alpha, S = S)$pars
+  param = tryCatch({
+    suppressWarnings(solnp(pars = parini, fun = MSC, eqfun = equal, eqB = c(1,1), LB = rep(0,2*N), VaR = VaR, ES = ES, r = r, alpha = alpha, S = S)$pars)
+  }, error = function(e) {
+    parini = rep(1/N, N)
+    suppressWarnings(solnp(pars = parini, fun = MSC, eqfun = equal, eqB = c(1,1), LB = rep(0,2*N), VaR = VaR, ES = ES, r = r, alpha = alpha, S = S)$pars)
+  })
   return(param)
 }
 

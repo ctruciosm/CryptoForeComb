@@ -7,7 +7,7 @@
 #### Relative and Minimum score combining strategies (Taylor, 2020)
 ################################################################################## 
 
-setwd("/Volumes/CTRUCIOS_SD/ForecastCombinationCrypto/Codes/CryptoForeComb/")
+#setwd("/Volumes/CTRUCIOS_SD/ForecastCombinationCrypto/Codes/CryptoForeComb/")
 library(Rsolnp)
 library(dplyr)
 library(stringr)  
@@ -15,8 +15,9 @@ library(Rcpp)
 sourceCpp("scoring_functions.cpp")
 source("Optimizations.R")
 
-cryptocurrency =  "/Volumes/CTRUCIOS_SD/ForecastCombinationCrypto/Codes/Resultados/BTC" # "./ETH"  # Options are "./BTC", "./ETH" and "./LTC"
-end_date = "2021-08-14"
+#cryptocurrency = "/Volumes/CTRUCIOS_SD/ForecastCombinationCrypto/Codes/Resultados/BTC"
+cryptocurrency =  "./ETH" # "./ETH"  # Options are "./BTC", "./ETH" and "./LTC"
+end_date = "2021-12-22"
 
 if (str_sub(cryptocurrency , -3, -1)   == "BTC") {
   crypto = read.csv("./Data/BTCUSDT-1d-data.csv") %>% 
@@ -47,6 +48,18 @@ ES5 = ES %>% dplyr::select(ends_with("5")) %>% as.matrix() + mu
 
 # Load InS Data
 
+inVaR2_GARCH = read.csv("inVaR2_GARCH.csv")[,-1] + matrix(rep(mu,length(ret)), ncol = length(ret), byrow = TRUE)
+inVaR5_GARCH = read.csv("inVaR5_GARCH.csv")[,-1] + matrix(rep(mu,length(ret)), ncol = length(ret), byrow = TRUE)
+inES2_GARCH = read.csv("inES2_GARCH.csv")[,-1] + matrix(rep(mu,length(ret)), ncol = length(ret), byrow = TRUE)
+inES5_GARCH = read.csv("inES5_GARCH.csv")[,-1] + matrix(rep(mu,length(ret)), ncol = length(ret), byrow = TRUE)
+
+
+inVaR2_GJR = read.csv("inVaR2_GJR.csv")[,-1] + matrix(rep(mu,length(ret)), ncol = length(ret), byrow = TRUE)
+inVaR5_GJR = read.csv("inVaR5_GJR.csv")[,-1] + matrix(rep(mu,length(ret)), ncol = length(ret), byrow = TRUE)
+inES2_GJR = read.csv("inES2_GJR.csv")[,-1] + matrix(rep(mu,length(ret)), ncol = length(ret), byrow = TRUE)
+inES5_GJR = read.csv("inES5_GJR.csv")[,-1] + matrix(rep(mu,length(ret)), ncol = length(ret), byrow = TRUE)
+
+
 inVaR2_Boot = read.csv("inVaR2_Boot.csv")[,-1] + matrix(rep(mu,length(ret)), ncol = length(ret), byrow = TRUE)
 inVaR5_Boot = read.csv("inVaR5_Boot.csv")[,-1] + matrix(rep(mu,length(ret)), ncol = length(ret), byrow = TRUE)
 inES2_Boot = read.csv("inES2_Boot.csv")[,-1] + matrix(rep(mu,length(ret)), ncol = length(ret), byrow = TRUE)
@@ -67,10 +80,10 @@ inVaR5_FI = read.csv("inVaR5_FI.csv")[,-1] + matrix(rep(mu,length(ret)), ncol = 
 inES2_FI = read.csv("inES2_FI.csv")[,-1] + matrix(rep(mu,length(ret)), ncol = length(ret), byrow = TRUE)
 inES5_FI = read.csv("inES5_FI.csv")[,-1] + matrix(rep(mu,length(ret)), ncol = length(ret), byrow = TRUE)
 
-inVaR2_CS = read.csv("inVaR2_CS.csv")[,-1] + matrix(rep(mu,length(ret)), ncol = length(ret), byrow = TRUE)
-inVaR5_CS = read.csv("inVaR5_CS.csv")[,-1] + matrix(rep(mu,length(ret)), ncol = length(ret), byrow = TRUE)
-inES2_CS = read.csv("inES2_CS.csv")[,-1] + matrix(rep(mu,length(ret)), ncol = length(ret), byrow = TRUE)
-inES5_CS = read.csv("inES5_CS.csv")[,-1] + matrix(rep(mu,length(ret)), ncol = length(ret), byrow = TRUE)
+inVaR2_NG = read.csv("inVaR2_NG.csv")[,-1] + matrix(rep(mu,length(ret)), ncol = length(ret), byrow = TRUE)
+inVaR5_NG = read.csv("inVaR5_NG.csv")[,-1] + matrix(rep(mu,length(ret)), ncol = length(ret), byrow = TRUE)
+inES2_NG  = read.csv("inES2_NG.csv")[,-1] + matrix(rep(mu,length(ret)), ncol = length(ret), byrow = TRUE)
+inES5_NG = read.csv("inES5_NG.csv")[,-1] + matrix(rep(mu,length(ret)), ncol = length(ret), byrow = TRUE)
 
 inVaR2_CAViaR = read.csv("inVaR2_CAViaR.csv")[,-1] + matrix(rep(mu,length(ret)), ncol = length(ret), byrow = TRUE)
 inVaR5_CAViaR = read.csv("inVaR5_CAViaR.csv")[,-1] + matrix(rep(mu,length(ret)), ncol = length(ret), byrow = TRUE)
@@ -122,31 +135,31 @@ for (j in 1:3) {
     for (i in 1:OoS) {
       #### RSC  
       lambda2 = RSC_opt(parini = lini2, 
-                        VaR = cbind(inVaR2_Boot[,i],inVaR2_GAS[,i], inVaR2_MS[,i],inVaR2_FI[,i],
-                                   inVaR2_CS[,i], inVaR2_CAViaR[,i], inVaR2_CAViaREVT[,i], inVaR2_CAViaRALD[,i]), 
-                        ES = cbind(inES2_Boot[,i], inES2_GAS[,i], inES2_MS[,i], inES2_FI[,i],
-                                     inES2_CS[,i], inES2_CAViaR[,i], inES2_CAViaREVT[,i], inES2_CAViaRALD[,i]), 
+                        VaR = cbind(inVaR2_GARCH[,i], inVaR2_GJR[,i], inVaR2_GAS[,i],inVaR2_MS[,i], inVaR2_Boot[,i],inVaR2_FI[,i], inVaR2_NG[,i],
+                                    inVaR2_CAViaR[,i], inVaR2_CAViaREVT[,i], inVaR2_CAViaRALD[,i]), 
+                        ES = cbind(inES2_GARCH[,i], inES2_GJR[,i], inES2_GAS[,i], inES2_MS[,i], inES2_Boot[,i], inES2_FI[,i], inES2_NG[,i],
+                                   inES2_CAViaR[,i], inES2_CAViaREVT[,i], inES2_CAViaRALD[,i]), 
                         r =  crypto$ret[i:(InS + i - 1)], alpha = a2, S = S_)
       lini2 = lambda2
       lambda5 = RSC_opt(parini = lini5, 
-                        VaR = cbind(inVaR5_Boot[,i], inVaR5_GAS[,i], inVaR5_MS[,i],inVaR5_FI[,i],
-                                    inVaR5_CS[,i], inVaR5_CAViaR[,i],inVaR5_CAViaREVT[,i],inVaR5_CAViaRALD[,i]), 
-                        ES = cbind(inES5_Boot[,i], inES5_GAS[,i], inES5_MS[,i], inES5_FI[,i],
-                                   inES5_CS[,i], inES5_CAViaR[,i], inES5_CAViaREVT[,i], inES5_CAViaRALD[,i]), 
+                        VaR = cbind(inVaR5_GARCH[,i], inVaR5_GJR[,i], inVaR5_GAS[,i], inVaR5_MS[,i], inVaR5_Boot[,i],inVaR5_FI[,i], inVaR5_NG[,i],
+                                    inVaR5_CAViaR[,i],inVaR5_CAViaREVT[,i],inVaR5_CAViaRALD[,i]), 
+                        ES = cbind(inES5_GARCH[,i], inES5_GJR[,i], inES5_GAS[,i], inES5_MS[,i], inES5_Boot[,i], inES5_FI[,i], inES5_NG[,i],
+                                   inES5_CAViaR[,i], inES5_CAViaREVT[,i], inES5_CAViaRALD[,i]), 
                         r =  crypto$ret[i:(InS + i - 1)], alpha = a5, S = S_)
       lini5 = lambda5
       
       omega2RSC[i,] = RSC_Eval(lambda2, 
-                               VaR = cbind(inVaR2_Boot[,i],inVaR2_GAS[,i], inVaR2_MS[,i], inVaR2_FI[,i],
-                                           inVaR2_CS[,i], inVaR2_CAViaR[,i], inVaR2_CAViaREVT[,i], inVaR2_CAViaRALD[,i]), 
-                               ES = cbind(inES2_Boot[,i], inES2_GAS[,i], inES2_MS[,i], inES2_FI[,i],
-                                          inES2_CS[,i], inES2_CAViaR[,i], inES2_CAViaREVT[,i], inES2_CAViaRALD[,i]), 
+                               VaR = cbind(inVaR2_GARCH[,i], inVaR2_GJR[,i], inVaR2_GAS[,i], inVaR2_MS[,i], inVaR2_Boot[,i], inVaR2_FI[,i], inVaR2_NG[,i],
+                                           inVaR2_CAViaR[,i], inVaR2_CAViaREVT[,i], inVaR2_CAViaRALD[,i]), 
+                               ES = cbind(inES2_GARCH[,i], inES2_GJR[,i], inES2_GAS[,i], inES2_MS[,i], inES2_Boot[,i], inES2_FI[,i], inES2_NG[,i],
+                                          inES2_CAViaR[,i], inES2_CAViaREVT[,i], inES2_CAViaRALD[,i]), 
                                r =  crypto$ret[i:(InS + i - 1)], alpha = a2, S = S_)
       omega5RSC[i,] = RSC_Eval(lambda5, 
-                               VaR = cbind(inVaR5_Boot[,i],inVaR5_GAS[,i],inVaR5_MS[,i],inVaR5_FI[,i],
-                                           inVaR5_CS[,i],inVaR5_CAViaR[,i],inVaR5_CAViaREVT[,i], inVaR5_CAViaRALD[,i]), 
-                               ES = cbind(inES5_Boot[,i],inES5_GAS[,i],inES5_MS[,i],inES5_FI[,i],
-                                          inES5_CS[,i],inES5_CAViaR[,i],inES5_CAViaREVT[,i],inES5_CAViaRALD[,i]), 
+                               VaR = cbind(inVaR5_GARCH[,i], inVaR5_GJR[,i], inVaR5_GAS[,i], inVaR5_MS[,i],inVaR5_Boot[,i],inVaR5_FI[,i],inVaR5_NG[,i],
+                                           inVaR5_CAViaR[,i],inVaR5_CAViaREVT[,i], inVaR5_CAViaRALD[,i]), 
+                               ES = cbind(inES5_GARCH[,i],inES5_GJR[,i], inES5_GAS[,i], inES5_MS[,i],inES5_Boot[,i],inES5_FI[,i],inES5_NG[,i],
+                                          inES5_CAViaR[,i],inES5_CAViaREVT[,i],inES5_CAViaRALD[,i]), 
                                r =  crypto$ret[i:(InS + i - 1)], alpha = a5, S = S_)
 
       
@@ -155,16 +168,16 @@ for (j in 1:3) {
       
       #### MSC
       omega2MSC[i,] = MSC_opt(parini = omegaini2, 
-                              VaR = cbind(inVaR5_Boot[,i], inVaR5_GAS[,i], inVaR5_MS[,i],inVaR5_FI[,i],
-                                          inVaR5_CS[,i], inVaR5_CAViaR[,i],inVaR5_CAViaREVT[,i],inVaR5_CAViaRALD[,i]), 
-                              ES = cbind(inES5_Boot[,i], inES5_GAS[,i], inES5_MS[,i], inES5_FI[,i],
-                                         inES5_CS[,i], inES5_CAViaR[,i], inES5_CAViaREVT[,i], inES5_CAViaRALD[,i]), 
+                              VaR = cbind(inVaR5_GARCH[,i], inVaR5_GJR[,i], inVaR5_GAS[,i], inVaR5_MS[,i], inVaR5_Boot[,i],inVaR5_FI[,i],inVaR5_NG[,i],
+                                          inVaR5_CAViaR[,i],inVaR5_CAViaREVT[,i],inVaR5_CAViaRALD[,i]), 
+                              ES = cbind(inES5_GARCH[,i], inES5_GJR[,i], inES5_GAS[,i], inES5_MS[,i], inES5_Boot[,i], inES5_FI[,i],inES5_NG[,i],
+                                         inES5_CAViaR[,i], inES5_CAViaREVT[,i], inES5_CAViaRALD[,i]), 
                               r =  crypto$ret[i:(InS + i - 1)], alpha = a5, S = S_)
       omega5MSC[i,] = MSC_opt(parini = omegaini5, 
-                              VaR = cbind(inVaR5_Boot[,i], inVaR5_GAS[,i], inVaR5_MS[,i],inVaR5_FI[,i],
-                                          inVaR5_CS[,i], inVaR5_CAViaR[,i],inVaR5_CAViaREVT[,i],inVaR5_CAViaRALD[,i]), 
-                              ES = cbind(inES5_Boot[,i], inES5_GAS[,i], inES5_MS[,i], inES5_FI[,i],
-                                         inES5_CS[,i], inES5_CAViaR[,i], inES5_CAViaREVT[,i], inES5_CAViaRALD[,i]), 
+                              VaR = cbind(inVaR5_GARCH[,i], inVaR5_GJR[,i], inVaR5_GAS[,i], inVaR5_MS[,i], inVaR5_Boot[,i],inVaR5_FI[,i],inVaR5_NG[,i],
+                                          inVaR5_CAViaR[,i],inVaR5_CAViaREVT[,i],inVaR5_CAViaRALD[,i]), 
+                              ES = cbind(inES5_GARCH[,i], inES5_GJR[,i], inES5_GAS[,i], inES5_MS[,i], inES5_Boot[,i], inES5_FI[,i],inES5_NG[,i],
+                                         inES5_CAViaR[,i], inES5_CAViaREVT[,i], inES5_CAViaRALD[,i]), 
                               r =  crypto$ret[i:(InS + i - 1)], alpha = a5, S = S_)
       
       omegaini2 = omega2MSC[i,]

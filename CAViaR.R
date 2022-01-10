@@ -26,16 +26,16 @@ CAViaR = function(r, risklevel = 0.05, type = "sym_abs", par_ini = NULL) {
     # Grid
     if (type == "asym_slope") {
       pini = matrix(0, ncol = 4, nrow = 10000)
-      pini[,1] = -0.01*runif(10000)
-      pini[,2] = 0.8 + 0.2*runif(10000)
-      pini[,3] = -0.5 + runif(10000)
+      pini[,1] = runif(10000, -0.4, 0)
+      pini[,2] = runif(10000)
+      pini[,3] = runif(10000, -1.5, -0.01)
       pini[,4] = 0.5*runif(10000)
       loss = apply(pini, 1, CAViaR_loss, r, risklevel, type)
     } else{
       pini = matrix(0, ncol = 3, nrow = 10000)
-      pini[,1] = -0.01*runif(10000)
-      pini[,2] = -runif(10000)
-      pini[,3] = 0.4 + 0.3 + runif(10000)
+      pini[,1] = runif(10000, -0.4, 0)
+      pini[,2] = runif(10000)
+      pini[,3] = runif(10000, -1.5, -0.01)
       loss = apply(pini, 1, CAViaR_loss, r, risklevel, type)
     }
     # Optimisation
@@ -142,22 +142,26 @@ ALD = function(r, risklevel = 0.05, type = "sym_abs", caviar_params = NULL) {
     if (is.null(caviar_params)) caviar_params = CAViaR(r, risklevel, type = type, par_ini = caviar_params)[[2]]
     gamma_pini = ALD_grid(r, risklevel, caviar_params, type_code)
     params_ini = c(caviar_params, gamma_pini)
-    ald_params = suppressWarnings(optim(par = params_ini, fn = ALD_loss, r = r, risklevel = risklevel, type = type))
-    
+    ald_params = tryCatch({
+      suppressWarnings(optim(par = params_ini, fn = ALD_loss, r = r, risklevel = risklevel, type = type))
+    }, error = function(e) {
+      NULL
+    })
+    # Grid
     if (type == "asym_slope") {
-      pini = matrix(0, ncol = 4, nrow = 10000)
-      pini[,1] = -0.01*runif(10000)
-      pini[,2] = 0.8 + 0.2*runif(10000)
-      pini[,3] = -0.5 + runif(10000)
-      pini[,4] = 0.5*runif(10000)
-      pini[,5] = runif(10000, -1, 1)
+      pini = matrix(0, ncol = 5, nrow = 1000)
+      pini[,1] = -0.2*runif(1000)
+      pini[,2] = runif(1000)
+      pini[,3] = -runif(1000)
+      pini[,4] = 0.5*runif(1000)
+      pini[,5] = -0.8 + 3*runif(1000)
       loss = apply(pini, 1, ALD_loss, r, risklevel, type)
     } else{
-      pini = matrix(0, ncol = 3, nrow = 10000)
-      pini[,1] = -0.01*runif(10000)
-      pini[,2] = -runif(10000)
-      pini[,3] = 0.4 + 0.3 + runif(10000)
-      pini[,4] = runif(10000, -1, 1)
+      pini = matrix(0, ncol = 4, nrow = 1000)
+      pini[,1] = -0.2*runif(1000)
+      pini[,2] = runif(1000)
+      pini[,3] = -runif(1000)
+      pini[,4] = -0.8 + 3*runif(1000)
       loss = apply(pini, 1, ALD_loss, r, risklevel, type)
     }
     # Optimisation
@@ -169,21 +173,23 @@ ALD = function(r, risklevel = 0.05, type = "sym_abs", caviar_params = NULL) {
     if (best_of_three == 1) params = params1
     if (best_of_three == 2) params = params2
     if (best_of_three == 3) params = params3
-    if (ald_params$value < params$value) params = ald_params
+    if (!is.null(ald_params)) {
+      if (ald_params$value < params$value) params = ald_params
+    }
     params = params$par
     Qu[1] = quantile(r, risklevel) 
     if (type == "asym_slope") {
       for (i in 2:(n + 1)) {
-        Qu[i] = ald_params[1] + ald_params[2]*Qu[i - 1] + ald_params[3]*max(r[i - 1], 0) + ald_params[4]*min(r[i - 1], 0)
+        Qu[i] = params[1] + params[2]*Qu[i - 1] + params[3]*max(r[i - 1], 0) + params[4]*min(r[i - 1], 0)
       }
-      ES = (1 + exp(ald_params[5]))*Qu
+      ES = (1 + exp(params[5]))*Qu
     } else {
       for (i in 2:(n + 1)) {
-        Qu[i] = ald_params[1] + ald_params[2]*Qu[i - 1] + ald_params[3]*abs(r[i - 1])
+        Qu[i] = params[1] + params[2]*Qu[i - 1] + params[3]*abs(r[i - 1])
       }
-      ES = (1 + exp(ald_params[4]))*Qu
+      ES = (1 + exp(params[4]))*Qu
     }
-    return(list(cbind(Qu, ES), ald_params))
+    return(list(cbind(Qu, ES), params))
   } else{
     return(print('type option not found, should be either asym_slope or sym_abs.'))
   }
