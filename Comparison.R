@@ -62,7 +62,7 @@ library(quantreg)
 sourceCpp("scoring_functions.cpp")
 source("Function_VaR_VQR.R")
 source("Optimizations.R")
-source("00_GiacominiRossi.R")
+source("GiacominiRossiTest.R")
 
 
 p = 0.05
