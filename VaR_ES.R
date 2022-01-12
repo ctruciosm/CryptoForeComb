@@ -15,7 +15,7 @@ library(rugarch)
 source("CAViaR.R")
 
 
-crytocurrency = "ETH/"              # Other options are: "BTC/", ETH/" and "LTC/"
+crytocurrency = "ETH/"              # "BTC/" or "ETH/"
 alpha = c(0.025, 0.05)              # Risk levels
 nmodels = 10                        # Number os models used
 end_date = "2021-12-22"
