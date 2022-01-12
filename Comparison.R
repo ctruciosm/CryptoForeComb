@@ -1,6 +1,6 @@
 ################################################################################## 
-## Paper: Forecasting Value-at-Risk and Expected Shortfall of Cryptocurrencies  ##
-##        using Combinations based on Jump-Robust and Regime-Switching Models   ##
+## Paper: A Comparison of Methods for Forecasting Value-at-Risk and Expected    ##
+##        Shortfall of Cryptocurrencies.                                        ##
 ## Authors: Carlos Trucíos and James W. Taylor
 ################################################################################## 
 #### Implemented by Carlos Trucios
