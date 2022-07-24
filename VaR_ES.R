@@ -6,6 +6,7 @@
 #### Implemented by Carlos Trucios
 #### One-step-ahead forecast VaR/ES and in-sample VaR/ES estimation
 ################################################################################## 
+#setwd("/Volumes/CTRUCIOS_SD/UNICAMP/Ongoing Research/ForecastCombinationCrypto/CryptoForeComb/")
 rm(list = ls())
 library(RobGARCHBoot)
 library(GAS)
@@ -15,11 +16,11 @@ library(rugarch)
 source("CAViaR.R")
 
 
-crytocurrency = "ETH/"              # "BTC/" or "ETH/"
+crytocurrency = "BTC/"              # "BTC/" or "ETH/"
 alpha = c(0.025, 0.05)              # Risk levels
 nmodels = 10                        # Number os models used
-end_date = "2021-12-22"
-OoS = 700
+end_date = "2022-07-23"
+OoS = 800
 
 if (crytocurrency == "BTC/") {
   crypto = read.csv("Data/BTCUSDT-1d-data.csv") %>% 
@@ -53,6 +54,12 @@ GJR_Spec = ugarchspec(variance.model = list(model = 'gjrGARCH', garchOrder = c(1
 NGARCH_Spec = ugarchspec(variance.model = list(model = "fGARCH", garchOrder = c(1, 1), submodel = "NAGARCH"), 
                           mean.model = list(armaOrder = c(0, 0), include.mean = FALSE), 
                           distribution.model = "sstd")
+AR1_Spec = ugarchspec(variance.model = list(model = "sGARCH", garchOrder = c(0, 0)), 
+                     mean.model = list(armaOrder = c(1, 0), include.mean = FALSE), 
+                     distribution.model = "sstd")
+AR2_Spec = ugarchspec(variance.model = list(model = "sGARCH", garchOrder = c(0, 0)), 
+                     mean.model = list(armaOrder = c(2, 0), include.mean = FALSE), 
+                     distribution.model = "sstd")
 
 VaR = matrix(0,ncol = length(alpha)*nmodels + 2, nrow = OoS)
 ES = matrix(0,ncol = length(alpha)*nmodels, nrow = OoS)
@@ -74,15 +81,29 @@ OoSret = mu = c()
 inVaR2_GJR = inVaR5_GJR = inVaR2_GARCH = inVaR5_GARCH = inVaR2_NG = inVaR5_NG = inVaR2_FI = inVaR5_FI = inVaR2_MS = inVaR5_MS = inVaR2_GAS = inVaR5_GAS = inVaR2_Boot = inVaR5_Boot =  inVaR2_CAViaR =  inVaR5_CAViaR = inVaR2_CAViaREVT =  inVaR5_CAViaREVT = inVaR2_CAViaRALD =  inVaR5_CAViaRALD = matrix(0, ncol = OoS, nrow = InS)
 inES2_GJR = inES5_GJR = inES2_GARCH = inES5_GARCH = inES2_NG = inES5_NG = inES2_FI = inES5_FI = inES2_MS = inES5_MS = inES2_GAS = inES5_GAS = inES2_Boot = inES5_Boot =  inES2_CAViaR =  inES5_CAViaR = inES2_CAViaREVT =  inES5_CAViaREVT = inES2_CAViaRALD =  inES5_CAViaRALD = matrix(0, ncol = OoS, nrow = InS)
 vol_GJR = vol_GARCH = vol_NG = vol_FI = vol_Boot = vol_GAS = vol_MS = matrix(0, ncol = OoS, nrow = InS)
-
 caviar2 = caviar5 = caviar_evt2 = caviar_evt5 = NULL
+
+see_ar <- c()
 for (i in 1:OoS) {
   print(paste(i,"of", OoS, "replications"))
 # Rolling Windows 
   predailyreturns = crypto$ret[i:(InS + i - 1)]
   VaR[i,length(alpha)*nmodels + 1] = crypto$ret[InS + i]         # OoS return
-  VaR[i,length(alpha)*nmodels + 2] = mean(predailyreturns)       # InS mean
-  dailyreturns = scale(predailyreturns , scale = FALSE, center = TRUE)
+  
+  AR1_fit = ugarchfit(AR1_Spec, predailyreturns, solver = "hybrid")
+  AR2_fit = ugarchfit(AR2_Spec, predailyreturns, solver = "hybrid")
+  
+  if (infocriteria(AR1_fit)[1] <= infocriteria(AR2_fit)[1]) {
+    AR_fore = ugarchforecast(AR1_fit, n.ahead = 1)
+    dailyreturns = residuals(AR1_fit)
+    see_ar[i] <- 1
+  } else {
+    AR_fore = ugarchforecast(AR2_fit, n.ahead = 1)
+    dailyreturns = residuals(AR2_fit)
+    see_ar[i] <- 2
+  }
+  VaR[i,length(alpha)*nmodels + 2] = as.numeric(AR_fore@forecast$seriesFor)      # InS mean
+  
 # Benchmarks
   GARCH_fit = ugarchfit(GARCH_Spec, dailyreturns, solver = "hybrid")
   GARCH_fore = ugarchforecast(GARCH_fit, n.ahead = 1)
@@ -232,6 +253,7 @@ if (dir.exists(crytocurrency)) {
 # Saving Oos VaR and ES
 write.csv(VaR, paste0(crytocurrency,"VaR.csv"))
 write.csv(ES, paste0(crytocurrency,"ES.csv"))
+write.csv(see_ar, paste0(crytocurrency,"see_ar.csv"))
 
 # Saving InS VaR and ES MSGARCH
 write.csv(inVaR2_MS, paste0(crytocurrency,"inVaR2_MS.csv"))

@@ -16,15 +16,15 @@ library(robts)
 
 
 setwd("./Data")
-end_date = "2021-12-22"
+end_date = "2022-07-23"
 
 BTC = read.csv("BTCUSDT-1d-data.csv") %>% 
   mutate(date = as.Date(timestamp)) %>% arrange(date) %>% mutate(ret = c(0,diff(log(close))*100)) %>% 
-  dplyr::select(date, ret) %>% filter(date > "2017-08-17", date < end_date) %>% rename(BTC=ret)
+  dplyr::select(date, ret) %>% filter(date > "2017-08-17", date < end_date) %>% rename(BTC = ret)
 
 ETH = read.csv("ETHUSDT-1d-data.csv") %>% 
   mutate(date = as.Date(timestamp)) %>% arrange(date) %>% mutate(ret = c(0,diff(log(close))*100)) %>% 
-  dplyr::select(date, ret) %>% filter(date > "2017-08-17", date < end_date) %>% rename(ETH=ret)
+  dplyr::select(date, ret) %>% filter(date > "2017-08-17", date < end_date) %>% rename(ETH = ret)
 
 Crypto = BTC %>% left_join(ETH, by = "date") %>% dplyr::select(BTC, ETH) 
 Crypto = as.matrix(Crypto) 
@@ -44,7 +44,7 @@ Descriptive = function(ret){
 }
 N = dim(Crypto)[2]
 Results = matrix(0, ncol = 9, nrow = N)
-for (i in 1:N){
+for (i in 1:N) {
   Results[i, ] = Descriptive(Crypto[,i])
 }
 
@@ -54,7 +54,7 @@ tabela = xtable(Results,caption = "Descriptive statistics of daily returns", dig
 
 print(tabela, file = "Descriptive.tex", compress = FALSE)
 
-OoS = 700
+OoS = 800
 InS = dim(Crypto)[1] - OoS
 Crypto2[InS + 1,]
 
@@ -98,6 +98,7 @@ acf.val<-sapply(c(1:nlag),function(h) rho(x,h))
 x2<-x^2
 var<-1+(sapply(c(1:nlag),function(h) gamma(x2,h)))/gamma(x,0)^2
 band<-sqrt(var/n)
+
 conf.level <- 0.95
 ciline <- qnorm((1 - conf.level)/2)/sqrt(length(x))
 bacf <- acf(x, plot = FALSE, 50)  
@@ -107,6 +108,8 @@ p2_1 <- ggplot(data=bacfdf[-1,], mapping=aes(x=lag, y=acf)) +
   geom_bar(stat = "identity", position = "identity", fill = "green4") + ylab("Bitcoin")+ 
   ylim(c(-0.15,0.15))+
   geom_line(aes(y = -1.96*band, x = 1:50)) +
+  geom_line(aes(y = -1.96/sqrt(n), x = 1:50)) +
+  geom_line(aes(y = 1.96/sqrt(n), x = 1:50)) +
   geom_line(aes(y = 1.96*band, x = 1:50)) + theme_bw() + 
   theme(legend.position = "none")
 
@@ -117,6 +120,7 @@ acf.val<-sapply(c(1:nlag),function(h) rho(x,h))
 x2<-x^2
 var<-1+(sapply(c(1:nlag),function(h) gamma(x2,h)))/gamma(x,0)^2
 band<-sqrt(var/n)
+
 conf.level <- 0.95
 ciline <- qnorm((1 - conf.level)/2)/sqrt(length(x))
 bacf <- acf(x, plot = FALSE, 50)  
@@ -126,6 +130,8 @@ p2_2 <- ggplot(data=bacfdf[-1,], mapping=aes(x=lag, y=acf)) +
   geom_bar(stat = "identity", position = "identity", fill = "green4") + ylab("Ethereum")+ 
   ylim(c(-0.15,0.15))+
   geom_line(aes(y = -1.96*band, x = 1:50)) +
+  geom_line(aes(y = -1.96/sqrt(n), x = 1:50)) +
+  geom_line(aes(y = 1.96/sqrt(n), x = 1:50)) +
   geom_line(aes(y = 1.96*band, x = 1:50)) + theme_bw() + 
   theme(legend.position = "none")
 }
