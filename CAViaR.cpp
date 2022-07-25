@@ -7,7 +7,7 @@ using namespace Rcpp;
 
 // [[Rcpp::depends(RcppArmadillo)]]
 // [[Rcpp::export]]
-SEXP ALD_grid(arma::vec r, double risklevel, arma::vec caviar_params, double type) {
+SEXP ALD_grid(arma::vec caviar_params, arma::vec r, double risklevel, double type) {
   Rcpp::Function ALD_loss("ALD_loss");
   if(type == 1){
     double pgamma, aux_pgamma, loss, aux_loss;

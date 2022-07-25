@@ -115,7 +115,7 @@ CAViaR_reg = function(r, risklevel = 0.05, type = "sym_abs", par_ini = NULL) {
   return(list(cbind(VaR, ES), caviar_method[[2]]))
 }
 
-ALD_loss = function(r, params, risklevel = 0.05, type = "sym_abs") {
+ALD_loss = function(params, r, risklevel = 0.05, type = "sym_abs") {
   n = length(r)
   Qu = rep(0, n)
   Qu[1] = quantile(r, risklevel) 
@@ -140,7 +140,7 @@ ALD = function(r, risklevel = 0.05, type = "sym_abs", caviar_params = NULL) {
     Qu = rep(0, n + 1)
     type_code = ifelse(type == "asym_slope", 1, 0)
     if (is.null(caviar_params)) caviar_params = CAViaR(r, risklevel, type = type, par_ini = caviar_params)[[2]]
-    gamma_pini = ALD_grid(r, risklevel, caviar_params, type_code)
+    gamma_pini = ALD_grid(caviar_params, r, risklevel, type_code)
     params_ini = c(caviar_params, gamma_pini)
     ald_params = tryCatch({
       suppressWarnings(optim(par = params_ini, fn = ALD_loss, r = r, risklevel = risklevel, type = type))
