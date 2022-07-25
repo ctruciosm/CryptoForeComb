@@ -2,7 +2,7 @@ library(gPdtest)
 library(Rcpp)
 sourceCpp("CAViaR.cpp")
 
-CAViaR_loss = function(r, params, risklevel, type) {
+CAViaR_loss = function(params, r, risklevel, type) {
   n = length(r)
   Qu = rep(0, n)
   Qu[1] = quantile(r, risklevel) # Taylor uses res[1:300]

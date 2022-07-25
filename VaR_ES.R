@@ -18,7 +18,7 @@ source("CAViaR.R")
 
 crytocurrency = "BTC/"              # "BTC/" or "ETH/"
 alpha = c(0.025, 0.05)              # Risk levels
-nmodels = 10                        # Number os models used
+nmodels = 10                        # Number of models used
 end_date = "2022-07-23"
 OoS = 800
 
