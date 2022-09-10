@@ -38,22 +38,22 @@ InS = dim(crypto)[1] - OoS
 
 # Volatility models Specifications
 # ast1 is another parametrization of sstd. See Zhu et al. (2010)
-GAS_Spec = UniGASSpec(Dist = "sstd", GASPar = list(scale = TRUE))
-MSGARC_Spec = CreateSpec(variance.spec = list(model = c("sGARCH","sGARCH")),
-                         switch.spec = list(do.mix = FALSE),
-                         distribution.spec = list(distribution = c("sstd", "sstd")))
-FIGARCH_Spec = ugarchspec(variance.model = list(model = 'fiGARCH', garchOrder = c(1, 1)), 
-                          mean.model = list(armaOrder = c(0,0), include.mean = FALSE), 
-                          distribution = 'sstd')
-GARCH_Spec = ugarchspec(variance.model = list(model = 'sGARCH', garchOrder = c(1, 1)), 
-                          mean.model = list(armaOrder = c(0,0), include.mean = FALSE), 
-                          distribution = 'sstd')
-GJR_Spec = ugarchspec(variance.model = list(model = 'gjrGARCH', garchOrder = c(1, 1)), 
-                        mean.model = list(armaOrder = c(0,0), include.mean = FALSE), 
-                        distribution = 'sstd')
-NGARCH_Spec = ugarchspec(variance.model = list(model = "fGARCH", garchOrder = c(1, 1), submodel = "NAGARCH"), 
-                          mean.model = list(armaOrder = c(0, 0), include.mean = FALSE), 
-                          distribution.model = "sstd")
+# GAS_Spec = UniGASSpec(Dist = "sstd", GASPar = list(scale = TRUE))
+# MSGARC_Spec = CreateSpec(variance.spec = list(model = c("sGARCH","sGARCH")),
+#                          switch.spec = list(do.mix = FALSE),
+#                          distribution.spec = list(distribution = c("sstd", "sstd")))
+# FIGARCH_Spec = ugarchspec(variance.model = list(model = 'fiGARCH', garchOrder = c(1, 1)), 
+#                           mean.model = list(armaOrder = c(0,0), include.mean = FALSE), 
+#                           distribution = 'sstd')
+# GARCH_Spec = ugarchspec(variance.model = list(model = 'sGARCH', garchOrder = c(1, 1)), 
+#                           mean.model = list(armaOrder = c(0,0), include.mean = FALSE), 
+#                           distribution = 'sstd')
+# GJR_Spec = ugarchspec(variance.model = list(model = 'gjrGARCH', garchOrder = c(1, 1)), 
+#                         mean.model = list(armaOrder = c(0,0), include.mean = FALSE), 
+#                         distribution = 'sstd')
+# NGARCH_Spec = ugarchspec(variance.model = list(model = "fGARCH", garchOrder = c(1, 1), submodel = "NAGARCH"), 
+#                           mean.model = list(armaOrder = c(0, 0), include.mean = FALSE), 
+#                           distribution.model = "sstd")
 AR1_Spec = ugarchspec(variance.model = list(model = "sGARCH", garchOrder = c(0, 0)), 
                      mean.model = list(armaOrder = c(1, 0), include.mean = FALSE), 
                      distribution.model = "sstd")
@@ -105,55 +105,55 @@ for (i in 1:OoS) {
   VaR[i,length(alpha)*nmodels + 2] = as.numeric(AR_fore@forecast$seriesFor)      # InS mean
   
 # Benchmarks
-  GARCH_fit = ugarchfit(GARCH_Spec, dailyreturns, solver = "hybrid")
-  GARCH_fore = ugarchforecast(GARCH_fit, n.ahead = 1)
-  GJR_fit = ugarchfit(GJR_Spec, dailyreturns, solver = "hybrid")
-  GJR_fore = ugarchforecast(GJR_fit, n.ahead = 1)
+  # GARCH_fit = ugarchfit(GARCH_Spec, dailyreturns, solver = "hybrid")
+  # GARCH_fore = ugarchforecast(GARCH_fit, n.ahead = 1)
+  # GJR_fit = ugarchfit(GJR_Spec, dailyreturns, solver = "hybrid")
+  # GJR_fore = ugarchforecast(GJR_fit, n.ahead = 1)
 # Model Estimation
-  GAS_fit = UniGASFit(GAS_Spec, dailyreturns, Compute.SE = FALSE)
-  GAS_fore = UniGASFor(GAS_fit, H = 1)
-  FIGARCH_fit = ugarchfit(FIGARCH_Spec, dailyreturns, solver = "hybrid", fit.control =  list(trunclag = 100))
-  FIGARCH_fore = ugarchforecast(FIGARCH_fit, n.ahead = 1)
-  NGARCH_fit = ugarchfit(NGARCH_Spec, dailyreturns, solver = "hybrid", solver.control = list(tol = 1e-10))
-  NGARCH_fore = ugarchforecast(NGARCH_fit, n.ahead = 1, data = dailyreturns)  
-  set.seed(i)
-  MSGARCH_fit = FitMCMC(MSGARC_Spec,dailyreturns)
-  Boot = RobGARCHBoot(dailyreturns, n.boot = 3000, n.ahead = 1, ins = TRUE)
+  # GAS_fit = UniGASFit(GAS_Spec, dailyreturns, Compute.SE = FALSE)
+  # GAS_fore = UniGASFor(GAS_fit, H = 1)
+  # FIGARCH_fit = ugarchfit(FIGARCH_Spec, dailyreturns, solver = "hybrid", fit.control =  list(trunclag = 100))
+  # FIGARCH_fore = ugarchforecast(FIGARCH_fit, n.ahead = 1)
+  # NGARCH_fit = ugarchfit(NGARCH_Spec, dailyreturns, solver = "hybrid", solver.control = list(tol = 1e-10))
+  # NGARCH_fore = ugarchforecast(NGARCH_fit, n.ahead = 1, data = dailyreturns)  
+  # set.seed(i)
+  # MSGARCH_fit = FitMCMC(MSGARC_Spec,dailyreturns)
+  # Boot = RobGARCHBoot(dailyreturns, n.boot = 3000, n.ahead = 1, ins = TRUE)
   # In-sample volatilities for GARCH, GJR, FIGARCH and NGARCH
-  vol_GARCH[,i] = as.numeric(sigma(GARCH_fit)) 
-  vol_GJR[,i] = as.numeric(sigma(GJR_fit)) 
-  vol_FI[,i] = as.numeric(sigma(FIGARCH_fit)) 
-  vol_NG[,i] = as.numeric(sigma(NGARCH_fit)) 
+  # vol_GARCH[,i] = as.numeric(sigma(GARCH_fit)) 
+  # vol_GJR[,i] = as.numeric(sigma(GJR_fit)) 
+  # vol_FI[,i] = as.numeric(sigma(FIGARCH_fit)) 
+  # vol_NG[,i] = as.numeric(sigma(NGARCH_fit)) 
   # Computing VaR
   ## MSGARCH
-  risk = Risk(MSGARCH_fit, alpha = alpha, nahead = 1)
-  insampleRisk = Risk(MSGARCH_fit, alpha = alpha, do.its = TRUE)
-  inVaR2_MS[,i] = insampleRisk$VaR[,1]
-  inVaR5_MS[,i] = insampleRisk$VaR[,2]
+  # risk = Risk(MSGARCH_fit, alpha = alpha, nahead = 1)
+  # insampleRisk = Risk(MSGARCH_fit, alpha = alpha, do.its = TRUE)
+  # inVaR2_MS[,i] = insampleRisk$VaR[,1]
+  # inVaR5_MS[,i] = insampleRisk$VaR[,2]
   ## GAS
-  insampleGAS_VaR = quantile(GAS_fit, probs = alpha)
-  inVaR2_GAS[,i] = insampleGAS_VaR[1:InS,1]
-  inVaR5_GAS[,i] = insampleGAS_VaR[1:InS,2]
+  # insampleGAS_VaR = quantile(GAS_fit, probs = alpha)
+  # inVaR2_GAS[,i] = insampleGAS_VaR[1:InS,1]
+  # inVaR5_GAS[,i] = insampleGAS_VaR[1:InS,2]
   ## Bootstrap
-  inVaR2_Boot[,i] = apply(Boot[[3]],1,quantile, prob = alpha[1])
-  inVaR5_Boot[,i] = apply(Boot[[3]],1,quantile, prob = alpha[2])
-  BootVaR = quantile(Boot[[1]], prob = alpha)
+  # inVaR2_Boot[,i] = apply(Boot[[3]],1,quantile, prob = alpha[1])
+  # inVaR5_Boot[,i] = apply(Boot[[3]],1,quantile, prob = alpha[2])
+  # BootVaR = quantile(Boot[[1]], prob = alpha)
   ## FIGARCH
-  inVaR2_FI[,i] = qdist(distribution = "sstd", alpha[1], mu = 0, sigma = as.vector(sigma(FIGARCH_fit)), skew = coef(FIGARCH_fit)["skew"], shape = coef(FIGARCH_fit)["shape"])
-  inVaR5_FI[,i] = qdist(distribution = "sstd", alpha[2], mu = 0, sigma = as.vector(sigma(FIGARCH_fit)), skew = coef(FIGARCH_fit)["skew"], shape = coef(FIGARCH_fit)["shape"])
-  VaR_FI = qdist(distribution = "sstd", alpha, mu = 0, sigma = as.numeric(FIGARCH_fore@forecast$sigmaFor), skew = coef(FIGARCH_fit)["skew"], shape = coef(FIGARCH_fit)["shape"])
+  # inVaR2_FI[,i] = qdist(distribution = "sstd", alpha[1], mu = 0, sigma = as.vector(sigma(FIGARCH_fit)), skew = coef(FIGARCH_fit)["skew"], shape = coef(FIGARCH_fit)["shape"])
+  # inVaR5_FI[,i] = qdist(distribution = "sstd", alpha[2], mu = 0, sigma = as.vector(sigma(FIGARCH_fit)), skew = coef(FIGARCH_fit)["skew"], shape = coef(FIGARCH_fit)["shape"])
+  # VaR_FI = qdist(distribution = "sstd", alpha, mu = 0, sigma = as.numeric(FIGARCH_fore@forecast$sigmaFor), skew = coef(FIGARCH_fit)["skew"], shape = coef(FIGARCH_fit)["shape"])
   ## NGARCH
-  inVaR2_NG[,i] = qdist(distribution = "sstd", alpha[1], mu = 0, sigma = as.vector(sigma(NGARCH_fit)), skew = coef(NGARCH_fit)["skew"], shape = coef(NGARCH_fit)["shape"])
-  inVaR5_NG[,i] = qdist(distribution = "sstd", alpha[2], mu = 0, sigma = as.vector(sigma(NGARCH_fit)), skew = coef(NGARCH_fit)["skew"], shape = coef(NGARCH_fit)["shape"])
-  VaR_NG = qdist(distribution = "sstd", alpha, mu = 0, sigma = as.numeric(NGARCH_fore@forecast$sigmaFor), skew = coef(NGARCH_fit)["skew"], shape = coef(NGARCH_fit)["shape"])
+  # inVaR2_NG[,i] = qdist(distribution = "sstd", alpha[1], mu = 0, sigma = as.vector(sigma(NGARCH_fit)), skew = coef(NGARCH_fit)["skew"], shape = coef(NGARCH_fit)["shape"])
+  # inVaR5_NG[,i] = qdist(distribution = "sstd", alpha[2], mu = 0, sigma = as.vector(sigma(NGARCH_fit)), skew = coef(NGARCH_fit)["skew"], shape = coef(NGARCH_fit)["shape"])
+  # VaR_NG = qdist(distribution = "sstd", alpha, mu = 0, sigma = as.numeric(NGARCH_fore@forecast$sigmaFor), skew = coef(NGARCH_fit)["skew"], shape = coef(NGARCH_fit)["shape"])
   ## GARCH
-  inVaR2_GARCH[,i] = qdist(distribution = "sstd", alpha[1], mu = 0, sigma = as.vector(sigma(GARCH_fit)), skew = coef(GARCH_fit)["skew"], shape = coef(GARCH_fit)["shape"])
-  inVaR5_GARCH[,i] = qdist(distribution = "sstd", alpha[2], mu = 0, sigma = as.vector(sigma(GARCH_fit)), skew = coef(GARCH_fit)["skew"], shape = coef(GARCH_fit)["shape"])
-  VaR_GARCH = qdist(distribution = "sstd", alpha, mu = 0, sigma = as.numeric(GARCH_fore@forecast$sigmaFor), skew = coef(GARCH_fit)["skew"], shape = coef(GARCH_fit)["shape"])
+  # inVaR2_GARCH[,i] = qdist(distribution = "sstd", alpha[1], mu = 0, sigma = as.vector(sigma(GARCH_fit)), skew = coef(GARCH_fit)["skew"], shape = coef(GARCH_fit)["shape"])
+  # inVaR5_GARCH[,i] = qdist(distribution = "sstd", alpha[2], mu = 0, sigma = as.vector(sigma(GARCH_fit)), skew = coef(GARCH_fit)["skew"], shape = coef(GARCH_fit)["shape"])
+  # VaR_GARCH = qdist(distribution = "sstd", alpha, mu = 0, sigma = as.numeric(GARCH_fore@forecast$sigmaFor), skew = coef(GARCH_fit)["skew"], shape = coef(GARCH_fit)["shape"])
   ## GJR
-  inVaR2_GJR[,i] = qdist(distribution = "sstd", alpha[1], mu = 0, sigma = as.vector(sigma(GJR_fit)), skew = coef(GJR_fit)["skew"], shape = coef(GJR_fit)["shape"])
-  inVaR5_GJR[,i] = qdist(distribution = "sstd", alpha[2], mu = 0, sigma = as.vector(sigma(GJR_fit)), skew = coef(GJR_fit)["skew"], shape = coef(GJR_fit)["shape"])
-  VaR_GJR = qdist(distribution = "sstd", alpha, mu = 0, sigma = as.numeric(GJR_fore@forecast$sigmaFor), skew = coef(GJR_fit)["skew"], shape = coef(GJR_fit)["shape"])
+  # inVaR2_GJR[,i] = qdist(distribution = "sstd", alpha[1], mu = 0, sigma = as.vector(sigma(GJR_fit)), skew = coef(GJR_fit)["skew"], shape = coef(GJR_fit)["shape"])
+  # inVaR5_GJR[,i] = qdist(distribution = "sstd", alpha[2], mu = 0, sigma = as.vector(sigma(GJR_fit)), skew = coef(GJR_fit)["skew"], shape = coef(GJR_fit)["shape"])
+  # VaR_GJR = qdist(distribution = "sstd", alpha, mu = 0, sigma = as.numeric(GJR_fore@forecast$sigmaFor), skew = coef(GJR_fit)["skew"], shape = coef(GJR_fit)["shape"])
   ## Quantile Methods
   caviar2 = CAViaR_reg(dailyreturns, risklevel = alpha[1], type = "sym_abs", par_ini = caviar2[[2]])
   caviar5 = CAViaR_reg(dailyreturns, risklevel = alpha[2], type = "sym_abs", par_ini = caviar5[[2]])
@@ -168,65 +168,70 @@ for (i in 1:OoS) {
   inVaR2_CAViaRALD[,i] = caviar_ald2[[1]][1:InS,1]
   inVaR5_CAViaRALD[,i] = caviar_ald5[[1]][1:InS,1]
   
-  VaR[i,1:(length(alpha)*nmodels)] = c(VaR_GARCH, VaR_GJR, tail(insampleGAS_VaR,1), risk$VaR, BootVaR, VaR_FI, VaR_NG, 
-                                       caviar2[[1]][InS + 1,1], caviar5[[1]][InS + 1,1], 
-                                       caviar_evt2[[1]][InS + 1,1], caviar_evt5[[1]][InS + 1,1],
-                                       caviar_ald2[[1]][InS + 1,1], caviar_ald5[[1]][InS + 1,1])
+  # VaR[i,1:(length(alpha)*nmodels)] = c(VaR_GARCH, VaR_GJR, tail(insampleGAS_VaR,1), risk$VaR, BootVaR, VaR_FI, VaR_NG, 
+  #                                      caviar2[[1]][InS + 1,1], caviar5[[1]][InS + 1,1], 
+  #                                      caviar_evt2[[1]][InS + 1,1], caviar_evt5[[1]][InS + 1,1],
+  #                                      caviar_ald2[[1]][InS + 1,1], caviar_ald5[[1]][InS + 1,1])
+  
+  VaR[i,15:20] = c(caviar2[[1]][InS + 1,1], caviar5[[1]][InS + 1,1], 
+                   caviar_evt2[[1]][InS + 1,1], caviar_evt5[[1]][InS + 1,1],
+                   caviar_ald2[[1]][InS + 1,1], caviar_ald5[[1]][InS + 1,1])
+  
   # Computing ES
   ## FIGARCH
-  f_FI = function(x, sigma_) x*ddist(distribution = "sstd", y = x, 
-                           mu = 0, sigma = sigma_, skew = coef(FIGARCH_fit)["skew"],
-                           shape = coef(FIGARCH_fit)["shape"])
-  ES_FI = c(integrate(f_FI, -Inf, VaR_FI[1], sigma_ = as.numeric(FIGARCH_fore@forecast$sigmaFor))$value/0.025, 
-            integrate(f_FI, -Inf, VaR_FI[2], sigma_ = as.numeric(FIGARCH_fore@forecast$sigmaFor))$value/0.050)  
-  for (j in 1:InS) {
-    inES2_FI[j,i] = integrate(f_FI, -Inf, inVaR2_FI[j,i], sigma_ = vol_FI[j,i])$value/0.025
-    inES5_FI[j,i] = integrate(f_FI, -Inf, inVaR5_FI[j,i], sigma_ = vol_FI[j,i])$value/0.050
-  }
+  # f_FI = function(x, sigma_) x*ddist(distribution = "sstd", y = x, 
+  #                          mu = 0, sigma = sigma_, skew = coef(FIGARCH_fit)["skew"],
+  #                          shape = coef(FIGARCH_fit)["shape"])
+  # ES_FI = c(integrate(f_FI, -Inf, VaR_FI[1], sigma_ = as.numeric(FIGARCH_fore@forecast$sigmaFor))$value/0.025, 
+  #           integrate(f_FI, -Inf, VaR_FI[2], sigma_ = as.numeric(FIGARCH_fore@forecast$sigmaFor))$value/0.050)  
+  # for (j in 1:InS) {
+  #   inES2_FI[j,i] = integrate(f_FI, -Inf, inVaR2_FI[j,i], sigma_ = vol_FI[j,i])$value/0.025
+  #   inES5_FI[j,i] = integrate(f_FI, -Inf, inVaR5_FI[j,i], sigma_ = vol_FI[j,i])$value/0.050
+  # }
   ## NGARCH
-  f_NG = function(x, sigma_) x*ddist(distribution = "sstd", y = x, 
-                           mu = 0, sigma = sigma_, skew = coef(NGARCH_fit)["skew"],
-                           shape = coef(NGARCH_fit)["shape"])
-  ES_NG = c(integrate(f_NG, -Inf, VaR_NG[1], sigma_ = as.numeric(NGARCH_fore@forecast$sigmaFor))$value/0.025, 
-            integrate(f_NG, -Inf, VaR_NG[2], sigma_ = as.numeric(NGARCH_fore@forecast$sigmaFor))$value/0.050)  
-  for (j in 1:InS) {
-    inES2_NG[j,i] = integrate(f_NG, -Inf, inVaR2_NG[j,i], sigma_ = vol_NG[j,i])$value/0.025
-    inES5_NG[j,i] = integrate(f_NG, -Inf, inVaR5_NG[j,i], sigma_ = vol_NG[j,i])$value/0.050
-  }
+  # f_NG = function(x, sigma_) x*ddist(distribution = "sstd", y = x, 
+  #                          mu = 0, sigma = sigma_, skew = coef(NGARCH_fit)["skew"],
+  #                          shape = coef(NGARCH_fit)["shape"])
+  # ES_NG = c(integrate(f_NG, -Inf, VaR_NG[1], sigma_ = as.numeric(NGARCH_fore@forecast$sigmaFor))$value/0.025, 
+  #           integrate(f_NG, -Inf, VaR_NG[2], sigma_ = as.numeric(NGARCH_fore@forecast$sigmaFor))$value/0.050)  
+  # for (j in 1:InS) {
+  #   inES2_NG[j,i] = integrate(f_NG, -Inf, inVaR2_NG[j,i], sigma_ = vol_NG[j,i])$value/0.025
+  #   inES5_NG[j,i] = integrate(f_NG, -Inf, inVaR5_NG[j,i], sigma_ = vol_NG[j,i])$value/0.050
+  # }
   ## GARCH
-  f_GARCH = function(x, sigma_) x*ddist(distribution = "sstd", y = x, 
-                                     mu = 0, sigma = sigma_, skew = coef(GARCH_fit)["skew"],
-                                     shape = coef(GARCH_fit)["shape"])
-  ES_GARCH = c(integrate(f_GARCH, -Inf, VaR_GARCH[1], sigma_ = as.numeric(GARCH_fore@forecast$sigmaFor))$value/0.025, 
-            integrate(f_GARCH, -Inf, VaR_GARCH[2], sigma_ = as.numeric(GARCH_fore@forecast$sigmaFor))$value/0.050)  
-  for (j in 1:InS) {
-    inES2_GARCH[j,i] = integrate(f_GARCH, -Inf, inVaR2_GARCH[j,i], sigma_ = vol_GARCH[j,i])$value/0.025
-    inES5_GARCH[j,i] = integrate(f_GARCH, -Inf, inVaR5_GARCH[j,i], sigma_ = vol_GARCH[j,i])$value/0.050
-  }
+  # f_GARCH = function(x, sigma_) x*ddist(distribution = "sstd", y = x, 
+  #                                    mu = 0, sigma = sigma_, skew = coef(GARCH_fit)["skew"],
+  #                                    shape = coef(GARCH_fit)["shape"])
+  # ES_GARCH = c(integrate(f_GARCH, -Inf, VaR_GARCH[1], sigma_ = as.numeric(GARCH_fore@forecast$sigmaFor))$value/0.025, 
+  #           integrate(f_GARCH, -Inf, VaR_GARCH[2], sigma_ = as.numeric(GARCH_fore@forecast$sigmaFor))$value/0.050)  
+  # for (j in 1:InS) {
+  #   inES2_GARCH[j,i] = integrate(f_GARCH, -Inf, inVaR2_GARCH[j,i], sigma_ = vol_GARCH[j,i])$value/0.025
+  #   inES5_GARCH[j,i] = integrate(f_GARCH, -Inf, inVaR5_GARCH[j,i], sigma_ = vol_GARCH[j,i])$value/0.050
+  # }
   ## GJR
-  f_GJR = function(x, sigma_) x*ddist(distribution = "sstd", y = x, 
-                                        mu = 0, sigma = sigma_, skew = coef(GJR_fit)["skew"],
-                                        shape = coef(GJR_fit)["shape"])
-  ES_GJR = c(integrate(f_GJR, -Inf, VaR_GJR[1], sigma_ = as.numeric(GJR_fore@forecast$sigmaFor))$value/0.025, 
-               integrate(f_GJR, -Inf, VaR_GJR[2], sigma_ = as.numeric(GJR_fore@forecast$sigmaFor))$value/0.050)  
-  for (j in 1:InS) {
-    inES2_GJR[j,i] = integrate(f_GJR, -Inf, inVaR2_GJR[j,i], sigma_ = vol_GJR[j,i])$value/0.025
-    inES5_GJR[j,i] = integrate(f_GJR, -Inf, inVaR5_GJR[j,i], sigma_ = vol_GJR[j,i])$value/0.050
-  }
-  ## Bootstrap 
-  BootES = c(mean(Boot[[1]][Boot[[1]] <= BootVaR[1]]),
-             mean(Boot[[1]][Boot[[1]] <= BootVaR[2]]))
-  for (j in 1:InS) {
-    inES2_Boot[j,i] = mean(Boot[[3]][j,][Boot[[3]][j,] <= inVaR2_Boot[j,i]])
-    inES5_Boot[j,i] = mean(Boot[[3]][j,][Boot[[3]][j,] <= inVaR5_Boot[j,i]])
-  }
+  # f_GJR = function(x, sigma_) x*ddist(distribution = "sstd", y = x, 
+  #                                       mu = 0, sigma = sigma_, skew = coef(GJR_fit)["skew"],
+  #                                       shape = coef(GJR_fit)["shape"])
+  # ES_GJR = c(integrate(f_GJR, -Inf, VaR_GJR[1], sigma_ = as.numeric(GJR_fore@forecast$sigmaFor))$value/0.025, 
+  #              integrate(f_GJR, -Inf, VaR_GJR[2], sigma_ = as.numeric(GJR_fore@forecast$sigmaFor))$value/0.050)  
+  # for (j in 1:InS) {
+  #   inES2_GJR[j,i] = integrate(f_GJR, -Inf, inVaR2_GJR[j,i], sigma_ = vol_GJR[j,i])$value/0.025
+  #   inES5_GJR[j,i] = integrate(f_GJR, -Inf, inVaR5_GJR[j,i], sigma_ = vol_GJR[j,i])$value/0.050
+  # }
+  # ## Bootstrap 
+  # BootES = c(mean(Boot[[1]][Boot[[1]] <= BootVaR[1]]),
+  #            mean(Boot[[1]][Boot[[1]] <= BootVaR[2]]))
+  # for (j in 1:InS) {
+  #   inES2_Boot[j,i] = mean(Boot[[3]][j,][Boot[[3]][j,] <= inVaR2_Boot[j,i]])
+  #   inES5_Boot[j,i] = mean(Boot[[3]][j,][Boot[[3]][j,] <= inVaR5_Boot[j,i]])
+  # }
   ## GAS
-  insampleGAS_ES = ES(GAS_fit,probs = alpha)
-  inES2_GAS[,i] = insampleGAS_ES[1:InS,1]
-  inES5_GAS[,i] = insampleGAS_ES[1:InS,2]
+  # insampleGAS_ES = ES(GAS_fit,probs = alpha)
+  # inES2_GAS[,i] = insampleGAS_ES[1:InS,1]
+  # inES5_GAS[,i] = insampleGAS_ES[1:InS,2]
   ## MSGARCH
-  inES2_MS[,i] = insampleRisk$ES[,1]
-  inES5_MS[,i] = insampleRisk$ES[,2]
+  # inES2_MS[,i] = insampleRisk$ES[,1]
+  # inES5_MS[,i] = insampleRisk$ES[,2]
   ## Quantile methods
   inES2_CAViaR[,i] = caviar2[[1]][1:InS,2]
   inES5_CAViaR[,i] = caviar5[[1]][1:InS,2]
@@ -236,10 +241,14 @@ for (i in 1:OoS) {
   inES5_CAViaRALD[,i] = caviar_ald5[[1]][1:InS,2]
   
 
-  ES[i,] = c(ES_GARCH, ES_GJR, tail(insampleGAS_ES,1), risk$ES, BootES, ES_FI, ES_NG,
-             caviar2[[1]][InS + 1,2], caviar5[[1]][InS + 1,2],
-             caviar_evt2[[1]][InS + 1,2], caviar_evt5[[1]][InS + 1,2],
-             caviar_ald2[[1]][InS + 1,2], caviar_ald5[[1]][InS + 1,2])
+  # ES[i,] = c(ES_GARCH, ES_GJR, tail(insampleGAS_ES,1), risk$ES, BootES, ES_FI, ES_NG,
+  #            caviar2[[1]][InS + 1,2], caviar5[[1]][InS + 1,2],
+  #            caviar_evt2[[1]][InS + 1,2], caviar_evt5[[1]][InS + 1,2],
+  #            caviar_ald2[[1]][InS + 1,2], caviar_ald5[[1]][InS + 1,2])
+  
+  ES[i,15:20] = c(caviar2[[1]][InS + 1,2], caviar5[[1]][InS + 1,2],
+                  caviar_evt2[[1]][InS + 1,2], caviar_evt5[[1]][InS + 1,2],
+                  caviar_ald2[[1]][InS + 1,2], caviar_ald5[[1]][InS + 1,2])
 }
 
 # Creating subdirectory
@@ -251,51 +260,51 @@ if (dir.exists(crytocurrency)) {
 }
 
 # Saving Oos VaR and ES
-write.csv(VaR, paste0(crytocurrency,"VaR.csv"))
-write.csv(ES, paste0(crytocurrency,"ES.csv"))
-write.csv(see_ar, paste0(crytocurrency,"see_ar.csv"))
+write.csv(VaR, paste0(crytocurrency,"VaR_CAViaRs.csv"))
+write.csv(ES, paste0(crytocurrency,"ES_CAViaRs.csv"))
+#write.csv(see_ar, paste0(crytocurrency,"see_ar.csv"))
 
 # Saving InS VaR and ES MSGARCH
-write.csv(inVaR2_MS, paste0(crytocurrency,"inVaR2_MS.csv"))
-write.csv(inVaR5_MS, paste0(crytocurrency,"inVaR5_MS.csv"))
-write.csv(inES2_MS, paste0(crytocurrency,"inES2_MS.csv"))
-write.csv(inES5_MS, paste0(crytocurrency,"inES5_MS.csv"))
+# write.csv(inVaR2_MS, paste0(crytocurrency,"inVaR2_MS.csv"))
+# write.csv(inVaR5_MS, paste0(crytocurrency,"inVaR5_MS.csv"))
+# write.csv(inES2_MS, paste0(crytocurrency,"inES2_MS.csv"))
+# write.csv(inES5_MS, paste0(crytocurrency,"inES5_MS.csv"))
 
 # Saving InS VaR and ES GAS
-write.csv(inVaR2_GAS, paste0(crytocurrency,"inVaR2_GAS.csv"))
-write.csv(inVaR5_GAS, paste0(crytocurrency,"inVaR5_GAS.csv"))
-write.csv(inES2_GAS, paste0(crytocurrency,"inES2_GAS.csv"))
-write.csv(inES5_GAS, paste0(crytocurrency,"inES5_GAS.csv"))
+# write.csv(inVaR2_GAS, paste0(crytocurrency,"inVaR2_GAS.csv"))
+# write.csv(inVaR5_GAS, paste0(crytocurrency,"inVaR5_GAS.csv"))
+# write.csv(inES2_GAS, paste0(crytocurrency,"inES2_GAS.csv"))
+# write.csv(inES5_GAS, paste0(crytocurrency,"inES5_GAS.csv"))
 
 # Saving InS VaR and ES Bootstrap
-write.csv(inVaR2_Boot, paste0(crytocurrency,"inVaR2_Boot.csv"))
-write.csv(inVaR5_Boot, paste0(crytocurrency,"inVaR5_Boot.csv"))
-write.csv(inES2_Boot, paste0(crytocurrency,"inES2_Boot.csv"))
-write.csv(inES5_Boot, paste0(crytocurrency,"inES5_Boot.csv"))
+# write.csv(inVaR2_Boot, paste0(crytocurrency,"inVaR2_Boot.csv"))
+# write.csv(inVaR5_Boot, paste0(crytocurrency,"inVaR5_Boot.csv"))
+# write.csv(inES2_Boot, paste0(crytocurrency,"inES2_Boot.csv"))
+# write.csv(inES5_Boot, paste0(crytocurrency,"inES5_Boot.csv"))
 
 # Saving InS VaR and ES FIGARCH
-write.csv(inVaR2_FI, paste0(crytocurrency,"inVaR2_FI.csv"))
-write.csv(inVaR5_FI, paste0(crytocurrency,"inVaR5_FI.csv"))
-write.csv(inES2_FI, paste0(crytocurrency,"inES2_FI.csv"))
-write.csv(inES5_FI, paste0(crytocurrency,"inES5_FI.csv"))
+# write.csv(inVaR2_FI, paste0(crytocurrency,"inVaR2_FI.csv"))
+# write.csv(inVaR5_FI, paste0(crytocurrency,"inVaR5_FI.csv"))
+# write.csv(inES2_FI, paste0(crytocurrency,"inES2_FI.csv"))
+# write.csv(inES5_FI, paste0(crytocurrency,"inES5_FI.csv"))
 
 # Saving InS VaR and ES NGARCH
-write.csv(inVaR2_NG, paste0(crytocurrency,"inVaR2_NG.csv"))
-write.csv(inVaR5_NG, paste0(crytocurrency,"inVaR5_NG.csv"))
-write.csv(inES2_NG, paste0(crytocurrency,"inES2_NG.csv"))
-write.csv(inES5_NG, paste0(crytocurrency,"inES5_NG.csv"))
+# write.csv(inVaR2_NG, paste0(crytocurrency,"inVaR2_NG.csv"))
+# write.csv(inVaR5_NG, paste0(crytocurrency,"inVaR5_NG.csv"))
+# write.csv(inES2_NG, paste0(crytocurrency,"inES2_NG.csv"))
+# write.csv(inES5_NG, paste0(crytocurrency,"inES5_NG.csv"))
 
 # Saving InS VaR and ES GARCH
-write.csv(inVaR2_GARCH, paste0(crytocurrency,"inVaR2_GARCH.csv"))
-write.csv(inVaR5_GARCH, paste0(crytocurrency,"inVaR5_GARCH.csv"))
-write.csv(inES2_GARCH, paste0(crytocurrency,"inES2_GARCH.csv"))
-write.csv(inES5_GARCH, paste0(crytocurrency,"inES5_GARCH.csv"))
+# write.csv(inVaR2_GARCH, paste0(crytocurrency,"inVaR2_GARCH.csv"))
+# write.csv(inVaR5_GARCH, paste0(crytocurrency,"inVaR5_GARCH.csv"))
+# write.csv(inES2_GARCH, paste0(crytocurrency,"inES2_GARCH.csv"))
+# write.csv(inES5_GARCH, paste0(crytocurrency,"inES5_GARCH.csv"))
 
 # Saving InS VaR and ES GJR
-write.csv(inVaR2_GJR, paste0(crytocurrency,"inVaR2_GJR.csv"))
-write.csv(inVaR5_GJR, paste0(crytocurrency,"inVaR5_GJR.csv"))
-write.csv(inES2_GJR, paste0(crytocurrency,"inES2_GJR.csv"))
-write.csv(inES5_GJR, paste0(crytocurrency,"inES5_GJR.csv"))
+# write.csv(inVaR2_GJR, paste0(crytocurrency,"inVaR2_GJR.csv"))
+# write.csv(inVaR5_GJR, paste0(crytocurrency,"inVaR5_GJR.csv"))
+# write.csv(inES2_GJR, paste0(crytocurrency,"inES2_GJR.csv"))
+# write.csv(inES5_GJR, paste0(crytocurrency,"inES5_GJR.csv"))
 
 # Saving InS VaR and ES Quantile methods
 write.csv(inVaR2_CAViaR, paste0(crytocurrency,"inVaR2_CAViaR.csv"))

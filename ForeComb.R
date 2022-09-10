@@ -16,8 +16,8 @@ sourceCpp("scoring_functions.cpp")
 source("Optimizations.R")
 
 #cryptocurrency = "/Volumes/CTRUCIOS_SD/ForecastCombinationCrypto/Codes/Resultados/BTC"
-cryptocurrency =  "./ETH" # "./ETH"  # Options are "./BTC", "./ETH" and "./LTC"
-end_date = "2021-12-22"
+cryptocurrency =  "./BTC" # "./ETH"  # Options are "./BTC", "./ETH" and "./LTC"
+end_date = "2022-07-23"
 
 if (str_sub(cryptocurrency , -3, -1)   == "BTC") {
   crypto = read.csv("./Data/BTCUSDT-1d-data.csv") %>% 
@@ -125,7 +125,7 @@ for (j in 1:3) {
   if (j == 2) S_ = NZ
   if (j == 3) S_ = AL
 
-  # Initial values RSC
+  # Initial values RSCs
   lini2 = 0.000001
   lini5 = 0.000001
   # Initial values MSC
@@ -133,6 +133,7 @@ for (j in 1:3) {
   omegaini5 = rep(rep(1/M,M),2)  
 
     for (i in 1:OoS) {
+      print(i)
       #### RSC  
       lambda2 = RSC_opt(parini = lini2, 
                         VaR = cbind(inVaR2_GARCH[,i], inVaR2_GJR[,i], inVaR2_GAS[,i],inVaR2_MS[,i], inVaR2_Boot[,i],inVaR2_FI[,i], inVaR2_NG[,i],
@@ -183,7 +184,7 @@ for (j in 1:3) {
       omegaini2 = omega2MSC[i,]
       omegaini5 = omega5MSC[i,]
       VaR_MSC[i,] = c(VaR2[i,] %*% omega2MSC[i,1:M],VaR5[i,] %*% omega5MSC[i,1:M])
-      ES_MSC[i,] = c(ES2[i,] %*% omega2MSC[i,(M + 1):(2*M)],ES5[i,] %*% omega5MSC[i,(M+1):(2*M)])  
+      ES_MSC[i,] = c(ES2[i,] %*% omega2MSC[i,(M + 1):(2*M)],ES5[i,] %*% omega5MSC[i,(M + 1):(2*M)])  
     }
   
   # Once we compute the combining estimators, we save the results

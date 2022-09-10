@@ -53,3 +53,40 @@ SEXP ALD_grid(arma::vec caviar_params, arma::vec r, double risklevel, double typ
 
 
 
+
+// [[Rcpp::depends(RcppArmadillo)]]
+// [[Rcpp::export]]
+SEXP CAViaR_loss(arma::vec params, arma::vec r, double risklevel, double type) {
+  Rcpp::Function quantile("quantile");
+  Rcpp::Function max("max");
+  Rcpp::Function min("min");
+  Rcpp::Function abs("abs");
+  Rcpp::Function mean("mean");
+  int n = r.size();
+  arma::vec Qu(n);
+  arma::vec aux(n-1);
+
+  Qu[0] = Rcpp::as<double>(quantile(r, risklevel));
+  if (type == 1) {
+    for (int i=1; i < n; i++) {
+      Qu[i] = params[0] + params[1]*Qu[i - 1] + params[2]*Rcpp::as<double>(max(r[i - 1], 0)) + params[3]*Rcpp::as<double>(min(r[i - 1], 0));
+      if (r[i] < Qu[i]) {
+        aux[i-1] = (risklevel - 1)*(r[i] - Qu[i]);
+      } else {
+        aux[i-1] = risklevel*(r[i] - Qu[i]);
+      }
+    }
+  } else {
+    for (int i=1; i < n; i++) {
+      Qu[i] = params[0] + params[1]*Qu[i - 1] + params[2]*Rcpp::as<double>(abs(r[i - 1]));
+      if (r[i] < Qu[i]) {
+        aux[i-1] = (risklevel - 1)*(r[i] - Qu[i]);
+      } else {
+        aux[i-1] = risklevel*(r[i] - Qu[i]);
+      }
+    }
+  }
+  return Rcpp::wrap(Rcpp::as<double>(mean(aux)));
+}
+
+
