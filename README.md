@@ -16,7 +16,7 @@ Daily BTC and ETH prices were downloaded from Binance and are in the Data folder
 
 ### Auxiliary functions:
 
-- `Optimizations.R`: Used in `ForeComb.R` and `Comparison.R` codes. Optimizations.R, implements the scoring functions used and the optimization weights routines.
+- `Optimizations.R`: Used in `ForeComb.R` and `Comparison.R` codes. Implements the scoring functions used and the optimization weights routines.
 - `scoring_functions.cpp`: Implements the scoring functions in C++.
 - `Function_VaR_VQR.R`: Implements the VQR backtesting of Gaglianone et al. (2011).
 - `CAViaR.R` and `CAViaR.cpp`: implements the CAViaR, CAViaREVT and CAViaRALD methods.
