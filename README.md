@@ -23,7 +23,7 @@ Daily BTC and ETH prices were downloaded from Binance and are in the Data folder
 - `DescriptiveStatistics.R`: Table 1 and Figure 1 of the paper.
 - `GiacominiRossiTest.R`: Fluctuation test of Giacomini and Rossi (2010)
 
-The routines should be performed in the following ordering:
+The routines should be used as follows:
 
 1. `VaR_ES.R`
 2. `ForeComb.R`
