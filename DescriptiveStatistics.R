@@ -8,7 +8,6 @@
 ################################################################################## 
 library(tidyverse)
 library(qrmtools)
-library(robts)
 
 # If robust autocorrelations are desired, use:
 # bacf <- acfrob(x, plot = FALSE, 50, approach = "RA")$acf  
@@ -108,9 +107,10 @@ p2_1 <- ggplot(data=bacfdf[-1,], mapping=aes(x=lag, y=acf)) +
   geom_bar(stat = "identity", position = "identity", fill = "green4") + ylab("Bitcoin")+ 
   ylim(c(-0.15,0.15))+
   geom_line(aes(y = -1.96*band, x = 1:50)) +
-  geom_line(aes(y = -1.96/sqrt(n), x = 1:50)) +
-  geom_line(aes(y = 1.96/sqrt(n), x = 1:50)) +
-  geom_line(aes(y = 1.96*band, x = 1:50)) + theme_bw() + 
+  geom_line(aes(y = -1.96/sqrt(n), x = 1:50), linetype = "dotted") +
+  geom_line(aes(y = 1.96/sqrt(n), x = 1:50), linetype = "dotted") +
+  geom_line(aes(y = 1.96*band, x = 1:50)) + 
+  theme_bw() + 
   theme(legend.position = "none")
 
 x = ETH$ETH
@@ -130,9 +130,10 @@ p2_2 <- ggplot(data=bacfdf[-1,], mapping=aes(x=lag, y=acf)) +
   geom_bar(stat = "identity", position = "identity", fill = "green4") + ylab("Ethereum")+ 
   ylim(c(-0.15,0.15))+
   geom_line(aes(y = -1.96*band, x = 1:50)) +
-  geom_line(aes(y = -1.96/sqrt(n), x = 1:50)) +
-  geom_line(aes(y = 1.96/sqrt(n), x = 1:50)) +
-  geom_line(aes(y = 1.96*band, x = 1:50)) + theme_bw() + 
+  geom_line(aes(y = -1.96/sqrt(n), x = 1:50), linetype = "dotted") +
+  geom_line(aes(y = 1.96/sqrt(n), x = 1:50), linetype = "dotted") +
+  geom_line(aes(y = 1.96*band, x = 1:50)) + 
+  theme_bw() + 
   theme(legend.position = "none")
 }
 

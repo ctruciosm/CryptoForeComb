@@ -16,7 +16,7 @@ sourceCpp("scoring_functions.cpp")
 source("Optimizations.R")
 
 #cryptocurrency = "/Volumes/CTRUCIOS_SD/ForecastCombinationCrypto/Codes/Resultados/BTC"
-cryptocurrency =  "./BTC" # "./ETH"  # Options are "./BTC", "./ETH" and "./LTC"
+cryptocurrency =  "./ETH" # "./ETH"  # Options are "./BTC", "./ETH" and "./LTC"
 end_date = "2022-07-23"
 
 if (str_sub(cryptocurrency , -3, -1)   == "BTC") {

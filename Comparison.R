@@ -7,7 +7,6 @@
 #### Assessment procedures' performance
 #### This code produces the comparison Tables in the paper
 ################################################################################## 
-
 VaR_ES_full = function(risklevel, rl){
   mu = read.csv("VaR.csv")[,"mu"]
   VaR = as.matrix(read.csv("VaR.csv")[,-1]) + mu
@@ -69,8 +68,8 @@ p = 0.05
 pMCS = 0.05
 mu_ = 0.2
 end_date = "2022-07-23"
-MCS_type = "t.range"
-block_length =  12
+MCS_type = "t.max"
+block_length =  21
 out_of_sample = 800
 
 a2 = 0.025; a5 = 0.050; 
@@ -127,47 +126,47 @@ if (str_sub(getwd(), -3, -1) == "ETH") {
 # Including Basic Combining Strategies
 ### Mean
 VaRBTC2$AVG = apply(VaRBTC2[,1:n_ind],1,mean)
-#VaRETH2$AVG = apply(VaRETH2[,1:n_ind],1,mean)
+VaRETH2$AVG = apply(VaRETH2[,1:n_ind],1,mean)
 ESBTC2$AVG = apply(ESBTC2[,1:n_ind],1,mean)
-#ESETH2$AVG = apply(ESETH2[,1:n_ind],1,mean)
+ESETH2$AVG = apply(ESETH2[,1:n_ind],1,mean)
 
 VaRBTC5$AVG = apply(VaRBTC5[,1:n_ind],1,mean)
-#VaRETH5$AVG = apply(VaRETH5[,1:n_ind],1,mean)
+VaRETH5$AVG = apply(VaRETH5[,1:n_ind],1,mean)
 ESBTC5$AVG = apply(ESBTC5[,1:n_ind],1,mean)
-#ESETH5$AVG = apply(ESETH5[,1:n_ind],1,mean)
+ESETH5$AVG = apply(ESETH5[,1:n_ind],1,mean)
 
 ### Median
 VaRBTC2$MED = apply(VaRBTC2[,1:n_ind],1,median)
-#VaRETH2$MED = apply(VaRETH2[,1:n_ind],1,median)
+VaRETH2$MED = apply(VaRETH2[,1:n_ind],1,median)
 ESBTC2$MED = apply(ESBTC2[,1:n_ind],1,median)
-#ESETH2$MED = apply(ESETH2[,1:n_ind],1,median)
+ESETH2$MED = apply(ESETH2[,1:n_ind],1,median)
 
 VaRBTC5$MED = apply(VaRBTC5[,1:n_ind],1,median)
-#VaRETH5$MED = apply(VaRETH5[,1:n_ind],1,median)
+VaRETH5$MED = apply(VaRETH5[,1:n_ind],1,median)
 ESBTC5$MED = apply(ESBTC5[,1:n_ind],1,median)
-#ESETH5$MED = apply(ESETH5[,1:n_ind],1,median)
+ESETH5$MED = apply(ESETH5[,1:n_ind],1,median)
 
 ### Min
 VaRBTC2$MIN = apply(VaRBTC2[,1:n_ind],1,min)
-#VaRETH2$MIN = apply(VaRETH2[,1:n_ind],1,min)
+VaRETH2$MIN = apply(VaRETH2[,1:n_ind],1,min)
 ESBTC2$MIN = apply(ESBTC2[,1:n_ind],1,min)
-#ESETH2$MIN = apply(ESETH2[,1:n_ind],1,min)
+ESETH2$MIN = apply(ESETH2[,1:n_ind],1,min)
 
 VaRBTC5$MIN = apply(VaRBTC5[,1:n_ind],1,min)
-#VaRETH5$MIN = apply(VaRETH5[,1:n_ind],1,min)
+VaRETH5$MIN = apply(VaRETH5[,1:n_ind],1,min)
 ESBTC5$MIN = apply(ESBTC5[,1:n_ind],1,min)
-#ESETH5$MIN = apply(ESETH5[,1:n_ind],1,min)
+ESETH5$MIN = apply(ESETH5[,1:n_ind],1,min)
 
 ### Max
 VaRBTC2$MAX = apply(VaRBTC2[,1:n_ind],1,max)
-#VaRETH2$MAX = apply(VaRETH2[,1:n_ind],1,max)
+VaRETH2$MAX = apply(VaRETH2[,1:n_ind],1,max)
 ESBTC2$MAX = apply(ESBTC2[,1:n_ind],1,max)
-#ESETH2$MAX = apply(ESETH2[,1:n_ind],1,max)
+ESETH2$MAX = apply(ESETH2[,1:n_ind],1,max)
 
 VaRBTC5$MAX = apply(VaRBTC5[,1:n_ind],1,max)
-#VaRETH5$MAX = apply(VaRETH5[,1:n_ind],1,max)
+VaRETH5$MAX = apply(VaRETH5[,1:n_ind],1,max)
 ESBTC5$MAX = apply(ESBTC5[,1:n_ind],1,max)
-#ESETH5$MAX = apply(ESETH5[,1:n_ind],1,max)
+ESETH5$MAX = apply(ESETH5[,1:n_ind],1,max)
 
 ###########################################
 # Reordering
@@ -226,13 +225,13 @@ for (i in 1:K) { # each i is a method (individual or combination)
   set.seed(1234) # Only for reproducible porpuses
   BackTBTC2 = BacktestVaR(retBTC, VaRBTC2[,i], alpha = a2, Lags = 4)
   BackTBTC5 = BacktestVaR(retBTC, VaRBTC5[,i], alpha = a5, Lags = 4)
-  #BackTETH2 = BacktestVaR(retETH, VaRETH2[,i], alpha = a2, Lags = 4)
-  #BackTETH5 = BacktestVaR(retETH, VaRETH5[,i], alpha = a5, Lags = 4)
+  BackTETH2 = BacktestVaR(retETH, VaRETH2[,i], alpha = a2, Lags = 4)
+  BackTETH5 = BacktestVaR(retETH, VaRETH5[,i], alpha = a5, Lags = 4)
 
   EBackTBTC2 = ESTest(alpha = a2, retBTC, ESBTC2[,i], VaRBTC2[,i], conf.level = 0.95,  boot = TRUE, n.boot = 5000)
   EBackTBTC5 = ESTest(alpha = a5, retBTC, ESBTC5[,i], VaRBTC5[,i], conf.level = 0.95,  boot = TRUE, n.boot = 5000)
-  #EBackTETH2 = ESTest(alpha = a2, retETH, ESETH2[,i], VaRETH2[,i], conf.level = 0.95,  boot = TRUE, n.boot = 5000)
-  #EBackTETH5 = ESTest(alpha = a5, retETH, ESETH5[,i], VaRETH5[,i], conf.level = 0.95,  boot = TRUE, n.boot = 5000)
+  EBackTETH2 = ESTest(alpha = a2, retETH, ESETH2[,i], VaRETH2[,i], conf.level = 0.95,  boot = TRUE, n.boot = 5000)
+  EBackTETH5 = ESTest(alpha = a5, retETH, ESETH5[,i], VaRETH5[,i], conf.level = 0.95,  boot = TRUE, n.boot = 5000)
 
   BackVaRESBTC2[i,] = c(mean(retBTC < VaRBTC2[,i])*100, 
                        BackTBTC2$LRuc[2], BackTBTC2$LRcc[2],BackTBTC2$DQ$pvalue, VaR_VQR(retBTC, VaRBTC2[,i], a2),
@@ -258,35 +257,36 @@ for (i in 1:K) { # each i is a method (individual or combination)
                         mean(NZ(matrix(VaRBTC5[,i], ncol = 1), matrix(ESBTC5[,i], ncol = 1), retBTC, alpha = a5)),
                         mean(AL(matrix(VaRBTC5[,i], ncol = 1), matrix(ESBTC5[,i], ncol = 1), retBTC, alpha = a5)))
   
-  # BackVaRESETH2[i,] = c(mean(retETH < VaRETH2[,i])*100, 
-  #                      BackTETH2$LRuc[2], BackTETH2$LRcc[2],BackTETH2$DQ$pvalue, VaR_VQR(retETH, VaRETH2[,i], a2),
-  #                      EBackTETH2$boot.p.value,
-  #                      cc_backtest(retETH, VaRETH2[,i], ESETH2[,i], alpha  = a2)$pvalue_twosided_simple, 
-  #                      esr_backtest(retETH, VaRETH2[,i], ESETH2[,i],alpha  = a2, B = 0, version = 1)$pvalue_twosided_asymptotic,
-  #                      esr_backtest(retETH, VaRETH2[,i], ESETH2[,i],alpha  = a2, B = 0, version = 2)$pvalue_twosided_asymptotic,
-  #                      esr_backtest(retETH, VaRETH2[,i], ESETH2[,i],alpha  = a2, B = 0, version = 3)$pvalue_onesided_asymptotic,
-  #                      mean(QL(matrix(VaRETH2[,i], ncol = 1),retETH, alpha = a2)),
-  #                      mean(FZG(matrix(VaRETH2[,i], ncol = 1), matrix(ESETH2[,i], ncol = 1), retETH, alpha = a2)),
-  #                      mean(NZ(matrix(VaRETH2[,i], ncol = 1), matrix(ESETH2[,i], ncol = 1), retETH, alpha = a2)),
-  #                      mean(AL(matrix(VaRETH2[,i], ncol = 1), matrix(ESETH2[,i], ncol = 1), retETH, alpha = a2)))
-  # 
-  # BackVaRESETH5[i,] = c(mean(retETH < VaRETH5[,i])*100, 
-  #                       BackTETH5$LRuc[2], BackTETH5$LRcc[2],BackTETH5$DQ$pvalue, VaR_VQR(retETH, VaRETH5[,i], a5),
-  #                       EBackTETH5$boot.p.value,
-  #                       cc_backtest(retETH, VaRETH5[,i], ESETH5[,i],  alpha  = a5)$pvalue_twosided_simple, 
-  #                       esr_backtest(retETH, VaRETH5[,i], ESETH5[,i],alpha  = a5, B = 0, version = 1)$pvalue_twosided_asymptotic,
-  #                       esr_backtest(retETH, VaRETH5[,i], ESETH5[,i],alpha  = a5, B = 0, version = 2)$pvalue_twosided_asymptotic,
-  #                       esr_backtest(retETH, VaRETH5[,i], ESETH5[,i],alpha  = a5, B = 0, version = 3)$pvalue_onesided_asymptotic,
-  #                       mean(QL(matrix(VaRETH5[,i], ncol = 1),retETH, alpha = a5)),
-  #                       mean(FZG(matrix(VaRETH5[,i], ncol = 1), matrix(ESETH5[,i], ncol = 1), retETH, alpha = a5)),
-  #                       mean(NZ(matrix(VaRETH5[,i], ncol = 1), matrix(ESETH5[,i], ncol = 1), retETH, alpha = a5)),
-  #                       mean(AL(matrix(VaRETH5[,i], ncol = 1), matrix(ESETH5[,i], ncol = 1), retETH, alpha = a5)))
-  # 
+  BackVaRESETH2[i,] = c(mean(retETH < VaRETH2[,i])*100,
+                       BackTETH2$LRuc[2], BackTETH2$LRcc[2],BackTETH2$DQ$pvalue, VaR_VQR(retETH, VaRETH2[,i], a2),
+                       EBackTETH2$boot.p.value,
+                       cc_backtest(retETH, VaRETH2[,i], ESETH2[,i], alpha  = a2)$pvalue_twosided_simple,
+                       esr_backtest(retETH, VaRETH2[,i], ESETH2[,i],alpha  = a2, B = 0, version = 1)$pvalue_twosided_asymptotic,
+                       esr_backtest(retETH, VaRETH2[,i], ESETH2[,i],alpha  = a2, B = 0, version = 2)$pvalue_twosided_asymptotic,
+                       esr_backtest(retETH, VaRETH2[,i], ESETH2[,i],alpha  = a2, B = 0, version = 3)$pvalue_onesided_asymptotic,
+                       mean(QL(matrix(VaRETH2[,i], ncol = 1),retETH, alpha = a2)),
+                       mean(FZG(matrix(VaRETH2[,i], ncol = 1), matrix(ESETH2[,i], ncol = 1), retETH, alpha = a2)),
+                       mean(NZ(matrix(VaRETH2[,i], ncol = 1), matrix(ESETH2[,i], ncol = 1), retETH, alpha = a2)),
+                       mean(AL(matrix(VaRETH2[,i], ncol = 1), matrix(ESETH2[,i], ncol = 1), retETH, alpha = a2)))
+
+  BackVaRESETH5[i,] = c(mean(retETH < VaRETH5[,i])*100,
+                        BackTETH5$LRuc[2], BackTETH5$LRcc[2],BackTETH5$DQ$pvalue, VaR_VQR(retETH, VaRETH5[,i], a5),
+                        EBackTETH5$boot.p.value,
+                        cc_backtest(retETH, VaRETH5[,i], ESETH5[,i],  alpha  = a5)$pvalue_twosided_simple,
+                        esr_backtest(retETH, VaRETH5[,i], ESETH5[,i],alpha  = a5, B = 0, version = 1)$pvalue_twosided_asymptotic,
+                        esr_backtest(retETH, VaRETH5[,i], ESETH5[,i],alpha  = a5, B = 0, version = 2)$pvalue_twosided_asymptotic,
+                        esr_backtest(retETH, VaRETH5[,i], ESETH5[,i],alpha  = a5, B = 0, version = 3)$pvalue_onesided_asymptotic,
+                        mean(QL(matrix(VaRETH5[,i], ncol = 1),retETH, alpha = a5)),
+                        mean(FZG(matrix(VaRETH5[,i], ncol = 1), matrix(ESETH5[,i], ncol = 1), retETH, alpha = a5)),
+                        mean(NZ(matrix(VaRETH5[,i], ncol = 1), matrix(ESETH5[,i], ncol = 1), retETH, alpha = a5)),
+                        mean(AL(matrix(VaRETH5[,i], ncol = 1), matrix(ESETH5[,i], ncol = 1), retETH, alpha = a5)))
+
 }
 
 ###########################################
 #######    Model Confidence Set      ######
 ###########################################
+
 
 MCSBTC_MQL2 = rep(0,ncol(VaRBTC2))
 MQL2 = QL(as.matrix(VaRBTC2),retBTC, alpha = a2)
@@ -343,51 +343,51 @@ MCSBTC_MAL5[auxBTC_MAL5] = 1
 MCSETH_MQL2 = rep(0,ncol(VaRETH2))
 MQL2 = QL(as.matrix(VaRETH2),retETH, alpha = a2)
 colnames(MQL2) = colnames(VaRETH2)
-auxETH_MQL2 = estMCS.quick(MQL2, test=MCS_type, B=5000, l=block_length, alpha = pMCS)
+auxETH_MQL2 = estMCS.quick(MQL2, test = MCS_type, B = 5000, l = block_length, alpha = pMCS)
 MCSETH_MQL2[auxETH_MQL2] = 1
 
 MCSETH_MQL5 = rep(0,ncol(VaRETH5))
 MQL5 = QL(as.matrix(VaRETH5),retETH, alpha = a5)
 colnames(MQL5) = colnames(VaRETH5)
-auxETH_MQL5 = estMCS.quick(MQL5, test=MCS_type, B=5000, l=block_length, alpha = pMCS)
+auxETH_MQL5 = estMCS.quick(MQL5, test = MCS_type, B = 5000, l = block_length, alpha = pMCS)
 MCSETH_MQL5[auxETH_MQL5] = 1
 
 
 MCSETH_MFZG2 = rep(0,ncol(VaRETH2))
 MFZG2 = FZG(as.matrix(VaRETH2), as.matrix(ESETH2), retETH, alpha = a2)
 colnames(MFZG2) = colnames(VaRETH2)
-auxETH_MFZG2 = estMCS.quick(MFZG2, test=MCS_type, B=5000, l=block_length, alpha = pMCS)
+auxETH_MFZG2 = estMCS.quick(MFZG2, test = MCS_type, B = 5000, l = block_length, alpha = pMCS)
 MCSETH_MFZG2[auxETH_MFZG2] = 1
 
 MCSETH_MFZG5 = rep(0,ncol(VaRETH5))
 MFZG5 = FZG(as.matrix(VaRETH5), as.matrix(ESETH5), retETH, alpha = a5)
 colnames(MFZG5) = colnames(VaRETH5)
-auxETH_MFZG5 = estMCS.quick(MFZG5, test=MCS_type, B=5000, l=block_length, alpha = pMCS)
+auxETH_MFZG5 = estMCS.quick(MFZG5, test = MCS_type, B = 5000, l = block_length, alpha = pMCS)
 MCSETH_MFZG5[auxETH_MFZG5] = 1
 
 
 MCSETH_MNZ2 = rep(0,ncol(VaRETH2))
 MNZ2 = NZ(as.matrix(VaRETH2), as.matrix(ESETH2), retETH, alpha = a2)
 colnames(MNZ2) = colnames(VaRETH2)
-auxETH_MNZ2 = estMCS.quick(MNZ2, test=MCS_type, B=5000, l=block_length, alpha = pMCS)
+auxETH_MNZ2 = estMCS.quick(MNZ2, test = MCS_type, B = 5000, l = block_length, alpha = pMCS)
 MCSETH_MNZ2[auxETH_MNZ2] = 1
 
 MCSETH_MNZ5 = rep(0,ncol(VaRETH5))
 MNZ5 = NZ(as.matrix(VaRETH5), as.matrix(ESETH5), retETH, alpha = a5)
 colnames(MNZ5) = colnames(VaRETH5)
-auxETH_MNZ5 = estMCS.quick(MNZ5, test=MCS_type, B=5000, l=block_length, alpha = pMCS)
+auxETH_MNZ5 = estMCS.quick(MNZ5, test = MCS_type, B = 5000, l = block_length, alpha = pMCS)
 MCSETH_MNZ5[auxETH_MNZ5] = 1
 
 MCSETH_MAL2 = rep(0,ncol(VaRETH2))
 MAL2 = AL(as.matrix(VaRETH2), as.matrix(ESETH2), retETH, alpha = a2)
 colnames(MAL2) = colnames(VaRETH2)
-auxETH_MAL2 = estMCS.quick(MAL2, test=MCS_type, B=5000, l=block_length, alpha = pMCS)
+auxETH_MAL2 = estMCS.quick(MAL2, test = MCS_type, B = 5000, l = block_length, alpha = pMCS)
 MCSETH_MAL2[auxETH_MAL2] = 1
 
 MCSETH_MAL5 = rep(0,ncol(VaRETH5))
 MAL5 = AL(as.matrix(VaRETH5), as.matrix(ESETH5), retETH, alpha = a5)
 colnames(MAL5) = colnames(VaRETH5)
-auxETH_MAL5 = estMCS.quick(MAL5, test=MCS_type, B=5000, l=block_length, alpha = pMCS)
+auxETH_MAL5 = estMCS.quick(MAL5, test = MCS_type, B = 5000, l = block_length, alpha = pMCS)
 MCSETH_MAL5[auxETH_MAL5] = 1
 
 
@@ -528,7 +528,7 @@ graficos_fluctuations = function(modelo1, modelo2, crypto, risklevel, fluc_alpha
   
   if (modelo2 == "FZG_RSC") {
   plot1 <- ggplot(data = GR_QL$fluc) + 
-    #geom_vline(xintercept = as.Date(c("2020-03-12","2020-05-12", "2021-05-19")), color = "red", linetype = "dashed") + 
+    geom_vline(xintercept = as.Date(c("2020-03-12","2020-05-12", "2021-05-19")), color = "red", linetype = "dashed") + 
     geom_line(aes(x = days, y), color = "green4") + 
     geom_hline(yintercept = c(GR_QL$cv_sup, GR_QL$cv_inf), linetype = "dashed") + 
     ylab("Relative performance") + xlab(" ") + 
@@ -536,7 +536,7 @@ graficos_fluctuations = function(modelo1, modelo2, crypto, risklevel, fluc_alpha
             subtitle = bquote("QL scoring function. Risk level"~.(risklevel)~"%.")) + 
     theme(text = element_text(size = 16)) 
   plot2 <- ggplot(data = GR_FZG$fluc) + 
-    #geom_vline(xintercept = as.Date(c("2020-03-12","2020-05-12", "2021-05-19")), color = "red", linetype = "dashed") + 
+    geom_vline(xintercept = as.Date(c("2020-03-12","2020-05-12", "2021-05-19")), color = "red", linetype = "dashed") + 
     geom_line(aes(x = days, y), color = "green4") + 
     geom_hline(yintercept = c(GR_FZG$cv_sup, GR_FZG$cv_inf), linetype = "dashed") + 
     ylab("Relative performance") + xlab(" ") + 
@@ -544,7 +544,7 @@ graficos_fluctuations = function(modelo1, modelo2, crypto, risklevel, fluc_alpha
             subtitle = bquote("FZG scoring function. Risk level"~.(risklevel)~"%.")) + 
     theme(text = element_text(size = 16)) 
   plot3 <- ggplot(data = GR_NZ$fluc) + 
-    #geom_vline(xintercept = as.Date(c("2020-03-12","2020-05-12", "2021-05-19")), color = "red", linetype = "dashed") + 
+    geom_vline(xintercept = as.Date(c("2020-03-12","2020-05-12", "2021-05-19")), color = "red", linetype = "dashed") + 
     geom_line(aes(x = days, y), color = "green4") + 
     geom_hline(yintercept = c(GR_NZ$cv_sup, GR_NZ$cv_inf), linetype = "dashed") + 
     ylab("Relative performance") + xlab(" ") + 
@@ -552,7 +552,7 @@ graficos_fluctuations = function(modelo1, modelo2, crypto, risklevel, fluc_alpha
             subtitle = bquote("NZ scoring function. Risk level"~.(risklevel)~"%.")) + 
     theme(text = element_text(size = 16)) 
   plot4 <- ggplot(data = GR_AL$fluc) + 
-    #geom_vline(xintercept = as.Date(c("2020-03-12","2020-05-12", "2021-05-19")), color = "red", linetype = "dashed") + 
+    geom_vline(xintercept = as.Date(c("2020-03-12","2020-05-12", "2021-05-19")), color = "red", linetype = "dashed") + 
     geom_line(aes(x = days, y), color = "green4") + 
     geom_hline(yintercept = c(GR_AL$cv_sup, GR_AL$cv_inf), linetype = "dashed") + 
     ylab("Relative performance") + xlab(" ") + 
@@ -562,7 +562,7 @@ graficos_fluctuations = function(modelo1, modelo2, crypto, risklevel, fluc_alpha
   } else{
     if (modelo2 == "NZ_RSC") {
       plot1 <- ggplot(data = GR_QL$fluc) + 
-        #geom_vline(xintercept = as.Date(c("2020-03-12","2020-05-12", "2021-05-19")), color = "red", linetype = "dashed") + 
+        geom_vline(xintercept = as.Date(c("2020-03-12","2020-05-12", "2021-05-19")), color = "red", linetype = "dashed") + 
         geom_line(aes(x = days, y), color = "green4") + 
         geom_hline(yintercept = c(GR_QL$cv_sup, GR_QL$cv_inf), linetype = "dashed") + 
         ylab("Relative performance") + xlab(" ") + 
@@ -570,7 +570,7 @@ graficos_fluctuations = function(modelo1, modelo2, crypto, risklevel, fluc_alpha
                 subtitle = bquote("QL scoring function. Risk level"~.(risklevel)~"%.")) + 
         theme(text = element_text(size = 16)) 
       plot2 <- ggplot(data = GR_FZG$fluc) + 
-        #geom_vline(xintercept = as.Date(c("2020-03-12","2020-05-12", "2021-05-19")), color = "red", linetype = "dashed") + 
+        geom_vline(xintercept = as.Date(c("2020-03-12","2020-05-12", "2021-05-19")), color = "red", linetype = "dashed") + 
         geom_line(aes(x = days, y), color = "green4") + 
         geom_hline(yintercept = c(GR_FZG$cv_sup, GR_FZG$cv_inf), linetype = "dashed") + 
         ylab("Relative performance") + xlab(" ") + 
@@ -578,7 +578,7 @@ graficos_fluctuations = function(modelo1, modelo2, crypto, risklevel, fluc_alpha
                 subtitle = bquote("FZG scoring function. Risk level"~.(risklevel)~"%.")) + 
         theme(text = element_text(size = 16)) 
       plot3 <- ggplot(data = GR_NZ$fluc) + 
-        #geom_vline(xintercept = as.Date(c("2020-03-12","2020-05-12", "2021-05-19")), color = "red", linetype = "dashed") + 
+        geom_vline(xintercept = as.Date(c("2020-03-12","2020-05-12", "2021-05-19")), color = "red", linetype = "dashed") + 
         geom_line(aes(x = days, y), color = "green4") + 
         geom_hline(yintercept = c(GR_NZ$cv_sup, GR_NZ$cv_inf), linetype = "dashed") + 
         ylab("Relative performance") + xlab(" ") + 
@@ -586,7 +586,7 @@ graficos_fluctuations = function(modelo1, modelo2, crypto, risklevel, fluc_alpha
                 subtitle = bquote("NZ scoring function. Risk level"~.(risklevel)~"%.")) + 
         theme(text = element_text(size = 16)) 
       plot4 <- ggplot(data = GR_AL$fluc) + 
-        #geom_vline(xintercept = as.Date(c("2020-03-12","2020-05-12", "2021-05-19")), color = "red", linetype = "dashed") + 
+        geom_vline(xintercept = as.Date(c("2020-03-12","2020-05-12", "2021-05-19")), color = "red", linetype = "dashed") + 
         geom_line(aes(x = days, y), color = "green4") + 
         geom_hline(yintercept = c(GR_AL$cv_sup, GR_AL$cv_inf), linetype = "dashed") + 
         ylab("Relative performance") + xlab(" ") + 
@@ -596,7 +596,7 @@ graficos_fluctuations = function(modelo1, modelo2, crypto, risklevel, fluc_alpha
     } else {
       if (modelo2 == "AL_RSC") {
         plot1 <- ggplot(data = GR_QL$fluc) + 
-          #geom_vline(xintercept = as.Date(c("2020-03-12","2020-05-12", "2021-05-19")), color = "red", linetype = "dashed") + 
+          geom_vline(xintercept = as.Date(c("2020-03-12","2020-05-12", "2021-05-19")), color = "red", linetype = "dashed") + 
           geom_line(aes(x = days, y), color = "green4") + 
           geom_hline(yintercept = c(GR_QL$cv_sup, GR_QL$cv_inf), linetype = "dashed") + 
           ylab("Relative performance") + xlab(" ") + 
@@ -604,7 +604,7 @@ graficos_fluctuations = function(modelo1, modelo2, crypto, risklevel, fluc_alpha
                   subtitle = bquote("QL scoring function. Risk level"~.(risklevel)~"%.")) + 
           theme(text = element_text(size = 16)) 
         plot2 <- ggplot(data = GR_FZG$fluc) + 
-          #geom_vline(xintercept = as.Date(c("2020-03-12","2020-05-12", "2021-05-19")), color = "red", linetype = "dashed") + 
+          geom_vline(xintercept = as.Date(c("2020-03-12","2020-05-12", "2021-05-19")), color = "red", linetype = "dashed") + 
           geom_line(aes(x = days, y), color = "green4") + 
           geom_hline(yintercept = c(GR_FZG$cv_sup, GR_FZG$cv_inf), linetype = "dashed") + 
           ylab("Relative performance") + xlab(" ") + 
@@ -612,7 +612,7 @@ graficos_fluctuations = function(modelo1, modelo2, crypto, risklevel, fluc_alpha
                   subtitle = bquote("FZG scoring function. Risk level"~.(risklevel)~"%.")) + 
           theme(text = element_text(size = 16)) 
         plot3 <- ggplot(data = GR_NZ$fluc) + 
-          #geom_vline(xintercept = as.Date(c("2020-03-12","2020-05-12", "2021-05-19")), color = "red", linetype = "dashed") + 
+          geom_vline(xintercept = as.Date(c("2020-03-12","2020-05-12", "2021-05-19")), color = "red", linetype = "dashed") + 
           geom_line(aes(x = days, y), color = "green4") + 
           geom_hline(yintercept = c(GR_NZ$cv_sup, GR_NZ$cv_inf), linetype = "dashed") + 
           ylab("Relative performance") + xlab(" ") + 
@@ -620,7 +620,7 @@ graficos_fluctuations = function(modelo1, modelo2, crypto, risklevel, fluc_alpha
                   subtitle = bquote("NZ scoring function. Risk level"~.(risklevel)~"%.")) + 
           theme(text = element_text(size = 16)) 
         plot4 <- ggplot(data = GR_AL$fluc) + 
-          #geom_vline(xintercept = as.Date(c("2020-03-12","2020-05-12", "2021-05-19")), color = "red", linetype = "dashed") + 
+          geom_vline(xintercept = as.Date(c("2020-03-12","2020-05-12", "2021-05-19")), color = "red", linetype = "dashed") + 
           geom_line(aes(x = days, y), color = "green4") + 
           geom_hline(yintercept = c(GR_AL$cv_sup, GR_AL$cv_inf), linetype = "dashed") + 
           ylab("Relative performance") + xlab(" ") + 
@@ -630,7 +630,7 @@ graficos_fluctuations = function(modelo1, modelo2, crypto, risklevel, fluc_alpha
       } else{
         if (modelo2 == "FZG_MSC") {
           plot1 <- ggplot(data = GR_QL$fluc) + 
-            #geom_vline(xintercept = as.Date(c("2020-03-12","2020-05-12", "2021-05-19")), color = "red", linetype = "dashed") + 
+            geom_vline(xintercept = as.Date(c("2020-03-12","2020-05-12", "2021-05-19")), color = "red", linetype = "dashed") + 
             geom_line(aes(x = days, y), color = "green4") + 
             geom_hline(yintercept = c(GR_QL$cv_sup, GR_QL$cv_inf), linetype = "dashed") + 
             ylab("Relative performance") + xlab(" ") + 
@@ -638,7 +638,7 @@ graficos_fluctuations = function(modelo1, modelo2, crypto, risklevel, fluc_alpha
                     subtitle = bquote("QL scoring function. Risk level"~.(risklevel)~"%.")) + 
             theme(text = element_text(size = 16)) 
           plot2 <- ggplot(data = GR_FZG$fluc) + 
-            #geom_vline(xintercept = as.Date(c("2020-03-12","2020-05-12", "2021-05-19")), color = "red", linetype = "dashed") + 
+            geom_vline(xintercept = as.Date(c("2020-03-12","2020-05-12", "2021-05-19")), color = "red", linetype = "dashed") + 
             geom_line(aes(x = days, y), color = "green4") + 
             geom_hline(yintercept = c(GR_FZG$cv_sup, GR_FZG$cv_inf), linetype = "dashed") + 
             ylab("Relative performance") + xlab(" ") + 
@@ -646,7 +646,7 @@ graficos_fluctuations = function(modelo1, modelo2, crypto, risklevel, fluc_alpha
                     subtitle = bquote("FZG scoring function. Risk level"~.(risklevel)~"%.")) + 
             theme(text = element_text(size = 16)) 
           plot3 <- ggplot(data = GR_NZ$fluc) + 
-            #geom_vline(xintercept = as.Date(c("2020-03-12","2020-05-12", "2021-05-19")), color = "red", linetype = "dashed") + 
+            geom_vline(xintercept = as.Date(c("2020-03-12","2020-05-12", "2021-05-19")), color = "red", linetype = "dashed") + 
             geom_line(aes(x = days, y), color = "green4") + 
             geom_hline(yintercept = c(GR_NZ$cv_sup, GR_NZ$cv_inf), linetype = "dashed") + 
             ylab("Relative performance") + xlab(" ") + 
@@ -654,7 +654,7 @@ graficos_fluctuations = function(modelo1, modelo2, crypto, risklevel, fluc_alpha
                     subtitle = bquote("NZ scoring function. Risk level"~.(risklevel)~"%.")) + 
             theme(text = element_text(size = 16)) 
           plot4 <- ggplot(data = GR_AL$fluc) + 
-            #geom_vline(xintercept = as.Date(c("2020-03-12","2020-05-12", "2021-05-19")), color = "red", linetype = "dashed") + 
+            geom_vline(xintercept = as.Date(c("2020-03-12","2020-05-12", "2021-05-19")), color = "red", linetype = "dashed") + 
             geom_line(aes(x = days, y), color = "green4") + 
             geom_hline(yintercept = c(GR_AL$cv_sup, GR_AL$cv_inf), linetype = "dashed") + 
             ylab("Relative performance") + xlab(" ") + 
@@ -664,7 +664,7 @@ graficos_fluctuations = function(modelo1, modelo2, crypto, risklevel, fluc_alpha
         } else{
           if (modelo2 == "NZ_MSC") {
             plot1 <- ggplot(data = GR_QL$fluc) + 
-              #geom_vline(xintercept = as.Date(c("2020-03-12","2020-05-12", "2021-05-19")), color = "red", linetype = "dashed") + 
+              geom_vline(xintercept = as.Date(c("2020-03-12","2020-05-12", "2021-05-19")), color = "red", linetype = "dashed") + 
               geom_line(aes(x = days, y), color = "green4") + 
               geom_hline(yintercept = c(GR_QL$cv_sup, GR_QL$cv_inf), linetype = "dashed") + 
               ylab("Relative performance") + xlab(" ") + 
@@ -672,7 +672,7 @@ graficos_fluctuations = function(modelo1, modelo2, crypto, risklevel, fluc_alpha
                       subtitle = bquote("QL scoring function. Risk level"~.(risklevel)~"%.")) + 
               theme(text = element_text(size = 16)) 
             plot2 <- ggplot(data = GR_FZG$fluc) + 
-              #geom_vline(xintercept = as.Date(c("2020-03-12","2020-05-12", "2021-05-19")), color = "red", linetype = "dashed") + 
+              geom_vline(xintercept = as.Date(c("2020-03-12","2020-05-12", "2021-05-19")), color = "red", linetype = "dashed") + 
               geom_line(aes(x = days, y), color = "green4") + 
               geom_hline(yintercept = c(GR_FZG$cv_sup, GR_FZG$cv_inf), linetype = "dashed") + 
               ylab("Relative performance") + xlab(" ") + 
@@ -680,7 +680,7 @@ graficos_fluctuations = function(modelo1, modelo2, crypto, risklevel, fluc_alpha
                       subtitle = bquote("FZG scoring function. Risk level"~.(risklevel)~"%.")) + 
               theme(text = element_text(size = 16)) 
             plot3 <- ggplot(data = GR_NZ$fluc) + 
-              #geom_vline(xintercept = as.Date(c("2020-03-12","2020-05-12", "2021-05-19")), color = "red", linetype = "dashed") + 
+              geom_vline(xintercept = as.Date(c("2020-03-12","2020-05-12", "2021-05-19")), color = "red", linetype = "dashed") + 
               geom_line(aes(x = days, y), color = "green4") + 
               geom_hline(yintercept = c(GR_NZ$cv_sup, GR_NZ$cv_inf), linetype = "dashed") + 
               ylab("Relative performance") + xlab(" ") + 
@@ -688,7 +688,7 @@ graficos_fluctuations = function(modelo1, modelo2, crypto, risklevel, fluc_alpha
                       subtitle = bquote("NZ scoring function. Risk level"~.(risklevel)~"%.")) + 
               theme(text = element_text(size = 16)) 
             plot4 <- ggplot(data = GR_AL$fluc) + 
-              #geom_vline(xintercept = as.Date(c("2020-03-12","2020-05-12", "2021-05-19")), color = "red", linetype = "dashed") + 
+              geom_vline(xintercept = as.Date(c("2020-03-12","2020-05-12", "2021-05-19")), color = "red", linetype = "dashed") + 
               geom_line(aes(x = days, y), color = "green4") + 
               geom_hline(yintercept = c(GR_AL$cv_sup, GR_AL$cv_inf), linetype = "dashed") + 
               ylab("Relative performance") + xlab(" ") + 
@@ -698,7 +698,7 @@ graficos_fluctuations = function(modelo1, modelo2, crypto, risklevel, fluc_alpha
           } else{
             if (modelo2 == "AL_MSC") {
               plot1 <- ggplot(data = GR_QL$fluc) + 
-                #geom_vline(xintercept = as.Date(c("2020-03-12","2020-05-12", "2021-05-19")), color = "red", linetype = "dashed") + 
+                geom_vline(xintercept = as.Date(c("2020-03-12","2020-05-12", "2021-05-19")), color = "red", linetype = "dashed") + 
                 geom_line(aes(x = days, y), color = "green4") + 
                 geom_hline(yintercept = c(GR_QL$cv_sup, GR_QL$cv_inf), linetype = "dashed") + 
                 ylab("Relative performance") + xlab(" ") + 
@@ -706,7 +706,7 @@ graficos_fluctuations = function(modelo1, modelo2, crypto, risklevel, fluc_alpha
                         subtitle = bquote("QL scoring function. Risk level"~.(risklevel)~"%.")) + 
                 theme(text = element_text(size = 16)) 
               plot2 <- ggplot(data = GR_FZG$fluc) + 
-                #geom_vline(xintercept = as.Date(c("2020-03-12","2020-05-12", "2021-05-19")), color = "red", linetype = "dashed") + 
+                geom_vline(xintercept = as.Date(c("2020-03-12","2020-05-12", "2021-05-19")), color = "red", linetype = "dashed") + 
                 geom_line(aes(x = days, y), color = "green4") + 
                 geom_hline(yintercept = c(GR_FZG$cv_sup, GR_FZG$cv_inf), linetype = "dashed") + 
                 ylab("Relative performance") + xlab(" ") + 
@@ -714,7 +714,7 @@ graficos_fluctuations = function(modelo1, modelo2, crypto, risklevel, fluc_alpha
                         subtitle = bquote("FZG scoring function. Risk level"~.(risklevel)~"%.")) + 
                 theme(text = element_text(size = 16)) 
               plot3 <- ggplot(data = GR_NZ$fluc) + 
-                #geom_vline(xintercept = as.Date(c("2020-03-12","2020-05-12", "2021-05-19")), color = "red", linetype = "dashed") + 
+                geom_vline(xintercept = as.Date(c("2020-03-12","2020-05-12", "2021-05-19")), color = "red", linetype = "dashed") + 
                 geom_line(aes(x = days, y), color = "green4") + 
                 geom_hline(yintercept = c(GR_NZ$cv_sup, GR_NZ$cv_inf), linetype = "dashed") + 
                 ylab("Relative performance") + xlab(" ") + 
@@ -722,7 +722,7 @@ graficos_fluctuations = function(modelo1, modelo2, crypto, risklevel, fluc_alpha
                         subtitle = bquote("NZ scoring function. Risk level"~.(risklevel)~"%.")) + 
                 theme(text = element_text(size = 16)) 
               plot4 <- ggplot(data = GR_AL$fluc) + 
-                #geom_vline(xintercept = as.Date(c("2020-03-12","2020-05-12", "2021-05-19")), color = "red", linetype = "dashed") + 
+                geom_vline(xintercept = as.Date(c("2020-03-12","2020-05-12", "2021-05-19")), color = "red", linetype = "dashed") + 
                 geom_line(aes(x = days, y), color = "green4") + 
                 geom_hline(yintercept = c(GR_AL$cv_sup, GR_AL$cv_inf), linetype = "dashed") + 
                 ylab("Relative performance") + xlab(" ") + 
@@ -731,7 +731,7 @@ graficos_fluctuations = function(modelo1, modelo2, crypto, risklevel, fluc_alpha
                 theme(text = element_text(size = 16)) 
             } else{
               plot1 <- ggplot(data = GR_QL$fluc) + 
-                #geom_vline(xintercept = as.Date(c("2020-03-12","2020-05-12", "2021-05-19")), color = "red", linetype = "dashed") + 
+                geom_vline(xintercept = as.Date(c("2020-03-12","2020-05-12", "2021-05-19")), color = "red", linetype = "dashed") + 
                 geom_line(aes(x = days, y), color = "green4") + 
                 geom_hline(yintercept = c(GR_QL$cv_sup, GR_QL$cv_inf), linetype = "dashed") + 
                 ylab("Relative performance") + xlab(" ") + 
@@ -739,7 +739,7 @@ graficos_fluctuations = function(modelo1, modelo2, crypto, risklevel, fluc_alpha
                         subtitle = bquote("QL scoring function. Risk level"~.(risklevel)~"%.")) + 
                 theme(text = element_text(size = 16))
               plot2 <- ggplot(data = GR_FZG$fluc) + 
-                #geom_vline(xintercept = as.Date(c("2020-03-12","2020-05-12", "2021-05-19")), color = "red", linetype = "dashed") + 
+                geom_vline(xintercept = as.Date(c("2020-03-12","2020-05-12", "2021-05-19")), color = "red", linetype = "dashed") + 
                 geom_line(aes(x = days, y), color = "green4") + 
                 geom_hline(yintercept = c(GR_FZG$cv_sup, GR_FZG$cv_inf), linetype = "dashed") + 
                 ylab("Relative performance") + xlab(" ") + 
@@ -747,7 +747,7 @@ graficos_fluctuations = function(modelo1, modelo2, crypto, risklevel, fluc_alpha
                         subtitle = bquote("FZG scoring function. Risk level"~.(risklevel)~"%.")) + 
                 theme(text = element_text(size = 16))
               plot3 <- ggplot(data = GR_NZ$fluc) + 
-                #geom_vline(xintercept = as.Date(c("2020-03-12","2020-05-12", "2021-05-19")), color = "red", linetype = "dashed") + 
+                geom_vline(xintercept = as.Date(c("2020-03-12","2020-05-12", "2021-05-19")), color = "red", linetype = "dashed") + 
                 geom_line(aes(x = days, y), color = "green4") + 
                 geom_hline(yintercept = c(GR_NZ$cv_sup, GR_NZ$cv_inf), linetype = "dashed") + 
                 ylab("Relative performance") + xlab(" ") + 
@@ -755,7 +755,7 @@ graficos_fluctuations = function(modelo1, modelo2, crypto, risklevel, fluc_alpha
                         subtitle = bquote("NZ scoring function. Risk level"~.(risklevel)~"%.")) + 
                 theme(text = element_text(size = 16))
               plot4 <- ggplot(data = GR_AL$fluc) + 
-                #geom_vline(xintercept = as.Date(c("2020-03-12","2020-05-12", "2021-05-19")), color = "red", linetype = "dashed") + 
+                geom_vline(xintercept = as.Date(c("2020-03-12","2020-05-12", "2021-05-19")), color = "red", linetype = "dashed") + 
                 geom_line(aes(x = days, y), color = "green4") + 
                 geom_hline(yintercept = c(GR_AL$cv_sup, GR_AL$cv_inf), linetype = "dashed") + 
                 ylab("Relative performance") + xlab(" ") + 
@@ -789,35 +789,16 @@ for (i in 1:length(methods)) {
 }
 
 
-methods = c("GAS", "FIGARCH", "AVG", "MED")
+# ETH
+
+methods = c("GAS", "GJR", "GARCH", "MSGARCH", "Boot.", "FIGARCH", "NGARCH", "AVG", "MED", "FZG_MSC", "NZ_MSC", "AL_MSC", "AL_RSC")
 for (i in 1:length(methods)) {
   for (j in (i + 1):length(methods)) {
     graficos_fluctuations(methods[i], methods[j], "ETH", 2.5)
   }
 }
 
-
-methods = c("GARCH", "GJR", "GAS", "FIGARCH", "CAViaR", "AVG", "MED", "FZG_RSC", "FZG_MSC", "NZ_MSC", "AL_MSC")
-for (i in 1:length(methods)) {
-  for (j in (i + 1):length(methods)) {
-    graficos_fluctuations(methods[i], methods[j], "ETH", 5)
-  }
-}
-
-methods = c("GARCH", "GJR", "FIGARCH", "Boot.", "MSGARCH", "CAViaR","CAViaREVT","CAViaRALD", "AVG", "MED", "MAX", "MIN",  "FZG_RSC", "NZ_RSC", "AL_RSC", "FZG_MSC", "NZ_MSC", "AL_MSC")
-for (i in 1:length(methods)) {
-    graficos_fluctuations("GAS", methods[i], "ETH", 5)
-}
-
-
-methods = c("GARCH", "GJR", "FIGARCH", "Boot.", "MSGARCH", "CAViaR","CAViaREVT","CAViaRALD", "AVG", "MED", "MAX", "MIN",  "FZG_RSC", "NZ_RSC", "AL_RSC", "FZG_MSC", "NZ_MSC", "AL_MSC")
-for (i in 1:length(methods)) {
-  graficos_fluctuations("GAS", methods[i], "ETH", 2.5)
-}
-
-
-
-methods = c("FIGARCH", "GAS")
+methods = c("GAS", "GJR", "GARCH", "MSGARCH", "NGARCH", "CAViaR", "AVG", "MED", "FZG_MSC", "NZ_MSC", "FZG_RSC", "NZ_RSC", "AL_RSC")
 for (i in 1:length(methods)) {
   for (j in (i + 1):length(methods)) {
     graficos_fluctuations(methods[i], methods[j], "ETH", 5)
