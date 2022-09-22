@@ -54,6 +54,9 @@ GJR_Spec = ugarchspec(variance.model = list(model = 'gjrGARCH', garchOrder = c(1
 NGARCH_Spec = ugarchspec(variance.model = list(model = "fGARCH", garchOrder = c(1, 1), submodel = "NAGARCH"),
                           mean.model = list(armaOrder = c(0, 0), include.mean = FALSE),
                           distribution.model = "sstd")
+AR0_Spec = ugarchspec(variance.model = list(model = "sGARCH", garchOrder = c(0, 0)), 
+                      mean.model = list(armaOrder = c(0, 0), include.mean = TRUE), 
+                      distribution.model = "sstd")
 AR1_Spec = ugarchspec(variance.model = list(model = "sGARCH", garchOrder = c(0, 0)), 
                      mean.model = list(armaOrder = c(1, 0), include.mean = FALSE), 
                      distribution.model = "sstd")
@@ -83,6 +86,8 @@ inES2_GJR = inES5_GJR = inES2_GARCH = inES5_GARCH = inES2_NG = inES5_NG = inES2_
 vol_GJR = vol_GARCH = vol_NG = vol_FI = vol_Boot = vol_GAS = vol_MS = matrix(0, ncol = OoS, nrow = InS)
 caviar2 = caviar5 = caviar_evt2 = caviar_evt5 = NULL
 
+
+
 see_ar <- c()
 for (i in 1:OoS) {
   print(paste(i,"of", OoS, "replications"))
@@ -90,19 +95,30 @@ for (i in 1:OoS) {
   predailyreturns = crypto$ret[i:(InS + i - 1)]
   VaR[i,length(alpha)*nmodels + 1] = crypto$ret[InS + i]         # OoS return
   
+  # We testes fristly whether AR0 (only)
+  AR0_fit = ugarchfit(AR0_Spec, predailyreturns, solver = "hybrid")
   AR1_fit = ugarchfit(AR1_Spec, predailyreturns, solver = "hybrid")
   AR2_fit = ugarchfit(AR2_Spec, predailyreturns, solver = "hybrid")
   
-  if (infocriteria(AR1_fit)[1] <= infocriteria(AR2_fit)[1]) {
+  aic <- c(infocriteria(AR0_fit)[1], infocriteria(AR1_fit)[1], infocriteria(AR2_fit)[1])
+  see_ar[i] <- which(aic == min(aic))
+  if (see_ar[i] == 1) {
+    # It never happend
+    AR_fore = mean(predailyreturns)
+    dailyreturns = scale(predailyreturns, center = TRUE, scale = FALSE)
+    VaR[i,length(alpha)*nmodels + 2] = as.numeric(AR_fore)
+  }
+  if (see_ar[i] == 2) {
     AR_fore = ugarchforecast(AR1_fit, n.ahead = 1)
     dailyreturns = residuals(AR1_fit)
-    see_ar[i] <- 1
-  } else {
+    VaR[i,length(alpha)*nmodels + 2] = as.numeric(AR_fore@forecast$seriesFor)      
+  }
+  if (see_ar[i] == 3) {
     AR_fore = ugarchforecast(AR2_fit, n.ahead = 1)
     dailyreturns = residuals(AR2_fit)
-    see_ar[i] <- 2
+    VaR[i,length(alpha)*nmodels + 2] = as.numeric(AR_fore@forecast$seriesFor)   
   }
-  VaR[i,length(alpha)*nmodels + 2] = as.numeric(AR_fore@forecast$seriesFor)      # InS mean
+  
   
   # Benchmarks
   GARCH_fit = ugarchfit(GARCH_Spec, dailyreturns, solver = "hybrid")
