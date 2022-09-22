@@ -103,7 +103,7 @@ for (i in 1:OoS) {
   aic <- c(infocriteria(AR0_fit)[1], infocriteria(AR1_fit)[1], infocriteria(AR2_fit)[1])
   see_ar[i] <- which(aic == min(aic))
   if (see_ar[i] == 1) {
-    # It never happend
+    # Never happened actually
     AR_fore = mean(predailyreturns)
     dailyreturns = scale(predailyreturns, center = TRUE, scale = FALSE)
     VaR[i,length(alpha)*nmodels + 2] = as.numeric(AR_fore)
