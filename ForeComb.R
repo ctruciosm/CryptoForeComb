@@ -7,7 +7,6 @@
 #### Relative and Minimum score combining strategies (Taylor, 2020)
 ################################################################################## 
 
-#setwd("/Volumes/CTRUCIOS_SD/ForecastCombinationCrypto/Codes/CryptoForeComb/")
 library(Rsolnp)
 library(dplyr)
 library(stringr)  
@@ -15,8 +14,7 @@ library(Rcpp)
 sourceCpp("scoring_functions.cpp")
 source("Optimizations.R")
 
-#cryptocurrency = "/Volumes/CTRUCIOS_SD/ForecastCombinationCrypto/Codes/Resultados/BTC"
-cryptocurrency =  "./ETH" # "./ETH"  # Options are "./BTC", "./ETH" and "./LTC"
+cryptocurrency =  "./ETH" # Options are "./BTC" and "./ETH"
 end_date = "2022-07-23"
 
 if (str_sub(cryptocurrency , -3, -1)   == "BTC") {

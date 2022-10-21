@@ -6,7 +6,6 @@
 #### Implemented by Carlos Trucios
 #### One-step-ahead forecast VaR/ES and in-sample VaR/ES estimation
 ################################################################################## 
-#setwd("/Volumes/CTRUCIOS_SD/UNICAMP/Ongoing Research/ForecastCombinationCrypto/CryptoForeComb/")
 rm(list = ls())
 library(RobGARCHBoot)
 library(GAS)

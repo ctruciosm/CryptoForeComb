@@ -44,7 +44,6 @@ VaR_ES_full = function(risklevel, rl){
 }
 
 n_ind = 10 # number os individual models
-setwd("/Volumes/CTRUCIOS_SD/UNICAMP/Ongoing Research/ForecastCombinationCrypto/CryptoForeComb/")
 
 library(stringr)
 library(modelconf)
@@ -81,9 +80,9 @@ Caption_eth = "One-step-ahead VaR and ES backtesting for Ethereum at 2.5\\% and 
 file_tex_name_eth = "VaRES_eth.tex" 
 label_name_eth = "Table_VaRES_eth"
 
-setwd("/Volumes/CTRUCIOS_SD/UNICAMP/Ongoing Research/ForecastCombinationCrypto/CryptoForeComb/BTC")
+setwd("./BTC")
 if (str_sub(getwd(), -3, -1) == "BTC") {
-  crypto = read.csv("/Volumes/CTRUCIOS_SD/UNICAMP/Ongoing Research/ForecastCombinationCrypto/CryptoForeComb/Data/BTCUSDT-1d-data.csv") %>% 
+  crypto = read.csv("./Data/BTCUSDT-1d-data.csv") %>% 
     mutate(date = as.Date(timestamp)) %>% arrange(date) %>% mutate(ret = c(0,diff(log(close))*100)) %>% 
     dplyr::select(date, ret) %>% filter(date > "2017-08-17", date < end_date)
   OoS = out_of_sample
@@ -100,9 +99,9 @@ if (str_sub(getwd(), -3, -1) == "BTC") {
   VaRBTC5 = AUX[[2]]
   ESBTC5  = AUX[[3]]
 }
-setwd("/Volumes/CTRUCIOS_SD/UNICAMP/Ongoing Research/ForecastCombinationCrypto/CryptoForeComb/ETH")
+setwd("./ETH")
 if (str_sub(getwd(), -3, -1) == "ETH") {
-  crypto = read.csv("/Volumes/CTRUCIOS_SD/UNICAMP/Ongoing Research/ForecastCombinationCrypto/CryptoForeComb/Data/ETHUSDT-1d-data.csv") %>% 
+  crypto = read.csv("./Data/ETHUSDT-1d-data.csv") %>% 
     mutate(date = as.Date(timestamp)) %>% arrange(date) %>% mutate(ret = c(0,diff(log(close))*100)) %>% 
     dplyr::select(date, ret) %>% filter(date > "2017-08-17", date < end_date)
   OoS = out_of_sample
@@ -427,7 +426,7 @@ VaRESETH = rbind(BackVaRESETH2,BackVaRESETH5) %>%
   mutate(how_many_ct = ifelse(CC > p & DQ > p & VQ > p & ESR_3 > p & MFE > p & NZ > p,1,0)) %>% 
   mutate(classe = rep(c(rep("Indiv.",10), rep("Comb.",10)),2)) 
 
-setwd("/Volumes/CTRUCIOS_SD/UNICAMP/Ongoing Research/ForecastCombinationCrypto/WP_2021/")
+
 VaRESBTC %>% 
   select(risk_level, classe, method, Hits, CC, DQ,VQ,MFE,NZ, ESR_3, AQL,AFZG,ANZ,AAL) %>% 
   kbl(format = "latex", digits = c(1,1,1,1,3,3,3,3,3,3,3,3,3,3), booktabs = T,
